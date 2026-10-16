@@ -1,0 +1,25 @@
+---
+/** Kapsel im Satz (Hanzo): Bild, Logo oder Monogramm in einer dunklen, glänzenden Pille. */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { withBase } from '../../lib/works';
+interface Props { image?: ImageMetadata; logo?: string; text?: string; w?: string; light?: boolean; class?: string }
+const { image, logo, text, w = '1.45em', light = false, class: cls = '' } = Astro.props;
+---
+<span class:list={['bpill', light && 'light', cls]} style={`--pw:${w}`}>
+  {image && <Image src={image} alt="" widths={[200, 400]} sizes="160px" class="absolute inset-0 h-full w-full object-cover" />}
+  {logo && <img src={withBase(logo)} alt="" class="absolute inset-[18%] h-[64%] w-[64%] object-contain" />}
+  {text && <span class="absolute inset-0 grid place-items-center text-[0.36em] font-semibold tracking-[-0.03em]">{text}</span>}
+</span>
+<style>
+  .bpill {
+    position: relative; display: inline-block; vertical-align: -0.08em;
+    width: var(--pw); height: 0.78em; margin: 0 0.06em;
+    border-radius: 999px; overflow: hidden;
+    background: #161412; color: #fff;
+    box-shadow: inset 0 0 0 0.05em #000, inset 0 0.07em 0 rgb(255 255 255 / 0.25), 0 0.12em 0.3em rgb(28 25 23 / 0.35);
+  }
+  .bpill::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 0.045em #111, inset 0 0.08em 0.05em rgb(255 255 255 / 0.35); pointer-events: none; }
+  .bpill.light { background: #fff; }
+  .bpill.light::after { box-shadow: inset 0 0 0 0.045em #d8d2ca, inset 0 0.08em 0.05em rgb(255 255 255 / 0.9); }
+</style>

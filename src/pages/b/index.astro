@@ -1,0 +1,354 @@
+---
+/**
+ * Entwurf B – „Schreibtisch“. Gleiche Inhalte und Zielgruppe wie Entwurf A, komplett neues Design.
+ * Referenzen: Tracebit · heyclicky · Hanzo · Kate.m · Nutshell.
+ */
+import '../../styles/b.css';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Window from '../../components/b/Window.astro';
+import NameTag from '../../components/b/NameTag.astro';
+import Pill from '../../components/b/Pill.astro';
+import ClientDialog from '../../components/ClientDialog.astro';
+import StickyCall from '../../components/StickyCall.astro';
+import Icon from '../../components/Icon.astro';
+import { site, tel, wa, disciplines } from '../../site.config';
+import { getWorks, pick, withBase, disciplineLabel, countBy } from '../../lib/works';
+
+const works = await getWorks();
+const counts = countBy(works);
+const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
+const brands = clients.filter((c) => c.data.kind === 'brand');
+const headliners = clients.filter((c) => c.data.tier === 1);
+const lineup = clients.filter((c) => c.data.tier !== 1);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pad = (n: number) => String(n).padStart(2, '0');
+const w = (k: string) => pick(works, k);
+const logoH = (c: (typeof clients)[number], h: number) => `${(h * c.data.scale) / Math.sqrt(c.data.aspect)}px`;
+const people = Object.fromEntries(clients.filter((c) => c.data.photo).map((c) => [c.id, c.data.photo!]));
+---
+
+<Base title={`${site.name} – Entwurf B`} htmlClass="theme-b">
+  <!-- Ankündigungsleiste (Tracebit) -->
+  <div class="relative z-40 bg-[#211d1b] text-white">
+    <div class="mx-auto flex h-10 max-w-[1440px] items-center justify-center gap-10 overflow-hidden px-4 text-[12px] md:text-[13px]">
+      <a href="#netzwerk" class="truncate opacity-90 hover:opacity-100">Unser Netzwerk arbeitet für Red Bull, AMD & Warner Bros. Games →</a>
+      <a href="#leistungen" class="hidden opacity-90 hover:opacity-100 md:inline">Neu im Netzwerk: Ylva Labs – KI für Outreach →</a>
+    </div>
+  </div>
+
+  <header class="relative z-30">
+    <div class="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-4 md:h-[88px] md:px-20">
+      <a href="#top" class="flex items-center gap-1.5 text-[19px] font-semibold tracking-[-0.04em] md:text-[24px]">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" class="-mr-0.5"><path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11" stroke="#2f8fff" stroke-width="2.6" stroke-linecap="round" /><path d="M12 2v20" stroke="#1c1917" stroke-width="2.6" stroke-linecap="round" /></svg>
+        {site.name}
+      </a>
+      <nav class="hidden items-center gap-1 rounded-xl border border-[var(--line)] bg-white/70 p-1 text-[15px] md:flex">
+        <a href="#netzwerk" class="rounded-lg px-4 py-2 transition-colors hover:bg-[var(--surface-2)]">Netzwerk</a>
+        <a href="#arbeiten" class="rounded-lg px-4 py-2 transition-colors hover:bg-[var(--surface-2)]">Arbeiten</a>
+        <a href="#leistungen" class="rounded-lg px-4 py-2 transition-colors hover:bg-[var(--surface-2)]">Leistungen</a>
+        <a href="#kontakt" class="rounded-lg px-4 py-2 transition-colors hover:bg-[var(--surface-2)]">Kontakt</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href={tel} class="ink inline-flex h-10 items-center px-4 text-[14px] font-medium md:h-11 md:px-5 md:text-[15px]">Anrufen</a>
+        <a href={wa} target="_blank" rel="noopener" class="hidden h-11 items-center rounded-[10px] bg-[var(--surface-2)] px-5 text-[15px] font-medium transition-colors hover:bg-[#e2dbd2] md:inline-flex">WhatsApp</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- 1 · HERO: Satz mit Kapseln (Hanzo) auf dem Schreibtisch voller Fenster (heyclicky), Licht + Linien (Tracebit) -->
+    <section class="hero relative overflow-hidden" data-hero>
+      <div class="glow pointer-events-none absolute inset-0"></div>
+      <div class="dots pointer-events-none absolute inset-0 [mask-image:radial-gradient(70%_60%_at_50%_45%,#000,transparent)]"></div>
+      <svg class="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1440 900" aria-hidden="true">
+        <g stroke="#1c1917" stroke-opacity="0.22" stroke-width="1" fill="none">
+          <line x1="980" y1="0" x2="1440" y2="720" />
+          <line x1="420" y1="900" x2="1440" y2="300" />
+          <line x1="1100" y1="0" x2="1120" y2="900" stroke-opacity="0.1" />
+          <line x1="0" y1="640" x2="1440" y2="170" stroke-opacity="0.12" />
+        </g>
+      </svg>
+
+      <!-- Schreibtisch: Fenster, Sticker, Logos – auf Desktop ziehbar -->
+      <div class="desk pointer-events-none absolute inset-0 mx-auto max-w-[1440px]">
+        <Window work={w('reel-gaming-bankkarte')} file="bankkarte-reel.mov" class="item float" width="var(--w1)" style="--l:2%; --t:2%; --L:3%; --T:9%; --r:-3deg; --wa:4/5; animation-delay:-1s" />
+        <Window work={w('thumb-shaolin')} file="shaolin-thumb.jpg" class="item float" width="var(--w2)" style="--l:56%; --t:0%; --L:74%; --T:3%; --r:2deg; --wa:16/9" />
+        <Window work={w('thumb-monster')} file="horror-keyvisual.jpg" class="item float hidden md:block" width="210px" style="--L:82%; --T:36%; --r:-2deg; --wa:16/9; animation-delay:-2s" />
+        <Window work={w('live-x3d')} file="amd-live-turnier.mov" class="item float hidden md:block" width="220px" style="--L:3%; --T:58%; --r:2deg; --wa:16/9; animation-delay:-1.5s" />
+        <NameTag name="Marvin" class="item float" style="--l:30%; --t:44%; --L:17%; --T:4%; --r:-8deg; animation-delay:-2.5s" />
+        <div class="item sticker float hidden md:grid" style="--L:73%; --T:66%; --r:9deg; animation-delay:-0.5s" data-drag>
+          <img src={withBase('logos/redbull.svg')} alt="Red Bull" class="h-9 w-auto" />
+        </div>
+        <div class="item sticker float hidden md:grid" style="--L:21%; --T:76%; --r:-7deg; animation-delay:-3.5s" data-drag>
+          <img src={withBase('logos/twitch.svg')} alt="Twitch" class="h-9 w-auto" />
+        </div>
+      </div>
+
+      <div class="relative mx-auto flex max-w-[1440px] flex-col items-center px-4 pb-10 pt-[250px] text-center md:min-h-[calc(100svh-128px-120px)] md:justify-center md:px-10 md:pb-0 md:pt-6">
+        <h1 class="display-b text-[clamp(2.4rem,11vw,3rem)] leading-[1.02] md:text-[min(5.4vw,5.75rem)] md:leading-[1]">
+          <span class="block" data-reveal style="--d:60ms">Ein <span class="ital">Name</span> <Pill text="MA" />,</span>
+          <span class="block" data-reveal style="--d:160ms">ein <span class="ital">Anruf</span> <span class="phone-pill"><Icon name="phone" /></span>,</span>
+          <span class="block" data-reveal style="--d:260ms">das <span class="ital">Beste</span> <Pill image={w('plakat-knabe').data.image} w="1.2em" /> aus</span>
+          <span class="block" data-reveal style="--d:340ms">Deutschland <Pill logo="logos/redbull.svg" light w="1.35em" />.</span>
+        </h1>
+        <p class="mono mt-6 max-w-[30rem] text-[13px] leading-[1.7] text-[var(--muted)] md:mt-8 md:text-[15px]" data-reveal style="--d:420ms">
+          Design, Video, Social Media, Management und Software. Ein Netzwerk aus Profis, die sonst für die Großen arbeiten – über einen Anruf.
+        </p>
+        <div class="mt-7 hidden items-center gap-3 md:flex" data-reveal style="--d:500ms">
+          <a href={tel} class="aqua inline-flex h-12 items-center gap-2.5 rounded-full px-7 text-[17px] font-semibold"><Icon name="phone" size={18} /> Marvin anrufen</a>
+          <a href={wa} target="_blank" rel="noopener" class="silver inline-flex h-12 items-center gap-2.5 rounded-full px-7 text-[17px] font-medium"><Icon name="whatsapp" size={19} /> WhatsApp</a>
+        </div>
+        <p class="mono mt-3 hidden text-[12px] text-[var(--muted)] md:block" data-reveal style="--d:560ms">Mo–Fr erreichbar · Antwort meist am selben Tag</p>
+      </div>
+
+      <!-- Logo-Reihe (Tracebit), Originalfarben -->
+      <div class="relative mx-auto max-w-[1440px] pb-8 md:px-10 md:pb-12" data-reveal style="--d:640ms">
+        <div class="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] md:[mask-image:none]">
+          <div class="marquee-b flex w-max items-center md:w-full md:justify-between">
+            {[0, 1].map((dup) => (
+              <ul class:list={['flex shrink-0 items-center gap-12 pr-12 md:w-full md:justify-between md:gap-0 md:pr-0', dup === 1 && 'md:hidden']} aria-hidden={dup === 1 ? 'true' : undefined}>
+                {brands.map((c) => (
+                  <li><button type="button" data-client={c.id} class="block transition-transform duration-500 hover:-translate-y-0.5" aria-label={`${c.data.name} – Details`}><img src={withBase(c.data.logo!)} alt={c.data.name} style={`height:${logoH(c, 46)}`} class="w-auto" /></button></li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · HALLO (Kate.m): gekippte Karten + kurzer Absatz -->
+    <section class="mx-auto max-w-[1280px] px-4 pt-24 md:px-10 md:pt-40">
+      <h2 class="display-b text-center text-[clamp(2.6rem,12vw,3.5rem)] md:text-[6rem]" data-reveal>Hallo <span class="wave inline-block">👋</span></h2>
+      <div data-reveal class="cards relative mx-auto mt-10 flex h-[260px] max-w-[760px] items-start justify-center md:mt-14 md:h-[440px]">
+        <article class="kcard" style="--bgc:#6b3d17; --r:-7deg; --y:22px; z-index:1">
+          <h3>Vertrieb aus<br />Deutschland</h3>
+          <Image src={w('mgmt-tour-bus').data.image} alt="" widths={[400, 600]} sizes="260px" class="kimg" />
+        </article>
+        <article class="kcard" style="--bgc:#161412; --r:3deg; --y:0px; z-index:3">
+          <h3>Ich bin<br />{site.name}</h3>
+          <div class="kimg grid place-items-center bg-[#2a2622]"><span class="serif text-[64px] italic text-white/90 md:text-[88px]">MA</span></div>
+        </article>
+        <article class="kcard" style="--bgc:#b5b08a; --r:-2deg; --y:14px; z-index:2; --fgc:#3f3c26">
+          <h3>Netzwerk für<br />Marken & Creator</h3>
+          <Image src={w('software-dashboard').data.image} alt="" widths={[400, 600]} sizes="260px" class="kimg" />
+        </article>
+      </div>
+      <div class="mt-16 grid gap-6 md:mt-24 md:grid-cols-[1fr_1.4fr] md:gap-16">
+        <h2 class="text-[28px] font-semibold tracking-[-0.03em] md:text-[34px]" data-reveal>Über Marvin</h2>
+        <p class="text-[22px] leading-[1.3] tracking-[-0.02em] md:text-[30px]" data-reveal style="--d:100ms">
+          Marvin ist Vertriebler – und hat das beste Netzwerk, das du in Deutschland anrufen kannst: Designer hinter Plakaten für Red Bull, die Thumbnail-Studios der größten Creator, Social-Media-Teams, Videoproduzenten, Manager und Software-Entwickler. <span class="text-[var(--muted)]">Du rufst einmal an. Er holt den richtigen Profi.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- 3 · NETZWERK: Logos groß, wie ein Festival-Lineup -->
+    <section id="netzwerk" class="mx-auto max-w-[1280px] px-4 pt-28 md:px-10 md:pt-44">
+      <div class="flex items-end justify-between gap-6">
+        <h2 class="display-b text-[clamp(2.4rem,11vw,3.25rem)] md:text-[5rem]" data-reveal>Unser Netzwerk<br /><span class="ital">arbeitet für</span></h2>
+        <span class="mono hidden pb-3 text-[13px] text-[var(--muted)] md:block">[{pad(clients.length)}] Marken & Creator</span>
+      </div>
+      <div class="mt-10 grid grid-cols-2 gap-3 md:mt-14 md:grid-cols-4 md:gap-4">
+        {headliners.map((c, i) => (
+          <button type="button" data-client={c.id} class="lcard t1 group" data-reveal style={`--d:${i * 90}ms`} aria-label={`${c.data.name} – Details`}>
+            <img src={withBase(c.data.logo!)} alt={c.data.name} style={`height:${logoH(c, 104)}`} class="max-w-[78%] object-contain transition-transform duration-700 group-hover:scale-105" />
+            <span class="mono lmeta">{c.data.name}</span>
+          </button>
+        ))}
+        {lineup.map((c, i) => (
+          <button type="button" data-client={c.id} class="lcard t2 group" data-reveal style={`--d:${(i % 4) * 90}ms`} aria-label={`${c.data.name} – Details`}>
+            {c.data.logo ? (
+              <img src={withBase(c.data.logo)} alt={c.data.name} style={`height:${logoH(c, 60)}`} class="max-w-[72%] object-contain transition-transform duration-700 group-hover:scale-105" />
+            ) : (
+              <span class="flex flex-col items-center gap-2">
+                <Image src={people[c.id]} alt={c.data.name} width={200} height={200} class="size-16 rounded-full object-cover shadow-[0_6px_16px_-6px_rgb(28_25_23/0.4)] md:size-20" />
+                <span class="text-[15px] font-semibold tracking-[-0.02em]">{c.data.name}</span>
+              </span>
+            )}
+            <span class="mono lmeta">{c.data.kind === 'creator' ? 'Creator' : c.data.name}</span>
+          </button>
+        ))}
+      </div>
+      <p class="mono mt-4 text-[12px] text-[var(--muted)]">Antippen: was gemacht wurde – und welcher Profi aus dem Netzwerk.</p>
+    </section>
+
+    <!-- 4 · ARBEITEN: Versal-Headline mit Kapseln + Karussell (Nutshell) -->
+    <section id="arbeiten" class="pt-28 md:pt-44" data-carousel>
+      <div class="mx-auto max-w-[1280px] px-4 text-center md:px-10">
+        <h2 class="caps text-[clamp(2.1rem,10vw,2.8rem)] md:text-[min(6vw,5.5rem)]" data-reveal>
+          Arbeiten, <span class="oval"><Image src={w('thumb-shaolin').data.image} alt="" widths={[300]} sizes="140px" /></span> die man
+          <span class="oval round"><Image src={w('mgmt-creator-stadion').data.image} alt="" widths={[300]} sizes="140px" /></span> <span class="ital normal-case">kennt.</span>
+        </h2>
+        <p class="mono mx-auto mt-6 max-w-[26rem] text-[13px] leading-[1.7] text-[var(--muted)]" data-reveal style="--d:100ms">{works.length} Arbeiten aus dem Netzwerk: Plakate, Thumbnails, Reels, Live-Produktionen und Software.</p>
+      </div>
+      <div class="relative mt-10 md:mt-14">
+        <div data-track class="track flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] md:px-[max(40px,calc((100vw-1280px)/2+40px))]">
+          {works.map((wk, i) => (
+            <figure data-slide class="slide group relative shrink-0 snap-start overflow-hidden rounded-[16px] bg-[#1c1917]">
+              <Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[400, 700]} sizes="(min-width: 768px) 300px, 72vw" class="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-[1.04]" loading={i < 4 ? 'eager' : 'lazy'} />
+              <figcaption class="mono absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-14 text-center text-[11px] uppercase leading-[1.35] tracking-[0.02em] text-white">
+                {wk.data.title}<br /><span class="opacity-70">{disciplineLabel(wk.data.discipline)} · {wk.data.client}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <button type="button" data-next class="round-btn aqua !absolute right-4 top-1/2 hidden -translate-y-1/2 md:grid" aria-label="Weiter"><Icon name="arrow" size={22} /></button>
+        <button type="button" data-prev class="round-btn silver !absolute left-4 top-1/2 hidden -translate-y-1/2 md:grid" aria-label="Zurück"><Icon name="arrow" size={22} class="rotate-180" /></button>
+      </div>
+    </section>
+
+    <!-- 5 · STATEMENT (Nutshell) -->
+    <section class="mx-auto max-w-[1280px] px-4 pt-28 text-center md:px-10 md:pt-44">
+      <p class="caps text-[clamp(1.9rem,9vw,2.6rem)] md:text-[min(5.4vw,5rem)]" data-reveal>
+        Wir <u>finden</u>, <u>vermitteln</u> <span class="oval"><Image src={w('reel-gaming-bankkarte').data.image} alt="" widths={[300]} sizes="140px" /></span> und <u>liefern</u> – für Marken, Creator <span class="oval round"><Image src={people['anaelic']} alt="" widths={[200]} sizes="120px" /></span> und den Mittelstand.
+      </p>
+    </section>
+
+    <!-- 6 · LEISTUNGEN (Kate.m) -->
+    <section id="leistungen" class="mx-auto max-w-[1280px] px-4 pt-28 md:px-10 md:pt-44">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[28px] font-semibold tracking-[-0.03em] md:text-[34px]" data-reveal>Leistungen</h2>
+        <a href={tel} class="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3.5 text-[13px] transition-colors hover:bg-[var(--surface-2)]">Anrufen <Icon name="arrow" size={14} /></a>
+      </div>
+      <ul class="mt-8 border-t border-[#1c1917]/80">
+        {disciplines.map((d, i) => (
+          <li class="svc grid grid-cols-[3rem_1fr] items-center gap-x-4 gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[1fr_1.2fr_1.6fr] md:py-6" data-reveal style={`--d:${i * 70}ms`}>
+            <span class="mono text-[12px] text-[var(--muted)]">[{pad(i + 1)}]</span>
+            <span class="text-[19px] font-medium tracking-[-0.02em] md:text-[22px]">{d.label}</span>
+            <span class="mono col-start-2 text-[12px] text-[var(--muted)] md:col-start-auto md:text-right">{d.line.replace(/\.$/, '').split(/,\s*/).join('  |  ')} · {pad(counts[d.id] ?? 0)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 7 · ABSCHLUSS (Tracebit) -->
+    <section id="kontakt" class="relative mt-28 overflow-hidden md:mt-44">
+      <div class="glow pointer-events-none absolute inset-0"></div>
+      <svg class="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1440 700" aria-hidden="true">
+        <g stroke="#1c1917" stroke-opacity="0.2" fill="none"><line x1="900" y1="0" x2="1440" y2="560" /><line x1="300" y1="700" x2="1440" y2="200" /></g>
+      </svg>
+      <div class="relative mx-auto max-w-[1280px] px-4 pb-28 pt-24 md:px-10 md:pb-40 md:pt-36">
+        <h2 class="display-b text-[clamp(2.8rem,13vw,3.75rem)] md:text-[min(7.5vw,7.5rem)]" data-reveal>Ein Anruf.<br /><span class="ital">Den Rest regelt Marvin.</span></h2>
+        <p class="mono mt-6 max-w-[34rem] text-[13px] leading-[1.75] text-[var(--muted)] md:mt-8 md:text-[15px]" data-reveal style="--d:100ms">
+          Erzähl, was du vorhast – Plakat, Kampagne, Thumbnails, Social Media oder Software. Marvin bringt dich mit dem Profi zusammen, der genau das schon für die Großen gemacht hat.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3" data-reveal style="--d:180ms">
+          <a href={tel} class="ink inline-flex h-12 items-center gap-2 px-5 text-[15px] font-medium">{site.phoneDisplay} <Icon name="arrow" size={15} /></a>
+          <a href={wa} target="_blank" rel="noopener" class="aqua hidden h-12 items-center gap-2.5 rounded-full px-6 text-[15px] font-semibold md:inline-flex"><Icon name="whatsapp" size={18} /> WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mono mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] px-4 pb-28 pt-6 text-[12px] text-[var(--muted)] md:px-10 md:pb-8">
+      <span>© 2026 {site.name}</span>
+      <span class="flex gap-6"><a href={`${base}/`} class="hover:text-[var(--fg)]">← Entwurf A</a><a href="#" class="hover:text-[var(--fg)]">Impressum</a><a href="#" class="hover:text-[var(--fg)]">Datenschutz</a></span>
+    </footer>
+  </main>
+
+  <StickyCall />
+  <ClientDialog clients={clients} works={works} />
+</Base>
+
+<script>
+  import '../../lib/client-b.ts';
+</script>
+
+<style>
+  /* Schreibtisch-Objekte: Mobile kompakt oben, Desktop frei verteilt */
+  .desk { --w1: 112px; --w2: 150px; }
+  .desk :global(.item) {
+    position: absolute;
+    left: var(--l, 0);
+    top: var(--t, 0);
+    rotate: var(--r, 0deg);
+    pointer-events: auto;
+    z-index: 5;
+  }
+  .desk { top: 8px; height: 240px; }
+  @media (min-width: 768px) {
+    .desk { --w1: 170px; --w2: 230px; top: 0; height: auto; }
+    .desk :global(.item) { left: var(--L, 0); top: var(--T, 0); }
+  }
+  .desk :global(.float) { animation: b-float 7s ease-in-out infinite; }
+  .sticker {
+    place-items: center;
+    padding: 14px 18px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 26px -12px rgb(28 25 23 / 0.45), 0 1px 2px rgb(28 25 23 / 0.12);
+    cursor: grab;
+  }
+  .phone-pill {
+    display: inline-grid; place-items: center; vertical-align: -0.08em;
+    width: 1.3em; height: 0.78em; margin: 0 0.06em; border-radius: 999px; color: #fff;
+    background: linear-gradient(180deg, #8fd0ff 0%, #3d9bff 48%, #1f7ff5 52%, #4aa8ff 100%);
+    box-shadow: inset 0 0 0 0.04em #1b6fd8, inset 0 0.07em 0 rgb(255 255 255 / 0.6), 0 0.12em 0.3em rgb(31 127 245 / 0.45);
+  }
+  .phone-pill :global(svg) { width: 0.42em; height: 0.42em; }
+
+  .wave { transform-origin: 70% 70%; animation: wave 2.8s ease-in-out infinite; }
+  @keyframes wave { 0%, 60%, 100% { rotate: 0deg; } 10%, 30% { rotate: 14deg; } 20%, 40% { rotate: -8deg; } }
+
+  /* Kate.m-Karten */
+  .kcard {
+    position: absolute; left: 50%; top: 0;
+    width: 200px; padding: 16px 12px 12px; border-radius: 22px;
+    background: var(--bgc); color: var(--fgc, #fff);
+    transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+    box-shadow: 0 30px 50px -25px rgb(28 25 23 / 0.55);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .kcard h3 { font-size: 20px; line-height: 1.05; font-weight: 600; letter-spacing: -0.03em; padding: 0 4px 12px; }
+  .kcard :global(.kimg) { width: 100%; aspect-ratio: 1 / 1.05; object-fit: cover; border-radius: 14px; }
+  .cards .kcard:nth-child(1) { --x: -118%; }
+  .cards .kcard:nth-child(2) { --x: -50%; }
+  .cards .kcard:nth-child(3) { --x: 18%; }
+  @media (min-width: 768px) {
+    .kcard { width: 270px; padding: 20px 14px 14px; border-radius: 26px; }
+    .kcard h3 { font-size: 27px; }
+    .cards .kcard:nth-child(1) { --x: -142%; }
+    .cards .kcard:nth-child(3) { --x: 44%; }
+    .cards:hover .kcard:nth-child(1) { transform: translateX(-152%) translateY(10px) rotate(-10deg); }
+    .cards:hover .kcard:nth-child(3) { transform: translateX(54%) translateY(4px) rotate(5deg); }
+  }
+  @media (max-width: 767px) {
+    .cards .kcard:nth-child(1) { --x: -128%; }
+    .cards .kcard:nth-child(2) { --x: -50%; }
+    .cards .kcard:nth-child(3) { --x: 28%; }
+    .kcard { width: 128px; padding: 11px 8px 8px; border-radius: 16px; }
+    .kcard h3 { font-size: 13px; padding-bottom: 8px; }
+  }
+
+  /* Logo-Karten */
+  .lcard {
+    position: relative; display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s, transform 1.2s;
+  }
+  .lcard.t1 { aspect-ratio: 1 / 1; }
+  .lcard.t2 { aspect-ratio: 4 / 3; }
+  @media (min-width: 768px) { .lcard.t1 { aspect-ratio: 4 / 4.2; } .lcard.t2 { aspect-ratio: 16 / 10; } }
+  .lcard:hover { translate: 0 -4px; rotate: -1deg; box-shadow: var(--neu-lg); }
+  .lmeta { position: absolute; left: 14px; bottom: 11px; font-size: 11px; color: var(--muted); }
+
+  /* Nutshell-Versalien mit Ovalen */
+  .caps { font-weight: 500; text-transform: uppercase; letter-spacing: -0.035em; line-height: 0.98; }
+  .caps u { text-decoration-thickness: 0.06em; text-underline-offset: 0.08em; }
+  .oval { display: inline-block; vertical-align: -0.1em; width: 1.6em; height: 0.82em; border-radius: 999px; overflow: hidden; margin: 0 0.04em; box-shadow: 0 0.1em 0.3em rgb(28 25 23 / 0.3); }
+  .oval.round { width: 0.82em; }
+  .oval :global(img) { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Karussell */
+  .slide { width: 72vw; aspect-ratio: 3 / 4; }
+  @media (min-width: 768px) { .slide { width: 300px; } }
+  .round-btn { width: 56px; height: 56px; border-radius: 999px; place-items: center; z-index: 5; }
+
+  .svc { transition: background-color 0.4s; }
+  @media (hover: hover) { .svc:hover { background: var(--surface); } }
+
+  .marquee-b { animation: marquee-b 40s linear infinite; }
+  @keyframes marquee-b { to { transform: translate3d(-50%, 0, 0); } }
+  @media (min-width: 768px) { .marquee-b { animation: none; } }
+</style>

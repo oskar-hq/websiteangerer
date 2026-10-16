@@ -1,0 +1,197 @@
+---
+/**
+ * Entwurf C – ausschließlich nach Hanzo.
+ * Studio-Licht in Grauweiß, schmale Serif mit kursiven grauen Wörtern, schwarze Kapseln im Satz,
+ * Arbeiten auf Tablets in weißen Karten. Logos und Arbeiten bringen die einzige Farbe.
+ */
+import '../../styles/c.css';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Pill from '../../components/b/Pill.astro';
+import Device from '../../components/c/Device.astro';
+import ClientDialog from '../../components/ClientDialog.astro';
+import StickyCall from '../../components/StickyCall.astro';
+import Icon from '../../components/Icon.astro';
+import { site, tel, wa, disciplines } from '../../site.config';
+import { getWorks, pick, withBase, disciplineLabel, countBy } from '../../lib/works';
+
+const works = await getWorks();
+const counts = countBy(works);
+const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
+const headliners = clients.filter((c) => c.data.tier === 1);
+const lineup = clients.filter((c) => c.data.tier !== 1);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const w = (k: string) => pick(works, k);
+const logoH = (c: (typeof clients)[number], h: number) => `${(h * c.data.scale) / Math.sqrt(c.data.aspect)}px`;
+const firstOf = (id: string) => works.find((x) => x.data.discipline === id)!;
+const shown = 8;
+---
+
+<Base title={`${site.name} – Entwurf C`} htmlClass="theme-c">
+  <div class="panel relative m-2 overflow-hidden md:m-6">
+    <!-- Kopf: kleines kursives Logo links, runder Menü-Knopf rechts -->
+    <header class="relative z-20 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-8">
+      <a href="#top" class="serif text-[19px] italic md:text-[21px]">Marvin</a>
+      <details class="menu relative">
+        <summary class="grid size-11 cursor-pointer list-none place-items-center rounded-full bg-white shadow-[0_6px_18px_-8px_rgb(0_0_0/0.35),inset_0_0_0_1px_#e6e6e6]" aria-label="Menü">
+          <span class="flex flex-col gap-[3px]"><span class="block h-px w-3.5 bg-[#111]"></span><span class="block h-px w-3.5 bg-[#111]"></span></span>
+        </summary>
+        <nav class="absolute right-0 mt-3 w-56 rounded-2xl bg-white p-2 text-[14px] shadow-[0_24px_60px_-20px_rgb(0_0_0/0.4)]">
+          <a href="#netzwerk" class="block rounded-xl px-3 py-2.5 hover:bg-[#f2f2f2]">Netzwerk</a>
+          <a href="#arbeiten" class="block rounded-xl px-3 py-2.5 hover:bg-[#f2f2f2]">Arbeiten</a>
+          <a href="#leistungen" class="block rounded-xl px-3 py-2.5 hover:bg-[#f2f2f2]">Leistungen</a>
+          <a href={tel} class="pillbtn mt-1 flex items-center justify-between rounded-xl px-3 py-2.5 font-medium">Marvin anrufen <Icon name="arrow" size={14} class="-rotate-45" /></a>
+        </nav>
+      </details>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="relative px-5 pt-16 text-center md:px-10 md:pt-24" data-hero>
+        <h1 class="serif text-[clamp(2.6rem,11.5vw,3.4rem)] leading-[1.02] md:text-[min(6.4vw,6.4rem)] md:leading-[0.98]">
+          <span class="block whitespace-nowrap" data-reveal style="--d:60ms">Ich bin <span class="it">Marvin</span> <Pill text="MA" w="1.5em" />,</span>
+          <span class="block whitespace-nowrap" data-reveal style="--d:160ms">dein <span class="it">Netzwerk</span> <Pill image={w('plakat-knabe').data.image} w="1.5em" /><span class="hidden md:inline"> für</span></span>
+          <span class="block whitespace-nowrap" data-reveal style="--d:260ms"><span class="md:hidden">für </span>Deutschlands<span class="hidden md:inline"> <span class="it">Beste</span> <Pill logo="logos/redbull.svg" light w="1.5em" /></span></span>
+          <span class="block whitespace-nowrap md:hidden" data-reveal style="--d:340ms"><span class="it">Beste</span> <Pill logo="logos/redbull.svg" light w="1.5em" /></span>
+        </h1>
+        <p class="mx-auto mt-7 max-w-[25rem] text-[13px] leading-[1.55] text-[#7a7a7a] md:mt-9 md:text-[14px]" data-reveal style="--d:340ms">
+          Ein Name, ein Anruf: Design, Video, Social Media, Management und Software – von Profis, die für Red Bull, AMD und die größten Creator arbeiten.
+        </p>
+        <div class="mt-7 flex items-center justify-center gap-5" data-reveal style="--d:420ms">
+          <a href={tel} class="pillbtn inline-flex h-11 items-center gap-2 rounded-full px-6 text-[13px] font-semibold md:h-12 md:px-7 md:text-[14px]">Marvin anrufen <Icon name="arrow" size={14} class="-rotate-45" /></a>
+          <a href={wa} target="_blank" rel="noopener" class="hidden text-[13px] text-[#7a7a7a] underline decoration-[#cfcfcf] underline-offset-4 hover:text-[#111] md:inline">oder per WhatsApp</a>
+        </div>
+
+        <!-- Tablets in weißen Karten, unten angeschnitten -->
+        <div class="mx-auto mt-14 grid max-w-[1180px] gap-4 md:mt-20 md:grid-cols-2 md:gap-6" data-reveal style="--d:520ms">
+          <Device work={w('reel-gaming-bankkarte')} />
+          <Device work={w('thumb-shaolin')} class="hidden md:block" />
+        </div>
+      </section>
+
+      <!-- NETZWERK -->
+      <section id="netzwerk" class="mx-auto max-w-[1180px] px-5 pt-28 md:px-10 md:pt-44">
+        <h2 class="serif text-center text-[clamp(2.3rem,10vw,3rem)] leading-[1.02] md:text-[min(5vw,4.75rem)]" data-reveal>
+          Unser Netzwerk <span class="it">arbeitet für</span>
+        </h2>
+        <div class="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:grid-cols-4 md:gap-4">
+          {headliners.map((c, i) => (
+            <button type="button" data-client={c.id} class="lc t1 group" data-reveal style={`--d:${i * 90}ms`} aria-label={`${c.data.name} – Details`}>
+              <img src={withBase(c.data.logo!)} alt={c.data.name} style={`height:${logoH(c, 96)}`} class="max-w-[76%] object-contain transition-transform duration-700 group-hover:scale-105" />
+            </button>
+          ))}
+          {lineup.map((c, i) => (
+            <button type="button" data-client={c.id} class="lc t2 group" data-reveal style={`--d:${(i % 4) * 90}ms`} aria-label={`${c.data.name} – Details`}>
+              {c.data.logo ? (
+                <img src={withBase(c.data.logo)} alt={c.data.name} style={`height:${logoH(c, 56)}`} class="max-w-[70%] object-contain transition-transform duration-700 group-hover:scale-105" />
+              ) : (
+                <span class="serif flex items-center gap-1 text-[24px] md:text-[30px]">{c.data.name} <Pill image={c.data.photo} w="1.5em" /></span>
+              )}
+            </button>
+          ))}
+        </div>
+        <p class="mt-5 text-center text-[12px] text-[#8a8a8a]">Antippen für Details – was gemacht wurde und von wem.</p>
+      </section>
+
+      <!-- ARBEITEN -->
+      <section id="arbeiten" class="mx-auto max-w-[1180px] px-5 pt-28 md:px-10 md:pt-44">
+        <h2 class="serif text-center text-[clamp(2.3rem,10vw,3rem)] leading-[1.02] md:text-[min(5vw,4.75rem)]" data-reveal>
+          Ausgewählte <span class="it">Arbeiten</span> <Pill image={w('thumb-monster').data.image} w="1.5em" />
+        </h2>
+        <div class="mt-12 grid gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 md:gap-y-16" data-more>
+          {works.map((wk, i) => (
+            <figure class:list={['group', i >= shown && 'more hidden']} data-reveal>
+              <Device work={wk} crop={false} />
+              <figcaption class="mt-4 flex items-baseline justify-between gap-4 px-1">
+                <span class="serif text-[22px] leading-tight md:text-[26px]">{wk.data.title}</span>
+                <span class="shrink-0 text-[12px] text-[#8a8a8a]">{disciplineLabel(wk.data.discipline)} · {wk.data.client}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="mt-12 text-center">
+          <button type="button" class="pillbtn inline-flex h-11 items-center gap-2 rounded-full px-6 text-[13px] font-semibold" data-more-btn>
+            Alle {works.length} Arbeiten zeigen <Icon name="arrow-down" size={14} />
+          </button>
+        </div>
+      </section>
+
+      <!-- LEISTUNGEN als ein Satz mit Kapseln -->
+      <section id="leistungen" class="mx-auto max-w-[1180px] px-5 pt-28 text-center md:px-10 md:pt-44">
+        <p class="text-[12px] text-[#8a8a8a]" data-reveal>Leistungen</p>
+        <h2 class="serif mx-auto mt-5 max-w-[16ch] text-[clamp(2.3rem,10vw,3rem)] leading-[1.06] md:max-w-[18ch] md:text-[min(5vw,4.75rem)]" data-reveal style="--d:80ms">
+          {disciplines.map((d, i) => (
+            <span>
+              {d.label} <Pill image={firstOf(d.id).data.image} w="1.4em" />{i < disciplines.length - 2 ? ', ' : i === disciplines.length - 2 ? <span class="it"> und </span> : ''}
+            </span>
+          ))}
+          <span class="it"> – aus einer Hand.</span>
+        </h2>
+        <ul class="mx-auto mt-10 flex max-w-[44rem] flex-wrap justify-center gap-x-6 gap-y-2 text-[12px] text-[#8a8a8a]">
+          {disciplines.map((d) => <li>{d.label} · {String(counts[d.id] ?? 0).padStart(2, '0')}</li>)}
+        </ul>
+      </section>
+
+      <!-- ABSCHLUSS -->
+      <section class="px-5 pb-10 pt-28 text-center md:px-10 md:pb-12 md:pt-44">
+        <h2 class="serif text-[clamp(3rem,13vw,3.8rem)] leading-[1] md:text-[min(7vw,7rem)]" data-reveal>
+          Ein <span class="it">Name.</span><br />Ein <span class="it">Anruf</span> <span class="call-pill"><Icon name="phone" /></span>
+        </h2>
+        <p class="mx-auto mt-6 max-w-[24rem] text-[13px] leading-[1.55] text-[#7a7a7a]" data-reveal style="--d:100ms">{site.phoneDisplay} · Mo–Fr erreichbar</p>
+        <div class="mt-7 flex justify-center" data-reveal style="--d:160ms">
+          <a href={tel} class="pillbtn inline-flex h-12 items-center gap-2 rounded-full px-7 text-[14px] font-semibold">Marvin anrufen <Icon name="arrow" size={14} class="-rotate-45" /></a>
+        </div>
+        <footer class="mx-auto mt-28 flex max-w-[1180px] flex-wrap items-center justify-between gap-4 border-t border-[#d9d9d9] pt-5 text-[12px] text-[#8a8a8a] md:mt-40">
+          <span class="serif text-[16px] italic text-[#111]">Marvin</span>
+          <span class="flex gap-5"><a href={`${base}/`} class="hover:text-[#111]">Entwurf A</a><a href={`${base}/b/`} class="hover:text-[#111]">Entwurf B</a><a href="#" class="hover:text-[#111]">Impressum</a><a href="#" class="hover:text-[#111]">Datenschutz</a></span>
+        </footer>
+      </section>
+    </main>
+  </div>
+  <div class="h-20 md:hidden"></div>
+
+  <StickyCall />
+  <ClientDialog clients={clients} works={works} />
+</Base>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
+  btn?.addEventListener('click', () => {
+    document.querySelectorAll('[data-more] .more').forEach((el) => el.classList.remove('hidden', 'more'));
+    btn.remove();
+  });
+  // Menü schließen beim Antippen eines Links
+  document.querySelectorAll<HTMLAnchorElement>('.menu nav a').forEach((a) =>
+    a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),
+  );
+</script>
+
+<style>
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu nav { transform-origin: top right; animation: pop 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes pop { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+
+  .lc {
+    display: grid; place-items: center;
+    background: linear-gradient(180deg, #ffffff, #f4f4f4);
+    border-radius: 24px;
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(0 0 0 / 0.05);
+    transition: translate 0.7s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s, transform 1.2s;
+  }
+  .lc.t1 { aspect-ratio: 1 / 1; }
+  .lc.t2 { aspect-ratio: 4 / 3; }
+  @media (min-width: 768px) { .lc.t1 { aspect-ratio: 5 / 4; } .lc.t2 { aspect-ratio: 16 / 10; } }
+  .lc:hover { translate: 0 -4px; box-shadow: var(--neu-lg); }
+
+  .call-pill {
+    display: inline-grid; place-items: center; vertical-align: -0.06em;
+    width: 1.5em; height: 0.78em; margin-left: 0.06em; border-radius: 999px;
+    background: #161412; color: #fff;
+    box-shadow: inset 0 0 0 0.05em #000, inset 0 0.07em 0 rgb(255 255 255 / 0.25), 0 0.12em 0.3em rgb(0 0 0 / 0.35);
+  }
+  .call-pill :global(svg) { width: 0.38em; height: 0.38em; }
+
+  :global(.theme-c .sticky-call) { background: transparent !important; box-shadow: none !important; }
+  :global(.theme-c .sticky-call a[aria-label]) { color: #111 !important; }
+</style>

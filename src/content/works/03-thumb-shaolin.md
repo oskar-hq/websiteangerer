@@ -1,6 +1,6 @@
 ---
 title: "1 Tag Shaolin Training"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

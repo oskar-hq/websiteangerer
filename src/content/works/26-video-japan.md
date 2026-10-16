@@ -1,6 +1,6 @@
 ---
 title: "Japan – Folge 12"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: video
 medium: video
 kind: "Serie"

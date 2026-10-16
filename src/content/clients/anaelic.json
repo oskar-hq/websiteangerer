@@ -1,0 +1,19 @@
+{
+  "name": "Anaelic",
+  "kind": "creator",
+  "tier": 2,
+  "order": 120,
+  "scale": 1.0,
+  "items": [
+    {
+      "what": "Cosplay-Booking & Events",
+      "who": "Ciberdime",
+      "discipline": "Management"
+    }
+  ],
+  "works": [
+    "mgmt-cosplay",
+    "mgmt-red-carpet"
+  ],
+  "photo": "../../assets/people/anaelic.jpg"
+}

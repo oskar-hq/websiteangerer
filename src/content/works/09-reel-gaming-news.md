@@ -1,6 +1,6 @@
 ---
 title: "Gaming News"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: social
 medium: video
 kind: "Reel"

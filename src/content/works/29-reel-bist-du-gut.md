@@ -1,6 +1,6 @@
 ---
 title: "Bist du gut in …?"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: social
 medium: video
 kind: "Reel"

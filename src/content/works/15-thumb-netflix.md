@@ -1,6 +1,6 @@
 ---
 title: "Hotel im Baumhaus"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

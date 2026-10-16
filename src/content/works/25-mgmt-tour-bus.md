@@ -1,6 +1,6 @@
 ---
 title: "Tourbus-Aktion"
-client: "Fußball-Creator (Platzhalter)"
+client: "Fußball-Creator"
 discipline: management
 medium: image
 kind: "Booking"

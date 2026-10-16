@@ -1,6 +1,6 @@
 ---
 title: "Ein System als Baukasten"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: design
 medium: image
 kind: "Corporate Design"

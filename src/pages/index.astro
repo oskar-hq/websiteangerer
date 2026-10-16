@@ -1,83 +1,178 @@
 ---
-/** Übersicht: alle Entwürfe zum Vergleichen. */
+/**
+ * Startseite – Museum-Prinzip: Die Seite ist nahezu farblos, die Marken sind die Bilder.
+ * Hellblau ausschließlich für Anruf, WhatsApp und aktiven Filter.
+ */
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import LogoTile from '../components/LogoTile.astro';
+import ClientDialog from '../components/ClientDialog.astro';
+import WorkMedia from '../components/WorkMedia.astro';
+import StickyCall from '../components/StickyCall.astro';
 import Icon from '../components/Icon.astro';
-import { site } from '../site.config';
+import { site, tel, wa, disciplines } from '../site.config';
+import { getWorks, disciplineLabel, countBy } from '../lib/works';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const versions = [
-  {
-    id: 'v1',
-    name: 'Ruhe',
-    line: 'Trade-Republic-Gefühl. Off-White, riesige Typo, fast keine Farbe. Hellblau nur am Anruf.',
-    font: 'Geist + Geist Mono',
-    colors: ['#F6F5F1', '#0B1426', '#5BB8FF'],
-  },
-  {
-    id: 'v2',
-    name: 'Nacht',
-    line: 'Sehr dunkles Blau, der Name als Marke. Die Arbeiten laufen im Hero und leuchten beim Hover.',
-    font: 'Bricolage Grotesque + Inter',
-    colors: ['#070E1C', '#EEF1F6', '#5BB8FF'],
-  },
-  {
-    id: 'v3',
-    name: 'Index',
-    line: 'Redaktionell. Haarlinien, Nummern, Serif-Italic als Akzent. Die Wand als ruhiges Kontaktbogen-Raster.',
-    font: 'Instrument Sans + Instrument Serif',
-    colors: ['#FFFFFF', '#0B1426', '#0A6FD1'],
-  },
-];
+const works = await getWorks();
+const counts = countBy(works);
+const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
+const headliners = clients.filter((c) => c.data.tier === 1);
+const lineup = clients.filter((c) => c.data.tier !== 1);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Welche Profis stehen hinter welcher Disziplin (aus den Kundendaten abgeleitet)
+const whoBy = (label: string) => [...new Set(clients.flatMap((c) => c.data.items.filter((i) => i.discipline === label).map((i) => i.who)))];
+const whoExtra: Record<string, string[]> = { Software: ['Ylva Labs'] };
 ---
 
-<Base theme="hub" current="hub" title={`Entwürfe – ${site.name}`}>
-  <main class="mx-auto max-w-[1440px] px-4 pb-24 pt-20 md:px-10 md:pt-28">
-    <p class="label mb-6 text-muted">Website {site.name} · Designentwürfe · Stand 10/2026</p>
-    <h1 class="display max-w-4xl text-[clamp(2.6rem,10vw,6rem)]">Drei Richtungen.<br /><span class="text-muted">Eine wählen.</span></h1>
-    <p class="mt-6 max-w-xl text-[16px] text-muted">
-      Alle drei Entwürfe nutzen dieselben Inhalte: Hero als Visitenkarte, die Wand, Disziplinen, Abschluss mit Anruf.
-      Unten links (Desktop) bzw. oben rechts (Mobile) kannst du jederzeit zwischen den Versionen wechseln.
-      Alle Bilder, Logos, Kunden und Nummern sind <span class="text-fg">Platzhalter</span>.
-    </p>
-
-    <ul class="mt-14 grid gap-10 md:mt-20 lg:grid-cols-3 lg:gap-8">
-      {versions.map((v) => (
-        <li>
-          <a href={`${base}/${v.id}/`} class="hub-card group block">
-            <div class="hub-frame relative aspect-[16/10] overflow-hidden rounded-[12px] bg-surface shadow-[0_0_0_1px_var(--line)]">
-              <iframe src={`${base}/${v.id}/`} title={`Vorschau ${v.name}`} loading="lazy" tabindex="-1" aria-hidden="true" class="pointer-events-none absolute left-0 top-0 h-[900px] w-[1440px] origin-top-left border-0"></iframe>
-            </div>
-            <div class="mt-5 flex items-baseline justify-between gap-4">
-              <h2 class="text-[22px] font-semibold tracking-[-0.03em]"><span class="label mr-2 align-middle text-muted">{v.id.toUpperCase()}</span>{v.name}</h2>
-              <span class="flex items-center gap-1.5 text-[14px] text-muted transition-colors group-hover:text-accent">Ansehen <Icon name="arrow" size={16} /></span>
-            </div>
-            <p class="mt-2 text-[15px] text-muted">{v.line}</p>
-            <div class="label mt-4 flex items-center gap-3 text-muted">
-              <span class="flex gap-1">{v.colors.map((c) => <span class="size-3.5 rounded-full shadow-[0_0_0_1px_rgb(255_255_255/0.15)]" style={`background:${c}`} />)}</span>
-              {v.font}
-            </div>
-          </a>
-        </li>
-      ))}
-    </ul>
-
-    <div class="mt-24 border-t border-line pt-6 text-[14px] text-muted">
-      <p class="max-w-xl"><span class="text-fg">Feedback-Tipp:</span> Mix ist ausdrücklich erlaubt, z. B. „Hero aus V2, Wand aus V3, Typo aus V1“. Am besten Mobile und Desktop getrennt beurteilen.</p>
+<Base>
+  <header class="head absolute inset-x-0 top-0 z-30 md:fixed">
+    <div class="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 md:h-[72px] md:px-10">
+      <a href="#top" class="text-[15px] font-semibold tracking-[-0.02em]">{site.name}</a>
+      <nav class="meta hidden items-center gap-8 text-muted md:flex">
+        <a href="#netzwerk" class="transition-colors hover:text-fg">Netzwerk</a>
+        <a href="#arbeiten" class="transition-colors hover:text-fg">Arbeiten</a>
+        <a href="#disziplinen" class="transition-colors hover:text-fg">Disziplinen</a>
+        <a href={tel} class="ml-2 inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-semibold text-on-accent">
+          <Icon name="phone" size={14} /> Anrufen
+        </a>
+      </nav>
     </div>
+  </header>
+
+  <main id="top" class="pb-24 md:pb-0">
+    <!-- HERO + Headliner: komplett im ersten Viewport -->
+    <section data-hero class="mx-auto flex min-h-svh max-w-[1440px] flex-col px-4 pb-[92px] pt-20 md:px-10 md:pb-10 md:pt-28">
+      <h1 class="display text-[clamp(2.5rem,11.4vw,3.25rem)] md:text-[min(7.2vw,12.6svh)]">
+        <span class="block" data-reveal style="--d:40ms">Ein Name. Ein Anruf.</span>
+        <span class="block text-muted" data-reveal style="--d:160ms">Das Beste, was Deutschland<br class="hidden md:block" /> zu bieten hat.</span>
+      </h1>
+
+      <div class="mt-auto pt-10 md:pt-12">
+        <div id="netzwerk" class="mb-3 flex items-end justify-between gap-6 md:mb-4" data-reveal style="--d:280ms">
+          <p class="meta text-muted">Unser Netzwerk arbeitet für</p>
+          <div class="hidden items-center gap-2 md:flex">
+            <a href={tel} class="inline-flex h-12 items-center gap-2.5 rounded-full bg-accent px-6 text-[15px] font-semibold text-on-accent transition-transform duration-500 ease-[var(--ease-out)] hover:-translate-y-px">
+              <Icon name="phone" size={17} /> Marvin anrufen
+            </a>
+            <a href={wa} target="_blank" rel="noopener" class="inline-flex h-12 items-center gap-2.5 rounded-full px-6 text-[15px] font-medium shadow-[inset_0_0_0_1.5px_var(--accent)] transition-transform duration-500 ease-[var(--ease-out)] hover:-translate-y-px">
+              <Icon name="whatsapp" size={18} /> WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+          {headliners.map((c, i) => <LogoTile client={c} i={i} />)}
+        </div>
+      </div>
+    </section>
+
+    <!-- Übriges Lineup: Marken + Creator gleichwertig -->
+    <section class="mx-auto max-w-[1440px] px-4 pt-2 md:px-10 md:pt-0">
+      <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+        {lineup.map((c, i) => <LogoTile client={c} i={i} />)}
+      </div>
+      <p class="meta mt-4 text-muted" data-reveal>Antippen für Details: was gemacht wurde und von wem aus dem Netzwerk.</p>
+    </section>
+
+    <!-- ARBEITEN -->
+    <section id="arbeiten" class="mx-auto max-w-[1440px] px-4 md:scroll-mt-16 md:px-10" style="padding-top: var(--section)" data-wall data-active="all">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <h2 class="display text-[clamp(2.75rem,13vw,3.5rem)] md:text-[min(7.2vw,8rem)]" data-reveal>Arbeiten.</h2>
+        <p class="meta max-w-[18rem] text-muted md:pb-3 md:text-right" data-reveal style="--d:120ms">
+          <span data-count>{pad(works.length)}</span> Arbeiten aus dem Netzwerk. Plakate, Thumbnails, Reels, Live-Produktionen, Software.
+        </p>
+      </div>
+
+      <div class="sticky top-0 z-20 -mx-4 mt-8 bg-bg px-4 md:static md:mx-0 md:mt-12 md:px-0">
+        <div class="filter flex gap-1.5 overflow-x-auto py-3 [scrollbar-width:none] md:py-0" role="toolbar" aria-label="Nach Disziplin filtern">
+          <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+          {disciplines.map((d) => <button type="button" data-filter={d.id} aria-pressed="false">{d.label}</button>)}
+        </div>
+      </div>
+
+      <div class="mt-4 md:mt-8 md:columns-2 md:gap-4 lg:columns-3">
+        {works.map((w, i) => (
+          <figure data-tile data-discipline={w.data.discipline} class="work group mb-10 snap-start scroll-mt-16 break-inside-avoid md:mb-4 md:scroll-mt-0" style={`view-transition-name: w${i}`}>
+            <div class="overflow-hidden rounded-[4px] bg-surface">
+              <WorkMedia work={w} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw" class="h-auto max-h-[78svh] w-full object-cover md:max-h-none" />
+            </div>
+            <figcaption class="meta flex justify-between gap-4 pt-2.5 md:pb-3">
+              <span class="min-w-0 truncate"><span class="text-fg">{w.data.title}</span> <span class="text-muted">· {w.data.client}</span></span>
+              <span class="shrink-0 text-muted">{disciplineLabel(w.data.discipline)}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- DISZIPLINEN -->
+    <section id="disziplinen" class="mx-auto max-w-[1440px] px-4 md:px-10" style="padding-top: var(--section)">
+      <p class="meta mb-6 text-muted md:mb-8" data-reveal>Disziplinen im Netzwerk</p>
+      <ul>
+        {disciplines.map((d, i) => {
+          const who = [...whoBy(d.label), ...(whoExtra[d.label] ?? [])];
+          return (
+            <li class="border-t border-line last:border-b" data-reveal style={`--d:${i * 90}ms`}>
+              <a href="#arbeiten" data-filter={d.id} class="disc group flex flex-col gap-2 py-5 md:flex-row md:items-end md:justify-between md:py-6">
+                <span class="display text-[clamp(2.75rem,13vw,3.5rem)] transition-transform duration-700 ease-[var(--ease-out)] group-hover:translate-x-2 md:text-[min(7.2vw,8rem)]">{d.label}</span>
+                <span class="meta flex gap-6 text-muted md:pb-3 md:text-right">
+                  <span class="md:max-w-[16rem]">{who.join(', ')}</span>
+                  <span class="tabular-nums">{pad(counts[d.id] ?? 0)}</span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <!-- ABSCHLUSS -->
+    <section class="mx-auto max-w-[1440px] px-4 pb-8 md:px-10 md:pb-10" style="padding-top: var(--section)">
+      <h2 class="display text-[clamp(3.25rem,16vw,4.5rem)] md:text-[min(12vw,13rem)]" data-reveal>Ein Anruf.</h2>
+      <div class="mt-6 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between" data-reveal style="--d:120ms">
+        <a href={tel} class="meta text-muted transition-colors hover:text-fg">{site.phoneDisplay} · Mo–Fr erreichbar</a>
+        <div class="hidden items-center gap-2 md:flex">
+          <a href={tel} class="inline-flex h-12 items-center gap-2.5 rounded-full bg-accent px-6 text-[15px] font-semibold text-on-accent transition-transform duration-500 ease-[var(--ease-out)] hover:-translate-y-px">
+            <Icon name="phone" size={17} /> Marvin anrufen
+          </a>
+          <a href={wa} target="_blank" rel="noopener" class="inline-flex h-12 items-center gap-2.5 rounded-full px-6 text-[15px] font-medium shadow-[inset_0_0_0_1.5px_var(--accent)] transition-transform duration-500 ease-[var(--ease-out)] hover:-translate-y-px">
+            <Icon name="whatsapp" size={18} /> WhatsApp
+          </a>
+        </div>
+      </div>
+      <footer class="meta mt-24 flex flex-wrap justify-between gap-4 border-t border-line pt-5 text-muted md:mt-32">
+        <span>© 2026 {site.name}</span>
+        <span class="flex gap-6"><a href="#" class="hover:text-fg">Impressum</a><a href="#" class="hover:text-fg">Datenschutz</a></span>
+      </footer>
+    </section>
   </main>
+
+  <StickyCall />
+  <ClientDialog clients={clients} works={works} />
 </Base>
 
-<script>
-  const fit = () =>
-    document.querySelectorAll<HTMLElement>('.hub-frame').forEach((f) => {
-      const ifr = f.querySelector('iframe');
-      if (ifr) ifr.style.transform = `scale(${f.clientWidth / 1440})`;
-    });
-  fit();
-  window.addEventListener('resize', fit);
-</script>
-
 <style>
-  .hub-card .hub-frame { transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
-  .hub-card:hover .hub-frame { transform: translateY(-4px); box-shadow: 0 0 0 1px #5bb8ff88, 0 30px 60px -30px rgb(91 184 255 / 0.4); }
+  .head { transition: background-color 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
+  :global(html[data-after-hero]) .head {
+    @media (min-width: 768px) {
+      background: var(--bg);
+      box-shadow: 0 1px 0 var(--line);
+    }
+  }
+  .filter button {
+    flex-shrink: 0;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface);
+    transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
+  }
+  .filter button:hover { color: var(--fg); }
+  .filter button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+  @media (hover: hover) and (pointer: fine) {
+    .work :global(img), .work :global(video) { transition: transform 1.4s var(--ease-out); }
+    .work:hover :global(img), .work:hover :global(video) { transform: scale(1.02); }
+  }
 </style>

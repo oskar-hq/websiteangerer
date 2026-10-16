@@ -2,24 +2,20 @@
 /** Mobile: dauerhaft sichtbare Anruf-Leiste im Daumenbereich. */
 import Icon from './Icon.astro';
 import { tel, wa } from '../site.config';
-interface Props { variant?: 'light' | 'dark' }
-const { variant = 'light' } = Astro.props;
 ---
 
-<div class:list={['sticky-call fixed inset-x-0 bottom-0 z-50 px-3 pt-3 pb-safe md:hidden', variant]}>
+<div class="sticky-call fixed inset-x-0 bottom-0 z-40 px-4 pt-6 pb-safe md:hidden">
   <div class="flex gap-2">
-    <a href={tel} class="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-2xl bg-accent text-[17px] font-semibold tracking-[-0.01em] text-on-accent active:scale-[0.98] transition-transform">
-      <Icon name="phone" size={20} /> Anrufen
+    <a href={tel} class="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-accent text-[16px] font-semibold tracking-[-0.01em] text-on-accent transition-transform active:scale-[0.98]">
+      <Icon name="phone" size={19} /> Marvin anrufen
     </a>
-    <a href={wa} target="_blank" rel="noopener" class="wa flex h-14 w-[4.5rem] items-center justify-center rounded-2xl active:scale-[0.98] transition-transform" aria-label="WhatsApp schreiben">
-      <Icon name="whatsapp" size={24} />
+    <a href={wa} target="_blank" rel="noopener" class="flex size-14 items-center justify-center rounded-full bg-bg text-fg shadow-[inset_0_0_0_1.5px_var(--accent)] transition-transform active:scale-[0.98]" aria-label="WhatsApp schreiben">
+      <Icon name="whatsapp" size={23} />
     </a>
   </div>
 </div>
 
 <style>
-  .sticky-call.light { background: linear-gradient(to top, var(--bg) 60%, transparent); }
-  .sticky-call.dark { background: linear-gradient(to top, var(--bg) 55%, transparent); }
-  .light .wa { background: var(--fg); color: var(--bg); }
-  .dark .wa { background: #16213a; color: var(--fg); box-shadow: inset 0 0 0 1px #24324f; }
+  /* bewusst kein Verlauf: ruhige, volle Fläche */
+  .sticky-call { background: var(--bg); box-shadow: 0 -1px 0 var(--line); padding-top: 12px; }
 </style>

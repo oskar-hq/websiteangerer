@@ -1,5 +1,5 @@
 /**
- * Zentrale Kontaktdaten. Hier ändern – alle Versionen übernehmen es automatisch.
+ * Zentrale Kontaktdaten. Hier ändern – die ganze Seite übernimmt es automatisch.
  * PLATZHALTER: Name und Nummern sind Dummy-Werte.
  */
 export const site = {
@@ -14,17 +14,6 @@ export const site = {
   /** Nur Ziffern inkl. Ländervorwahl, für wa.me */
   whatsapp: '491700000000',
   whatsappText: 'Hallo Marvin, ich habe deine Seite gesehen und möchte kurz sprechen.',
-  /** Platzhalter-Logoleiste (Kunden / Creator). Echte Logos später als SVG ersetzen. */
-  logos: [
-    'Nordlicht',
-    'Kanal 41',
-    'PIXELWERK',
-    'Meridian',
-    'Volta',
-    'STUDIO 7',
-    'Haus & Co',
-    'Creator X',
-  ],
 };
 
 export const tel = `tel:${site.phone}`;

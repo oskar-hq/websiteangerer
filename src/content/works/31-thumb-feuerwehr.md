@@ -1,6 +1,6 @@
 ---
 title: "Feuerwehr für einen Tag"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

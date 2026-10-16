@@ -1,6 +1,6 @@
 ---
 title: "Eishockey – Episode"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: video
 medium: video
 kind: "Episode"

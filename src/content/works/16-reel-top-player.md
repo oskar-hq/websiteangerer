@@ -1,6 +1,6 @@
 ---
 title: "Top 5 Player"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: social
 medium: video
 kind: "Reel"

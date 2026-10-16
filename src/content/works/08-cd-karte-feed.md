@@ -1,6 +1,6 @@
 ---
 title: "Von der Karte zum Feed"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: design
 medium: image
 kind: "Corporate Design"

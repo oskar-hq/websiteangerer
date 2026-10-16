@@ -1,6 +1,6 @@
 ---
 title: "Überblick Auftritt"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: design
 medium: image
 kind: "Corporate Design"

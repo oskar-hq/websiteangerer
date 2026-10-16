@@ -1,6 +1,6 @@
 ---
 title: "Community-Turnier"
-client: "Creator-Team (Platzhalter)"
+client: "Creator-Team"
 discipline: management
 medium: image
 kind: "Event"

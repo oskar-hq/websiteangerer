@@ -1,0 +1,20 @@
+{
+  "name": "Hidrofugal",
+  "kind": "brand",
+  "tier": 2,
+  "order": 110,
+  "scale": 0.95,
+  "items": [
+    {
+      "what": "Live-Event „Schwitzer Challenge“",
+      "who": "Ciberdime",
+      "discipline": "Video"
+    }
+  ],
+  "works": [
+    "mgmt-red-carpet",
+    "reel-bar-abend"
+  ],
+  "logo": "logos/hidrofugal.png",
+  "aspect": 1.063
+}

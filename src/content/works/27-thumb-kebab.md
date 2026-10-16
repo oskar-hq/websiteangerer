@@ -1,6 +1,6 @@
 ---
 title: "Kebab in Tokio"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

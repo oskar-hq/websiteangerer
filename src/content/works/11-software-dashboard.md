@@ -1,6 +1,6 @@
 ---
 title: "Outreach-Dashboard"
-client: "Ylva Labs (Platzhalter)"
+client: "Ylva Labs"
 discipline: software
 medium: image
 kind: "Software"

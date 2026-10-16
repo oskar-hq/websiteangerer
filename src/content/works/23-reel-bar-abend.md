@@ -1,6 +1,6 @@
 ---
 title: "Der Bar-Abend war zu teuer?"
-client: "Bank (Platzhalter)"
+client: "Bank"
 discipline: social
 medium: video
 kind: "Reel"

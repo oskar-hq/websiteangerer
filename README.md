@@ -1,13 +1,7 @@
-# Website Marvin Angerer – Designentwürfe
+# Website Marvin Angerer – Entwurf
 
-Astro + Tailwind, statisch. Drei Entwürfe auf einer gemeinsamen Basis:
-
-| Route | Entwurf |
-|---|---|
-| `/` | Übersicht aller Entwürfe |
-| `/v1/` | **Ruhe** – Off-White, große Typo (Geist) |
-| `/v2/` | **Nacht** – sehr dunkles Blau, Arbeiten im Hero (Bricolage Grotesque + Inter) |
-| `/v3/` | **Index** – redaktionell, Haarlinien, Serif-Akzente (Instrument Sans/Serif) |
+Astro + Tailwind, statisch. Eine Startseite nach dem Museum-Prinzip: Die Seite ist nahezu farblos,
+die Kundenlogos in Originalfarben sind das Lauteste. Hellblau nur für Anruf, WhatsApp und aktiven Filter.
 
 ## Entwickeln
 
@@ -19,7 +13,8 @@ npm run build    # -> dist/
 
 ## Inhalte pflegen
 
-- **Kontakt & Logos:** `src/site.config.ts` (Telefon, WhatsApp, Name, Logo-Platzhalter, Disziplinen)
+- **Kontakt:** `src/site.config.ts` (Telefon, WhatsApp, Name, Disziplinen)
+- **Kunden-Lineup:** eine JSON-Datei pro Marke/Creator in `src/content/clients/` (`tier: 1` = Headliner, groß). Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
 - **Arbeiten (Die Wand):** eine Datei pro Arbeit in `src/content/works/*.md`
 
 ```md
@@ -32,13 +27,12 @@ kind: "Thumbnail"         # freie Bezeichnung: Plakat, Reel, Spot …
 image: "../../assets/works/datei.jpg"   # Bild bzw. Poster bei Videos
 video: "media/datei.mp4"  # nur bei medium: video, Datei liegt in public/media/
 order: 330                # Reihenfolge auf der Wand
-placeholder: false        # true = Kachel zeigt „Platzhalter“-Label
 ---
 ```
 
 Bilder in `src/assets/works/` werden beim Build automatisch als WebP in mehreren Größen ausgegeben.
 
-> Alle aktuellen Medien, Kunden, Logos und Nummern sind **Platzhalter**.
+> Alle Inhalte sind Platzhalter.
 
 ## GitHub Pages
 

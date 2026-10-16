@@ -23,3 +23,10 @@ export function withBase(p: string) {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   return `${base}/${p.replace(/^\//, '')}`;
 }
+
+/** Arbeit über das Ende ihrer Datei-ID finden, z. B. "plakat-knabe" */
+export function pick(works: Work[], key: string): Work {
+  const w = works.find((x) => x.id.endsWith(key));
+  if (!w) throw new Error(`Arbeit "${key}" nicht gefunden`);
+  return w;
+}

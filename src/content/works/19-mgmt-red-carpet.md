@@ -1,6 +1,6 @@
 ---
 title: "Event-Coverage"
-client: "Lifestyle-Creator (Platzhalter)"
+client: "Lifestyle-Creator"
 discipline: management
 medium: image
 kind: "Event"

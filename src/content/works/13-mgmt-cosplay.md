@@ -1,6 +1,6 @@
 ---
 title: "Cosplay-Roster"
-client: "Cosplay-Talent (Platzhalter)"
+client: "Cosplay-Talent"
 discipline: management
 medium: image
 kind: "Talent"

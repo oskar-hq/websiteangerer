@@ -1,6 +1,6 @@
 ---
 title: "Creator-Kampagne im Stadion"
-client: "Entertainment-Creator (Platzhalter)"
+client: "Entertainment-Creator"
 discipline: management
 medium: image
 kind: "Booking"

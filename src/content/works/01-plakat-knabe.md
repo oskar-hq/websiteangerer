@@ -1,6 +1,6 @@
 ---
 title: "Automat & Dosen-Key-Visual"
-client: "Getränkemarke (Platzhalter)"
+client: "Getränkemarke"
 discipline: design
 medium: image
 kind: "Plakat"

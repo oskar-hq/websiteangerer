@@ -1,0 +1,20 @@
+{
+  "name": "EA Sports",
+  "kind": "brand",
+  "tier": 2,
+  "order": 80,
+  "scale": 0.95,
+  "items": [
+    {
+      "what": "Social-Media-Reels",
+      "who": "Studio LY",
+      "discipline": "Social Media"
+    }
+  ],
+  "works": [
+    "reel-bist-du-gut",
+    "reel-gaming-news"
+  ],
+  "logo": "logos/ea.svg",
+  "aspect": 2.055
+}

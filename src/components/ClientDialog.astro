@@ -1,0 +1,123 @@
+---
+/**
+ * Detailansicht pro Marke/Creator: Sheet auf Mobile, Overlay auf Desktop.
+ * Inhalte liegen als <template> vor und werden beim Öffnen eingesetzt.
+ */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import { tel, wa } from '../site.config';
+import { pick, withBase, type Work } from '../lib/works';
+
+interface Props { clients: CollectionEntry<'clients'>[]; works: Work[] }
+const { clients, works } = Astro.props;
+---
+
+{clients.map((client) => {
+  const c = client.data;
+  const ws = c.works.map((k) => pick(works, k));
+  return (
+    <template id={`client-${client.id}`}>
+      <div class="flex items-center gap-4">
+        {c.logo ? (
+          <img src={withBase(c.logo)} alt={c.name} class="h-11 w-auto max-w-[220px] object-contain md:h-14" style={`height: calc(var(--dl) * ${(c.scale / Math.sqrt(c.aspect)).toFixed(3)})`} />
+        ) : c.photo ? (
+          <Image src={c.photo} alt={c.name} width={160} height={160} class="size-14 rounded-full object-cover md:size-16" />
+        ) : null}
+      </div>
+      <h2 class="display mt-8 text-[clamp(2rem,8.4vw,2.5rem)] md:mt-10 md:text-[3.25rem]">
+        Unser Netzwerk arbeitet für <span class="whitespace-nowrap">{c.name}.</span>
+      </h2>
+      <dl class="mt-8 border-t border-line md:mt-10">
+        {c.items.map((it) => (
+          <div class="grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-1 border-b border-line py-4 md:grid-cols-[1.4fr_1fr_auto]">
+            <dt class="text-[16px] font-medium tracking-[-0.01em]">{it.what}</dt>
+            <dd class="meta col-start-1 text-muted md:col-start-auto">Aus dem Netzwerk: <span class="text-fg">{it.who}</span></dd>
+            <dd class="meta row-start-1 col-start-2 text-muted md:row-auto md:col-start-auto">{it.discipline}</dd>
+          </div>
+        ))}
+      </dl>
+      {ws.length > 0 && (
+        <div class="-mx-5 mt-8 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:px-0">
+          {ws.map((w) => (
+            <Image src={w.data.image} alt={`${w.data.kind}: ${w.data.title}`} widths={[480, 800]} sizes="320px" class="h-40 w-auto shrink-0 rounded-[4px] bg-surface object-cover md:h-44" />
+          ))}
+        </div>
+      )}
+      <div class="mt-8 flex gap-2 md:mt-10">
+        <a href={tel} class="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-accent text-[16px] font-semibold text-on-accent md:flex-none md:px-8">
+          <Icon name="phone" size={18} /> Marvin dazu anrufen
+        </a>
+        <a href={wa} target="_blank" rel="noopener" class="flex h-14 items-center justify-center gap-2.5 rounded-full px-5 text-[16px] font-medium shadow-[inset_0_0_0_1.5px_var(--accent)] md:px-7" aria-label="WhatsApp schreiben">
+          <Icon name="whatsapp" size={21} /><span class="hidden md:inline">WhatsApp</span>
+        </a>
+      </div>
+    </template>
+  );
+})}
+
+<dialog id="client-dialog" class="cd" aria-label="Details">
+  <div class="cd-panel">
+    <span class="cd-grip md:hidden" aria-hidden="true"></span>
+    <button type="button" class="cd-close" data-close aria-label="Schließen">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+    </button>
+    <div class="cd-body"></div>
+  </div>
+</dialog>
+
+<style is:global>
+  .cd {
+    --dl: 64px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    max-width: 100vw;
+    max-height: 100svh;
+    width: 100%;
+    margin: auto 0 0;
+    overflow: visible;
+  }
+  .cd::backdrop {
+    background: rgb(24 34 48 / 0.42);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  .cd.is-open::backdrop { opacity: 1; }
+  .cd-panel {
+    position: relative;
+    background: var(--bg);
+    border-radius: 18px 18px 0 0;
+    max-height: 90svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 28px 20px max(24px, env(safe-area-inset-bottom));
+    transform: translate3d(0, 100%, 0);
+    transition: transform 0.6s var(--ease-soft);
+  }
+  .cd.is-open .cd-panel { transform: none; }
+  .cd-grip { position: absolute; left: 50%; top: 10px; width: 36px; height: 4px; margin-left: -18px; border-radius: 4px; background: var(--line); }
+  .cd-close {
+    position: absolute; right: 16px; top: 16px;
+    width: 40px; height: 40px; border-radius: 999px;
+    display: grid; place-items: center;
+    background: var(--surface); color: var(--fg);
+    transition: background-color 0.3s;
+  }
+  .cd-close:hover { background: #ebebe6; }
+  @media (min-width: 768px) {
+    .cd { --dl: 84px; width: min(880px, calc(100vw - 80px)); margin: auto; }
+    .cd-panel {
+      border-radius: 10px;
+      padding: 48px 48px 44px;
+      max-height: calc(100svh - 80px);
+      transform: translate3d(0, 16px, 0);
+      opacity: 0;
+      transition: transform 0.6s var(--ease-out), opacity 0.45s var(--ease-out);
+    }
+    .cd.is-open .cd-panel { transform: none; opacity: 1; }
+    .cd-close { right: 24px; top: 24px; }
+  }
+  html.cd-lock { overflow: hidden; }
+</style>

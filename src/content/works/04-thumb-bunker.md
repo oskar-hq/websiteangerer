@@ -1,6 +1,6 @@
 ---
 title: "Bunker für das ganze Land"
-client: "Doku-Kanal (Platzhalter)"
+client: "Doku-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

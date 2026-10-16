@@ -1,0 +1,63 @@
+---
+/**
+ * Eine Kachel im Lineup. Marken: Logo in Originalfarbe. Creator: rundes Profilbild + Name.
+ * Antippen öffnet die Detailansicht (#client-dialog).
+ */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { withBase } from '../lib/works';
+
+interface Props { client: CollectionEntry<'clients'>; i: number }
+const { client, i } = Astro.props;
+const c = client.data;
+const t1 = c.tier === 1;
+const disciplines = [...new Set(c.items.map((x) => x.discipline))].join(' · ');
+---
+
+<button
+  type="button"
+  data-client={client.id}
+  data-reveal
+  style={`--d:${(i % 4) * 140 + Math.floor(i / 4) * 60}ms; --k:${(c.scale / Math.sqrt(c.aspect)).toFixed(3)}`}
+  class:list={['tile group relative flex w-full flex-col rounded-[6px] bg-surface text-left', t1 ? 'tier-1 aspect-square md:aspect-[5/4]' : 'tier-2 aspect-square md:aspect-[16/10]']}
+  aria-label={`${c.name} – Details ansehen`}
+>
+  <span class="flex flex-1 items-center justify-center px-4">
+    {c.kind === 'brand' && c.logo ? (
+      <img src={withBase(c.logo)} alt={c.name} class="logo" loading={t1 ? 'eager' : 'lazy'} decoding="async" />
+    ) : c.photo ? (
+      <span class="flex flex-col items-center gap-2.5 md:gap-3">
+        <Image src={c.photo} alt={c.name} width={240} height={240} class="face rounded-full object-cover" />
+        <span class="text-[15px] font-semibold tracking-[-0.02em] md:text-[17px]">{c.name}</span>
+      </span>
+    ) : null}
+  </span>
+  <span class="meta flex items-end justify-between gap-3 px-3 pb-2.5 text-muted md:px-4 md:pb-3.5">
+    <span class="truncate">{c.kind === 'brand' ? c.name : 'Creator'}</span>
+    <span class="hidden truncate md:inline">{disciplines}</span>
+  </span>
+</button>
+
+<style>
+  .tile { transition: background-color 0.6s var(--ease-out); }
+  .logo {
+    width: auto;
+    max-width: 80%;
+    /* Flächenausgleich: breite Logos niedriger, kompakte höher */
+    height: calc(var(--lh) * var(--k));
+    object-fit: contain;
+    transition: transform 0.9s var(--ease-out);
+  }
+  .tier-1 { --lh: 66px; }
+  .tier-2 { --lh: 42px; }
+  .face { width: 60px; height: 60px; transition: transform 0.9s var(--ease-out); }
+  @media (min-width: 768px) {
+    .tier-1 { --lh: 118px; }
+    .tier-2 { --lh: 76px; }
+    .face { width: 76px; height: 76px; }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tile:hover { background-color: #ebebe6; }
+    .tile:hover .logo, .tile:hover .face { transform: scale(1.04); }
+  }
+</style>

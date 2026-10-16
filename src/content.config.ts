@@ -27,4 +27,30 @@ const works = defineCollection({
     }),
 });
 
-export const collections = { works };
+/**
+ * Kunden & Creator für das Lineup. Eine JSON-Datei pro Marke in src/content/clients/.
+ * tier 1 = Headliner (groß), tier 2 = übriges Lineup.
+ */
+const clients = defineCollection({
+  loader: glob({ pattern: '**/*.json', base: './src/content/clients' }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      kind: z.enum(['brand', 'creator']),
+      tier: z.union([z.literal(1), z.literal(2)]),
+      order: z.number(),
+      /** Logo-Datei unter public/ (SVG/PNG in Originalfarben) – nur bei kind: brand */
+      logo: z.string().optional(),
+      /** Profilbild – nur bei kind: creator */
+      photo: image().optional(),
+      /** Optischer Größenausgleich des Logos (1 = Standard) */
+      scale: z.number().default(1),
+      /** Seitenverhältnis des Logos (Breite/Höhe) – für optischen Flächenausgleich */
+      aspect: z.number().default(1),
+      items: z.array(z.object({ what: z.string(), who: z.string(), discipline: z.string() })),
+      /** Verweise auf Arbeiten (Ende der Datei-ID in src/content/works) */
+      works: z.array(z.string()).default([]),
+    }),
+});
+
+export const collections = { works, clients };

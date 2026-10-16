@@ -1,6 +1,6 @@
 ---
 title: "Live-Turnier Operation X3D"
-client: "Hardware-Marke (Platzhalter)"
+client: "Hardware-Marke"
 discipline: video
 medium: image
 kind: "Live-Produktion"

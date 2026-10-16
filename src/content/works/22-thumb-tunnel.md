@@ -1,6 +1,6 @@
 ---
 title: "Verlassener Tunnel"
-client: "Creator-Kanal (Platzhalter)"
+client: "Creator-Kanal"
 discipline: design
 medium: image
 kind: "Thumbnail"

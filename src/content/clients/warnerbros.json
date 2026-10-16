@@ -1,0 +1,26 @@
+{
+  "name": "Warner Bros. Games",
+  "kind": "brand",
+  "tier": 1,
+  "order": 30,
+  "scale": 1.05,
+  "items": [
+    {
+      "what": "Launch-Betreuung & Creator-Booking",
+      "who": "Ciberdime",
+      "discipline": "Management"
+    },
+    {
+      "what": "Digitale Events",
+      "who": "Ciberdime",
+      "discipline": "Video"
+    }
+  ],
+  "works": [
+    "mgmt-cosplay",
+    "video-japan",
+    "thumb-minecraft"
+  ],
+  "logo": "logos/warnerbros-games.png",
+  "aspect": 4.167
+}

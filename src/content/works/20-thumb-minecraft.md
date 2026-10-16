@@ -1,6 +1,6 @@
 ---
 title: "Piratenschiff"
-client: "Gaming-Creator (Platzhalter)"
+client: "Gaming-Creator"
 discipline: design
 medium: image
 kind: "Thumbnail"

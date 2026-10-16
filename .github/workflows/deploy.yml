@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, claude/brave-babbage-nqrto6]
+    branches: [main, claude/brave-babbage-nqrto6, claude/liquid-glass-design-refine-6ymygw]
   workflow_dispatch:
 
 permissions:

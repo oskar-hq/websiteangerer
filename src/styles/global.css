@@ -128,6 +128,18 @@ html.js [data-reveal].is-in {
   html.feed {
     scroll-snap-type: y mandatory;
   }
+  /* Ein Screen im Feed: exakt Bildschirmhöhe, Platz für Kopfleiste oben und Anruf-Leiste unten */
+  .screen {
+    height: 100svh;
+    padding-top: 72px;
+    padding-bottom: 108px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    overflow: hidden;
+  }
 }
 
 /* Orbit-Drehung (Hero) */

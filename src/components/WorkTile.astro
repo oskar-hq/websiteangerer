@@ -1,0 +1,30 @@
+---
+/**
+ * Eine Arbeit. Erst in Graustufen, damit die Logos das Lauteste bleiben;
+ * Farbe kommt bei Hover (Desktop) bzw. sobald die Kachel im Bild ist (Mobile).
+ */
+import WorkMedia from './WorkMedia.astro';
+import { disciplineLabel, type Work } from '../lib/works';
+interface Props { work: Work; i: number; crop?: boolean; sizes?: string }
+const { work: w, i, crop = false, sizes = '(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw' } = Astro.props;
+---
+<figure data-tile data-discipline={w.data.discipline} data-colorize class="work group mb-10 snap-start scroll-mt-16 break-inside-avoid md:mb-4 md:scroll-mt-0" style={`view-transition-name: w${i}`}>
+  <div class:list={['relative overflow-hidden rounded-[4px] bg-surface', crop && 'md:aspect-[4/3]']}>
+    <WorkMedia work={w} sizes={sizes} class:list={['media h-auto max-h-[78svh] w-full object-cover', crop ? 'md:absolute md:inset-0 md:h-full md:max-h-none' : 'md:max-h-none']} />
+  </div>
+  <figcaption class="meta flex justify-between gap-4 pt-2.5 md:pb-3">
+    <span class="min-w-0 truncate"><span class="text-fg">{w.data.title}</span> <span class="text-muted">· {w.data.client}</span></span>
+    <span class="shrink-0 text-muted">{disciplineLabel(w.data.discipline)}</span>
+  </figcaption>
+</figure>
+<style>
+  .work :global(.media) {
+    filter: grayscale(1) contrast(0.92) brightness(1.04);
+    transition: filter 1.2s var(--ease-out), transform 1.4s var(--ease-out);
+  }
+  .work.is-color :global(.media) { filter: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .work.is-color :global(.media) { filter: grayscale(1) contrast(0.92) brightness(1.04); }
+    .work:hover :global(.media) { filter: none; transform: scale(1.02); }
+  }
+</style>

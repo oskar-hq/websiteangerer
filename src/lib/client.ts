@@ -89,6 +89,10 @@ function applyFilter(id: string) {
   else run();
 }
 
+// Vorfilter über Hash, z. B. /arbeiten/#design
+const initial = location.hash.slice(1);
+if (wall && filterBtns.some((b) => b.dataset.filter === initial)) applyFilter(initial);
+
 for (const b of filterBtns) {
   b.addEventListener('click', (ev) => {
     const id = b.dataset.filter ?? 'all';
@@ -167,4 +171,32 @@ if (dlg) {
     panel.style.transform = '';
     if (dy > 110) close();
   });
+}
+
+/* ---------- Arbeiten: Farbe, sobald im Bild (nur Touch-Geräte) ---------- */
+if (!finePointer.matches) {
+  const cio = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.target.classList.toggle('is-color', e.isIntersecting && e.intersectionRatio > 0.6)),
+    { threshold: [0, 0.6, 1] },
+  );
+  document.querySelectorAll('[data-colorize]').forEach((el) => cio.observe(el));
+}
+
+/* ---------- Wortmarke exakt auf Containerbreite setzen ---------- */
+const fitEls = Array.from(document.querySelectorAll<HTMLElement>('[data-fit]'));
+const fit = () => {
+  for (const el of fitEls) {
+    const box = el.parentElement!;
+    const avail = box.clientWidth;
+    el.style.fontSize = '';
+    const fs = parseFloat(getComputedStyle(el).fontSize);
+    const w = el.getBoundingClientRect().width;
+    if (w > 0) el.style.fontSize = `${(fs * avail) / w}px`;
+  }
+};
+if (fitEls.length) {
+  fit();
+  document.fonts?.ready.then(fit);
+  let t = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(t); t = requestAnimationFrame(fit); });
 }

@@ -6,6 +6,5 @@ medium: image
 kind: "Event"
 image: "../../assets/works/net-117.jpg"
 order: 320
-placeholder: true
 featured: false
 ---

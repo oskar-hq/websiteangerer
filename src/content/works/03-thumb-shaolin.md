@@ -6,6 +6,5 @@ medium: image
 kind: "Thumbnail"
 image: "../../assets/works/thumb-g3-21.jpg"
 order: 30
-placeholder: true
-featured: false
+featured: true
 ---

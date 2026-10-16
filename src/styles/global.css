@@ -124,6 +124,10 @@ html.js [data-reveal].is-in {
   html {
     scroll-snap-type: y proximity;
   }
+  /* Feed-Seiten: jede Wischbewegung rastet genau auf den nächsten Screen */
+  html.feed {
+    scroll-snap-type: y mandatory;
+  }
 }
 
 /* Orbit-Drehung (Hero) */

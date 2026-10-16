@@ -1,10 +1,13 @@
 ---
-/** Die volle Wand: alle Arbeiten aus dem Netzwerk, filterbar nach Disziplin. */
+/**
+ * Alle Arbeiten. Mobile: Social-Feed – ein Screen pro Arbeit, eine Wischbewegung = nächste Arbeit,
+ * am Ende rastet der Abschluss ein. Desktop: filterbares Raster.
+ */
 import Base from '../../layouts/Base.astro';
 import WorkTile from '../../components/WorkTile.astro';
 import StickyCall from '../../components/StickyCall.astro';
 import Icon from '../../components/Icon.astro';
-import { site, tel, disciplines } from '../../site.config';
+import { site, tel, wa, disciplines } from '../../site.config';
 import { getWorks, countBy } from '../../lib/works';
 
 const works = await getWorks();
@@ -13,32 +16,57 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<Base title={`Arbeiten – ${site.name}`}>
-  <header class="mx-auto flex snap-start h-16 max-w-[1440px] items-center justify-between px-4 md:h-[72px] md:px-10">
-    <a href={`${base}/`} class="group flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
-      <Icon name="arrow" size={16} class="rotate-180 transition-transform duration-500 group-hover:-translate-x-1" /> {site.name}
-    </a>
-    <a href={tel} class="btn-call hidden h-11 items-center gap-2 rounded-full px-5 text-[13px] font-semibold md:inline-flex">
-      <Icon name="phone" size={14} /> Anrufen
-    </a>
+<Base title={`Arbeiten – ${site.name}`} htmlClass="feed">
+  <!-- Kopfleiste: Mobile fest über dem Feed (Zurück + Filter), Desktop normal -->
+  <header class="topbar fixed inset-x-0 top-0 z-30 md:static">
+    <div class="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-4 md:h-[72px] md:justify-between md:px-10">
+      <a href={`${base}/`} class="neu-sm neu-press grid size-10 shrink-0 place-items-center rounded-full md:hidden" aria-label="Zurück zur Startseite">
+        <Icon name="arrow" size={16} class="rotate-180" />
+      </a>
+      <a href={`${base}/`} class="group hidden items-center gap-2 text-[15px] font-medium tracking-[-0.02em] md:flex">
+        <Icon name="arrow" size={16} class="rotate-180 transition-transform duration-500 group-hover:-translate-x-1" /> {site.name}
+      </a>
+      <div class="filter flex flex-1 gap-2 overflow-x-auto px-1 py-3 [scrollbar-width:none] md:hidden" role="toolbar" aria-label="Nach Disziplin filtern">
+        <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+        {disciplines.map((d) => <button type="button" data-filter={d.id} aria-pressed="false">{d.label}</button>)}
+      </div>
+      <a href={tel} class="btn-call hidden h-11 items-center gap-2 rounded-full px-5 text-[13px] font-semibold md:inline-flex">
+        <Icon name="phone" size={14} /> Anrufen
+      </a>
+    </div>
   </header>
 
-  <main class="mx-auto max-w-[1440px] px-4 pb-28 md:px-10 md:pb-24" data-wall data-active="all">
-    <div class="flex flex-col gap-6 pt-12 md:flex-row md:items-end md:justify-between md:pt-20">
-      <h1 class="display text-[clamp(2.75rem,13vw,3.5rem)] md:text-[min(9vw,10rem)]" data-reveal>Arbeiten.</h1>
+  <main class="mx-auto max-w-[1440px] px-4 md:px-10 md:pb-24" data-wall data-active="all">
+    <!-- Intro: auf Mobile der erste Screen -->
+    <section class="intro flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:pt-20">
+      <h1 class="display text-[clamp(3.25rem,16vw,4.25rem)] md:text-[min(9vw,10rem)]" data-reveal>Arbeiten.</h1>
       <p class="meta text-muted md:pb-4 md:text-right" data-reveal style="--d:120ms"><span data-count>{pad(works.length)}</span> / {pad(works.length)} Arbeiten aus dem Netzwerk</p>
-    </div>
+      <p class="meta flex items-center gap-2 text-muted md:hidden" data-reveal style="--d:240ms">
+        <Icon name="arrow-down" size={14} class="swipe" /> Wischen für die nächste Arbeit
+      </p>
+    </section>
 
-    <div class="sticky top-0 z-20 -mx-4 mt-8 bg-bg px-4 md:mx-0 md:mt-12 md:px-0">
-      <div class="filter flex gap-3 overflow-x-auto px-1 py-4 [scrollbar-width:none]" role="toolbar" aria-label="Nach Disziplin filtern">
+    <div class="sticky top-0 z-20 -mx-4 mt-12 hidden bg-bg px-4 md:mx-0 md:block md:px-0">
+      <div class="filter flex gap-3 overflow-x-auto px-1 py-4" role="toolbar" aria-label="Nach Disziplin filtern">
         <button type="button" data-filter="all" aria-pressed="true">Alle</button>
         {disciplines.map((d) => <button type="button" data-filter={d.id} aria-pressed="false">{d.label} <span class="tabular-nums opacity-60">{counts[d.id] ?? 0}</span></button>)}
       </div>
     </div>
 
-    <div class="mt-4 md:mt-6 md:columns-2 md:gap-4 lg:columns-3">
-      {works.map((w, i) => <WorkTile work={w} i={i} />)}
+    <div class="md:mt-6 md:columns-2 md:gap-4 lg:columns-3">
+      {works.map((w, i) => <WorkTile work={w} i={i} feed total={works.length} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 92vw" />)}
     </div>
+
+    <!-- Abschluss: auf Mobile der letzte Screen -->
+    <section class="outro flex flex-col justify-end md:hidden">
+      <h2 class="display text-[clamp(3.25rem,16vw,4.25rem)]">Ein Anruf.</h2>
+      <p class="mt-5 max-w-[20rem] text-[15px] leading-[1.55] text-muted">Etwas gesehen, das du für dich brauchst? Marvin bringt dich mit dem richtigen Profi zusammen.</p>
+      <a href={wa} target="_blank" rel="noopener" class="meta mt-6 text-[#2f8fdc]">Oder per WhatsApp schreiben</a>
+      <footer class="meta mt-14 flex justify-between border-t border-line pt-5 text-muted">
+        <span>© 2026 {site.name}</span>
+        <span class="flex gap-5"><a href="#">Impressum</a><a href="#">Datenschutz</a></span>
+      </footer>
+    </section>
   </main>
 
   <StickyCall />
@@ -58,4 +86,21 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
   .filter button:hover { color: var(--fg); }
   .filter button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); font-weight: 600; box-shadow: inset 4px 4px 9px rgb(20 90 160 / 0.35), inset -4px -4px 9px rgb(160 215 255 / 0.6); }
+
+  @media (max-width: 767px) {
+    .topbar { background: var(--bg); box-shadow: 0 12px 24px -18px rgb(22 27 29 / 0.3); }
+    .filter button { height: 34px; padding: 0 14px; }
+    .intro, .outro {
+      height: 100svh;
+      padding: 88px 0 120px;
+      justify-content: flex-end;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+    .swipe { animation: swipe 2.4s var(--ease-soft) infinite; }
+  }
+  @keyframes swipe {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(4px); opacity: 1; }
+  }
 </style>

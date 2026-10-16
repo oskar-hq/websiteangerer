@@ -75,12 +75,18 @@ function applyFilter(id: string) {
     for (const t of tiles) {
       const show = id === 'all' || t.dataset.discipline === id;
       t.hidden = !show;
-      if (show) t.style.setProperty('--i', String(i++));
+      if (show) {
+        t.style.setProperty('--i', String(i++));
+        const pos = t.querySelector('[data-pos]');
+        if (pos) pos.textContent = String(i).padStart(2, '0');
+      }
     }
     for (const b of filterBtns) {
       if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.dataset.filter === id));
     }
     wall?.setAttribute('data-active', id);
+    const visible = String(tiles.filter((t) => !t.hidden).length).padStart(2, '0');
+    document.querySelectorAll('[data-total]').forEach((el) => (el.textContent = visible));
     const count = document.querySelector('[data-count]');
     if (count) count.textContent = String(tiles.filter((t) => !t.hidden).length).padStart(2, '0');
   };
@@ -101,6 +107,11 @@ for (const b of filterBtns) {
       document.getElementById('wand')?.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth' });
     }
     applyFilter(id);
+    // Feed (Mobile): nach dem Filtern direkt zur ersten passenden Arbeit
+    if (document.documentElement.classList.contains('feed') && window.innerWidth < 768) {
+      const first = tiles.find((t) => !t.hidden);
+      requestAnimationFrame(() => first?.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' }));
+    }
   });
 }
 

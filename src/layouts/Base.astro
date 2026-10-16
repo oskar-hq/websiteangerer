@@ -2,12 +2,12 @@
 import '../styles/global.css';
 import { site } from '../site.config';
 
-interface Props { title?: string }
-const { title = `${site.name} – Ein Name. Ein Anruf.` } = Astro.props;
+interface Props { title?: string; htmlClass?: string }
+const { title = `${site.name} – Ein Name. Ein Anruf.`, htmlClass } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="de">
+<html lang="de" class={htmlClass}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

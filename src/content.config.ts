@@ -5,7 +5,6 @@ import { z } from 'astro/zod';
 /**
  * Eine Datei pro Arbeit in src/content/works/*.md
  * Bild: relativer Pfad zu src/assets/works/… (wird automatisch optimiert)
- * Video: Pfad unter public/ (z. B. "media/reel-1.mp4"), plus "image" als Poster.
  */
 const works = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/works' }),
@@ -18,7 +17,6 @@ const works = defineCollection({
       /** Art der Arbeit, z. B. "Thumbnail", "Plakat", "Reel" */
       kind: z.string(),
       image: image(),
-      video: z.string().optional(),
       order: z.number(),
       /** Kachel bekommt das Label "Platzhalter" */
       placeholder: z.boolean().default(true),

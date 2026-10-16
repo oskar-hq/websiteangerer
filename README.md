@@ -1,7 +1,7 @@
-# Website Marvin Angerer – Entwurf
+# Website Marvin Angerer
 
-Astro + Tailwind, statisch. Eine Startseite nach dem Museum-Prinzip: Die Seite ist nahezu farblos,
-die Kundenlogos in Originalfarben sind das Lauteste. Hellblau nur für Anruf, WhatsApp und aktiven Filter.
+Astro + Tailwind, statisch. Eine Startseite: reines Weiß, in der Mitte die Anruf-Kachel, drumherum kreisen
+Marken, Creator und Arbeiten als gekippte Squircles. Farbe kommt nur aus Logos, Fotos und Arbeiten.
 
 ## Entwickeln
 
@@ -13,9 +13,11 @@ npm run build    # -> dist/
 
 ## Inhalte pflegen
 
-- **Kontakt:** `src/site.config.ts` (Telefon, WhatsApp, Name, Disziplinen)
-- **Kunden-Lineup:** eine JSON-Datei pro Marke/Creator in `src/content/clients/` (`tier: 1` = Headliner, groß). Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
-- **Arbeiten (Die Wand):** eine Datei pro Arbeit in `src/content/works/*.md`
+- **Kontakt & Disziplinen:** `src/site.config.ts` (Name, Telefon, WhatsApp, Disziplinen)
+- **Marken & Creator:** eine JSON-Datei pro Eintrag in `src/content/clients/` (`tier: 1` = Headliner).
+  Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
+  Die Detailansicht („Unser Netzwerk arbeitet für …“) zeigt `items` (Leistung, Profi, Disziplin) und `works`.
+- **Arbeiten:** eine Datei pro Arbeit in `src/content/works/*.md`
 
 ```md
 ---
@@ -24,18 +26,17 @@ client: "Kunde"
 discipline: design        # design | video | social | management | software
 medium: image             # image | video
 kind: "Thumbnail"         # freie Bezeichnung: Plakat, Reel, Spot …
-image: "../../assets/works/datei.jpg"   # Bild bzw. Poster bei Videos
-video: "media/datei.mp4"  # nur bei medium: video, Datei liegt in public/media/
-order: 330                # Reihenfolge auf der Wand
+image: "../../assets/works/datei.jpg"
+order: 330                # Reihenfolge
+featured: false
 ---
 ```
 
-Bilder in `src/assets/works/` werden beim Build automatisch als WebP in mehreren Größen ausgegeben.
+Bilder in `src/assets/` werden beim Build automatisch als WebP in mehreren Größen ausgegeben.
 
 > Alle Inhalte sind Platzhalter.
 
 ## GitHub Pages
 
-Workflow `.github/workflows/deploy.yml` baut und veröffentlicht bei jedem Push.
-Einmalig nötig: Repo → Settings → Pages → Source: **GitHub Actions**.
+Der Workflow `.github/workflows/deploy.yml` baut und veröffentlicht bei jedem Push.
 URL: https://oskar-hq.github.io/websiteangerer/

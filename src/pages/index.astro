@@ -1,160 +1,170 @@
 ---
 /**
- * Startseite – Museum-Prinzip: Die Seite ist nahezu farblos, die Marken sind die Bilder.
- * Hellblau ausschließlich für Anruf, WhatsApp und aktiven Filter.
+ * Startseite – nach der Orbit-Referenz („Your catalog, instantly re-shot“).
+ * Reines Weiß, gekippte Bild-Squircles im Kreis um eine zentrale Kachel,
+ * Headline unten links mit grauer zweiter Zeile, schwarze Menü-Pille, Begriffs-Liste am rechten Rand.
  */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import LogoTile from '../components/LogoTile.astro';
-import Orbit from '../components/Orbit.astro';
 import ClientDialog from '../components/ClientDialog.astro';
-import WorkTile from '../components/WorkTile.astro';
 import StickyCall from '../components/StickyCall.astro';
 import Icon from '../components/Icon.astro';
 import { site, tel, wa, disciplines } from '../site.config';
-import { getWorks, countBy } from '../lib/works';
+import { getWorks, pick, withBase, disciplineLabel } from '../lib/works';
 
 const works = await getWorks();
-const counts = countBy(works);
 const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
-const headliners = clients.filter((c) => c.data.tier === 1);
-const lineup = clients.filter((c) => c.data.tier !== 1);
-const pad = (n: number) => String(n).padStart(2, '0');
-const featured = works.filter((w) => w.data.featured).slice(0, 6);
-// Mobile-Feed: Lineup in Bildschirme zu je 4 Kacheln (2 × 2)
-const chunks = Array.from({ length: Math.ceil(lineup.length / 4) }, (_, k) => lineup.slice(k * 4, k * 4 + 4));
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const w = (k: string) => pick(works, k);
+const cl = (id: string) => clients.find((c) => c.id === id)!;
 
-// Welche Profis stehen hinter welcher Disziplin (aus den Kundendaten abgeleitet)
-const whoBy = (label: string) => [...new Set(clients.flatMap((c) => c.data.items.filter((i) => i.discipline === label).map((i) => i.who)))];
-const whoExtra: Record<string, string[]> = { Software: ['Ylva Labs'] };
+// Orbit: Arbeiten, Creator und Marken im Wechsel – Größe, Neigung, Deckkraft wie in der Referenz
+type O = { img?: ImageMetadata; logo?: string; client?: string; s: number; r: number; o?: number; gray?: boolean };
+const orbit: O[] = [
+  { img: w('mgmt-cosplay').data.image, s: 0.62, r: -8, o: 0.35 },
+  { logo: 'logos/redbull.svg', client: 'redbull', s: 1.0, r: 10 },
+  { img: w('thumb-shaolin').data.image, s: 1.05, r: -6 },
+  { img: cl('viscabarca').data.photo, client: 'viscabarca', s: 0.95, r: 12 },
+  { logo: 'logos/amd.svg', client: 'amd', s: 0.95, r: -4 },
+  { img: w('plakat-knabe').data.image, s: 1.08, r: 6, gray: true },
+  { img: cl('anaelic').data.photo, client: 'anaelic', s: 0.9, r: -10 },
+  { logo: 'logos/ubisoft.svg', client: 'ubisoft', s: 0.85, r: 8 },
+  { img: w('thumb-monster').data.image, s: 1.0, r: -12, gray: true },
+  { logo: 'logos/warnerbros-games.png', client: 'warnerbros', s: 1.0, r: 4 },
+  { img: cl('elotrix').data.photo, client: 'elotrix', s: 0.9, r: -6 },
+];
+const n = orbit.length;
+const shown = 12;
 ---
 
-<Base htmlClass="feed">
-  <header class="head fixed inset-x-0 top-0 z-30">
-    <div class="mx-auto grid h-16 max-w-[1440px] grid-cols-2 items-center px-4 md:h-[84px] md:grid-cols-3 md:px-10">
-      <a href="#top" class="text-[15px] font-medium tracking-[-0.02em]">{site.name}</a>
-      <nav class="meta neu-sm hidden h-11 items-center justify-self-center rounded-full px-2 text-muted md:flex">
-        <a href="#netzwerk" class="rounded-full px-4 py-2 transition-colors hover:text-fg">Netzwerk</a>
-        <a href="#arbeiten" class="rounded-full px-4 py-2 transition-colors hover:text-fg">Arbeiten</a>
-        <a href="#disziplinen" class="rounded-full px-4 py-2 transition-colors hover:text-fg">Disziplinen</a>
-      </nav>
-      <a href={tel} class="btn-call hidden h-11 items-center gap-2 justify-self-end rounded-full px-5 text-[13px] font-semibold md:inline-flex">
-        <Icon name="phone" size={14} /> Anrufen
+<Base>
+  <header class="fixed inset-x-0 top-0 z-30">
+    <div class="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 md:h-[92px] md:px-7">
+      <a href="#top" class="mark" aria-label={site.name}>
+        <span class="grid grid-cols-3 gap-[2px]">
+          {[1,0,1, 1,1,0, 1,0,1].map((v) => <span class:list={['size-[8px] rounded-[1px]', v ? 'bg-black' : 'bg-transparent']}></span>)}
+        </span>
+        <span class="ml-2 hidden text-[13px] font-semibold tracking-[-0.02em] md:inline">{site.name}<sup class="ml-0.5 text-[8px]">®</sup></span>
       </a>
+      <nav class="hidden h-10 items-center gap-1 rounded-full bg-black p-1 pl-4 text-[14px] text-white md:flex">
+        <a href="#netzwerk" class="flex items-center gap-2 pr-3"><span class="flex flex-col gap-[3px]"><span class="block h-px w-4 bg-white"></span><span class="block h-px w-4 bg-white"></span></span> Menü</a>
+        <a href={tel} class="grid size-8 place-items-center rounded-full bg-[#2a2a2a] transition-colors hover:bg-[#3a3a3a]" aria-label="Anrufen"><Icon name="phone" size={15} /></a>
+        <a href="#netzwerk" class="rounded-full bg-[#2a2a2a] px-3 py-1.5 text-[13px] tabular-nums">{clients.length} Marken</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href={wa} target="_blank" rel="noopener" class="hidden size-9 place-items-center rounded-full shadow-[0_0_0_1px_#e3e3e3] transition-colors hover:bg-[#f4f4f4] md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={16} /></a>
+        <a href={tel} class="inline-flex h-10 items-center rounded-full bg-black px-5 text-[14px] font-medium text-white md:h-11 md:px-6 md:text-[15px]">Anrufen</a>
+      </div>
     </div>
   </header>
 
   <main id="top">
-    <!-- HERO: links Botschaft + Anruf, rechts Marvin mit dem Netzwerk im Orbit -->
-    <section data-hero class="screen-hero relative mx-auto grid min-h-svh max-w-[1440px] snap-start snap-always grid-rows-[auto_1fr] px-4 pb-[100px] pt-16 md:grid-cols-12 md:grid-rows-1 md:items-center md:gap-6 md:px-10 md:pb-10 md:pt-[84px]">
-      <div class="relative order-1 h-[46svh] min-h-[330px] md:order-2 md:col-span-7 md:h-[min(78svh,760px)]">
-        <Orbit clients={clients} works={works} />
+    <!-- HERO -->
+    <section class="hero relative mx-auto h-svh min-h-[680px] max-w-[1440px] overflow-hidden px-4 md:min-h-[760px] md:px-7" data-hero>
+      <div class="orbit" aria-label="Unser Netzwerk arbeitet für">
+        <div class="ring">
+          {orbit.map((o, i) => {
+            const style = `--a:${(360 / n) * i - 100}deg; --s:${o.s}; --r:${o.r}deg; --o:${o.o ?? 1}`;
+            const inner = o.logo ? (
+              <span class="sq logo"><img src={withBase(o.logo)} alt="" /></span>
+            ) : (
+              <span class:list={['sq', o.gray && 'gray']}><Image src={o.img!} alt="" widths={[240, 400]} sizes="160px" /></span>
+            );
+            return o.client ? (
+              <button type="button" class="orb" style={style} data-client={o.client} aria-label={`${cl(o.client).data.name} – Details`}><span class="orb-in" data-reveal style={`--d:${150 + i * 70}ms`}>{inner}</span></button>
+            ) : (
+              <a href="#arbeiten" class="orb" style={style} aria-label="Arbeiten ansehen"><span class="orb-in" data-reveal style={`--d:${150 + i * 70}ms`}>{inner}</span></a>
+            );
+          })}
+        </div>
+        <div class="center" data-reveal style="--d:60ms">
+          <a href={tel} class="tile" aria-label="Marvin anrufen"><Icon name="phone" size={22} /></a>
+          <p class="mt-3 text-center text-[12px]">Marvin anrufen</p>
+        </div>
       </div>
-      <div class="relative z-10 order-2 self-end md:order-1 md:col-span-5 md:self-center">
-        <h1 class="display text-[clamp(2.9rem,14vw,3.75rem)] md:text-[min(6.6vw,7.25rem)]">
-          <span class="block" data-reveal style="--d:120ms">Ein Name.</span>
-          <span class="block text-muted" data-reveal style="--d:220ms">Ein Anruf.</span>
+
+      <!-- Begriffs-Liste am rechten Rand -->
+      <ul class="tags hidden md:flex" aria-hidden="true">
+        {[...disciplines, ...disciplines.slice(0, 1)].map((d, i) => <li class="tag" data-tag style={`--k:${i}`}>{d.label}</li>)}
+      </ul>
+
+      <div class="absolute inset-x-4 bottom-[104px] flex items-end justify-between md:inset-x-7 md:bottom-12">
+        <h1 class="text-[clamp(2.6rem,12vw,3.2rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]">
+          <span class="block" data-reveal style="--d:200ms">Ein Name,</span>
+          <span class="block text-[#8e8e8e]" data-reveal style="--d:300ms">ein Anruf.</span>
         </h1>
-        <p class="mt-5 max-w-[26rem] text-[15px] leading-[1.55] text-muted md:mt-8 md:text-[16px]" data-reveal style="--d:320ms">
-          Das Beste, was Deutschland zu bieten hat: Designer, Videoproduzenten, Social-Media-Teams, Manager und Software-Entwickler aus einem Netzwerk.
-        </p>
-        <div class="mt-9 hidden items-center gap-4 md:flex" data-reveal style="--d:420ms">
-          <a href={tel} class="btn-call inline-flex h-14 items-center gap-2.5 rounded-full px-7 text-[15px] font-semibold">
-            <Icon name="phone" size={17} /> Marvin anrufen
-          </a>
-          <a href={wa} target="_blank" rel="noopener" class="neu-sm neu-press inline-flex h-14 items-center gap-2.5 rounded-full px-7 text-[15px] font-medium text-[#2f8fdc]">
-            <Icon name="whatsapp" size={18} /> WhatsApp
-          </a>
-        </div>
+        <span class="absolute bottom-0 left-1/2 hidden -translate-x-1/2 pb-3 text-[11px] md:block">©2026</span>
+        <a href="#netzwerk" class="hidden pb-3 text-[11px] tracking-[0.02em] md:block">RUNTERSCROLLEN</a>
       </div>
     </section>
 
-    <!-- NETZWERK: Mobile = je ein Screen für Headliner und für jeden 4er-Block, Desktop = ein Raster -->
-    <section class="mx-auto max-w-[1440px] px-4 md:px-10 md:pt-[var(--section)]">
-      <div class="screen md:contents">
-        <div id="netzwerk" class="mb-8 flex flex-col gap-3 md:mb-12 md:flex-row md:items-end md:justify-between md:gap-4">
-          <h2 class="display text-[clamp(2.75rem,13vw,3.5rem)] md:text-[min(7.2vw,8rem)]" data-reveal>Netzwerk.</h2>
-          <p class="meta text-muted md:pb-3" data-reveal style="--d:120ms">Unser Netzwerk arbeitet für</p>
-        </div>
-        <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-          {headliners.map((c, i) => <LogoTile client={c} i={i} />)}
-        </div>
+    <!-- NETZWERK -->
+    <section id="netzwerk" class="mx-auto max-w-[1440px] px-4 pt-24 md:px-7 md:pt-40">
+      <h2 class="text-[clamp(2.4rem,11vw,3rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]" data-reveal>
+        Unser Netzwerk<br /><span class="text-[#8e8e8e]">arbeitet für.</span>
+      </h2>
+      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-14">
+        {clients.map((c, i) => (
+          <button type="button" data-client={c.id} class="ncell group" style={`--r:${[-6, 5, -3, 8, -8, 3, 6, -5][i % 8]}deg`} data-reveal aria-label={`${c.data.name} – Details`}>
+            {c.data.logo ? (
+              <span class="sq logo big"><img src={withBase(c.data.logo)} alt={c.data.name} /></span>
+            ) : (
+              <span class="sq big"><Image src={c.data.photo!} alt={c.data.name} width={360} height={360} /></span>
+            )}
+            <span class="mt-4 block text-center text-[12px]">{c.data.name}</span>
+          </button>
+        ))}
       </div>
-      {chunks.map((chunk, k) => (
-        <div class="screen md:contents">
-          <p class="meta mb-4 text-muted md:hidden">Außerdem · {pad(k + 1)} / {pad(chunks.length)}</p>
-          <div class="grid grid-cols-2 gap-4 md:mt-6 md:grid-cols-4 md:gap-6">
-            {chunk.map((c, i) => <LogoTile client={c} i={i} />)}
-          </div>
-          {k === chunks.length - 1 && <p class="meta mt-4 text-muted" data-reveal>Antippen für Details: was gemacht wurde und von wem aus dem Netzwerk.</p>}
-        </div>
-      ))}
     </section>
 
-    <!-- ARBEITEN: kuratiert, gedämpft. Mobile = Social-Feed, ein Screen pro Arbeit -->
-    <section id="arbeiten" class="mx-auto max-w-[1440px] px-4 md:scroll-mt-16 md:px-10 md:pt-[var(--section)]">
-      <div class="screen md:contents">
-        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
-          <h2 class="display text-[clamp(3.25rem,16vw,4.25rem)] md:text-[min(7.2vw,8rem)]" data-reveal>Arbeiten.</h2>
-          <p class="meta max-w-[18rem] text-muted md:pb-3 md:text-right" data-reveal style="--d:120ms">
-            Eine Auswahl aus {works.length} Arbeiten des Netzwerks.
-          </p>
-          <p class="meta flex items-center gap-2 text-muted md:hidden" data-reveal style="--d:240ms">
-            <Icon name="arrow-down" size={14} class="swipe" /> Wischen für die nächste Arbeit
-          </p>
-        </div>
+    <!-- ARBEITEN -->
+    <section id="arbeiten" class="mx-auto max-w-[1440px] px-4 pt-28 md:px-7 md:pt-44">
+      <div class="flex items-end justify-between gap-6">
+        <h2 class="text-[clamp(2.4rem,11vw,3rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]" data-reveal>
+          Arbeiten,<br /><span class="text-[#8e8e8e]">die man kennt.</span>
+        </h2>
+        <span class="hidden pb-2 text-[11px] md:block">{works.length} ARBEITEN</span>
       </div>
-      <div class="md:mt-12 md:grid md:grid-cols-3 md:gap-x-4 md:gap-y-2">
-        {featured.map((w, i) => <WorkTile work={w} i={i} crop feed total={featured.length} sizes="(min-width: 768px) 30vw, 92vw" />)}
+      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-16" data-more>
+        {works.map((wk, i) => (
+          <figure class:list={['wcell group', i >= shown && 'more hidden']} style={`--r:${[4, -6, 7, -3, -8, 5, -4, 6][i % 8]}deg`} data-reveal>
+            <span class:list={['sq big', i % 3 === 1 && 'gray']}><Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[300, 500]} sizes="(min-width: 768px) 22vw, 44vw" /></span>
+            <figcaption class="mt-4 text-center text-[12px]">{wk.data.title}<span class="block text-[#8e8e8e]">{disciplineLabel(wk.data.discipline)}</span></figcaption>
+          </figure>
+        ))}
       </div>
-      <div class="screen md:block md:h-auto md:p-0">
-        <p class="meta mb-4 text-muted md:hidden">Noch {works.length - featured.length} weitere</p>
-        <a href={`${base}/arbeiten/`} class="neu neu-press group mt-0 flex items-center justify-between rounded-full px-6 py-5 md:mt-6 md:px-8 md:py-6" data-reveal>
-          <span class="text-[17px] font-medium tracking-[-0.02em] md:text-[19px]">Alle {works.length} Arbeiten ansehen</span>
-          <Icon name="arrow" size={20} class="transition-transform duration-700 ease-[var(--ease-out)] group-hover:translate-x-1.5" />
-        </a>
+      <div class="mt-14 flex justify-center">
+        <button type="button" class="inline-flex h-11 items-center gap-2 rounded-full bg-black px-6 text-[14px] font-medium text-white" data-more-btn>Alle {works.length} zeigen</button>
       </div>
     </section>
 
     <!-- DISZIPLINEN -->
-    <section id="disziplinen" class="screen mx-auto max-w-[1440px] px-4 md:block md:h-auto md:px-10 md:pb-0 md:pt-[var(--section)]">
-      <p class="meta mb-4 text-muted md:mb-8" data-reveal>Disziplinen im Netzwerk</p>
+    <section class="mx-auto max-w-[1440px] px-4 pt-28 md:px-7 md:pt-44">
       <ul>
-        {disciplines.map((d, i) => {
-          const who = [...whoBy(d.label), ...(whoExtra[d.label] ?? [])];
-          return (
-            <li class="border-t border-line last:border-b" data-reveal style={`--d:${i * 90}ms`}>
-              <a href={`${base}/arbeiten/#${d.id}`} class="disc group flex items-end justify-between gap-2 py-3 md:flex-row md:items-end md:justify-between md:py-6">
-                <span class="display text-[clamp(2.1rem,10vw,2.6rem)] transition-transform duration-700 ease-[var(--ease-out)] group-hover:translate-x-2 md:text-[min(7.2vw,8rem)]">{d.label}</span>
-                <span class="meta flex gap-6 pb-1 text-muted md:pb-3 md:text-right">
-                  <span class="hidden md:inline md:max-w-[16rem]">{who.join(', ')}</span>
-                  <span class="tabular-nums">{pad(counts[d.id] ?? 0)}</span>
-                </span>
-              </a>
-            </li>
-          );
-        })}
+        {disciplines.map((d, i) => (
+          <li class="border-t border-[#ececec] py-5 last:border-b md:py-7" data-reveal style={`--d:${i * 70}ms`}>
+            <span class="grid gap-1 md:grid-cols-[1fr_1fr] md:items-baseline">
+              <span class="text-[clamp(2rem,9vw,2.4rem)] font-medium leading-none tracking-[-0.05em] md:text-[min(4.2vw,3.6rem)]">{d.label}</span>
+              <span class="text-[14px] text-[#8e8e8e] md:text-[16px]">{d.line}</span>
+            </span>
+          </li>
+        ))}
       </ul>
     </section>
 
     <!-- ABSCHLUSS -->
-    <section class="screen mx-auto max-w-[1440px] px-4 md:block md:h-auto md:px-10 md:pb-10 md:pt-[var(--section)]">
-      <h2 class="display text-[clamp(3.25rem,16vw,4.5rem)] md:text-[min(12vw,13rem)]" data-reveal>Ein Anruf.</h2>
-      <div class="mt-6 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between" data-reveal style="--d:120ms">
-        <a href={tel} class="meta text-muted transition-colors hover:text-fg">{site.phoneDisplay} · Mo–Fr erreichbar</a>
-        <div class="hidden items-center gap-2 md:flex">
-          <a href={tel} class="btn-call inline-flex h-12 items-center gap-2.5 rounded-full px-6 text-[15px] font-semibold">
-            <Icon name="phone" size={17} /> Marvin anrufen
-          </a>
-          <a href={wa} target="_blank" rel="noopener" class="neu-sm neu-press inline-flex h-12 items-center gap-2.5 rounded-full px-6 text-[15px] font-medium text-[#2f8fdc]">
-            <Icon name="whatsapp" size={18} /> WhatsApp
-          </a>
-        </div>
+    <section class="relative mx-auto max-w-[1440px] px-4 pb-28 pt-28 md:px-7 md:pb-16 md:pt-44">
+      <div class="flex flex-col items-center">
+        <a href={tel} class="tile" aria-label="Marvin anrufen"><Icon name="phone" size={22} /></a>
+        <p class="mt-3 text-[12px]">{site.phoneDisplay}</p>
       </div>
-      <footer class="meta mt-16 flex flex-wrap justify-between gap-4 border-t border-line pt-5 text-muted md:mt-32">
-        <span>© 2026 {site.name}</span>
-        <span class="flex gap-6"><a href={`${base}/b/`} class="hover:text-fg">Entwurf B →</a><a href={`${base}/c/`} class="hover:text-fg">Entwurf C →</a><a href={`${base}/d/`} class="hover:text-fg">D →</a><a href={`${base}/e/`} class="hover:text-fg">E →</a><a href="#" class="hover:text-fg">Impressum</a><a href="#" class="hover:text-fg">Datenschutz</a></span>
+      <h2 class="mt-24 text-[clamp(2.6rem,12vw,3.2rem)] font-medium leading-[0.98] tracking-[-0.055em] md:mt-32 md:text-[min(5.2vw,4.6rem)]" data-reveal>
+        Ein Name,<br /><span class="text-[#8e8e8e]">ein Anruf.</span>
+      </h2>
+      <footer class="mt-14 flex flex-wrap items-center justify-between gap-4 text-[11px] md:mt-16">
+        <span>©2026 {site.name}</span>
+        <span class="flex flex-wrap gap-5"><a href="#">Impressum</a><a href="#">Datenschutz</a></span>
       </footer>
     </section>
   </main>
@@ -163,16 +173,72 @@ const whoExtra: Record<string, string[]> = { Software: ['Ylva Labs'] };
   <ClientDialog clients={clients} works={works} />
 </Base>
 
+<script>
+  // Begriffs-Liste: aktiver Eintrag wandert langsam weiter
+  const tags = Array.from(document.querySelectorAll<HTMLElement>('[data-tag]'));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let active = 2;
+  const paint = () => tags.forEach((t, i) => { t.style.setProperty('--dist', String(Math.abs(i - active))); t.classList.toggle('is-on', i === active); });
+  paint();
+  if (!reduce && tags.length) setInterval(() => { active = (active + 1) % tags.length; paint(); }, 2600);
+
+  const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
+  btn?.addEventListener('click', () => {
+    document.querySelectorAll('[data-more] .more').forEach((el) => el.classList.remove('hidden', 'more'));
+    btn.remove();
+  });
+</script>
+
 <style>
-  @media (max-width: 767px) {
-    .screen-hero { height: 100svh; min-height: 0; }
-    .head { background: var(--bg); }
-    .swipe { animation: swipe 2.4s var(--ease-soft) infinite; }
+  .mark { display: inline-flex; align-items: center; }
+
+  /* Orbit */
+  .orbit { --rx: 128px; --ry: 150px; --w: 68px; position: absolute; left: 50%; top: 42%; width: 0; height: 0; }
+  @media (min-width: 768px) { .orbit { --rx: 250px; --ry: 220px; --w: 116px; top: 48%; } }
+  .ring { position: absolute; inset: 0; animation: orbit 260s linear infinite; }
+  .ring:hover { animation-play-state: paused; }
+  .orb {
+    --t: calc(var(--a) + var(--spin));
+    position: absolute; left: 0; top: 0;
+    width: calc(var(--w) * var(--s)); height: calc(var(--w) * var(--s));
+    translate: calc(-50% + cos(var(--t)) * var(--rx)) calc(-50% + sin(var(--t)) * var(--ry));
+    opacity: var(--o);
   }
-  @keyframes swipe {
-    0%, 100% { transform: translateY(0); opacity: 0.5; }
-    50% { transform: translateY(4px); opacity: 1; }
+  .orb-in { display: block; width: 100%; height: 100%; rotate: var(--r); transition: rotate 0.8s cubic-bezier(0.16, 1, 0.3, 1), scale 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s, transform 1.2s; }
+  .orb:hover .orb-in { rotate: 0deg; scale: 1.06; }
+
+  .sq { display: block; width: 100%; height: 100%; border-radius: 30%; overflow: hidden; background: #f1f1f1; }
+  .sq :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .sq.gray :global(img) { filter: grayscale(1); }
+  .sq.logo { display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px -24px rgb(0 0 0 / 0.35); }
+  .sq.logo :global(img) { width: 62%; height: 62%; object-fit: contain; }
+
+  .center { position: absolute; left: 0; top: 0; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+  .tile {
+    display: grid; place-items: center; width: 84px; height: 84px; border-radius: 22px; color: #8a8a8a;
+    background: #fff; box-shadow: 0 0 0 1px #d9d9d9; transition: color 0.3s, box-shadow 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .head { transition: background-color 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
-  :global(html[data-after-hero]) .head { background: var(--bg); box-shadow: 0 10px 30px -18px rgb(22 27 29 / 0.25); }
+  .tile:hover { color: #000; box-shadow: 0 0 0 1px #000; transform: translateY(-2px); }
+  @media (min-width: 768px) { .tile { width: 106px; height: 106px; border-radius: 24px; } }
+
+  /* Begriffs-Liste rechts, nach außen hin blasser */
+  .tags { position: absolute; right: -28px; top: 50%; translate: 0 -50%; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .tag {
+    --dist: 3;
+    padding: 7px 14px; border-radius: 8px; font-size: 14px; white-space: nowrap;
+    box-shadow: 0 0 0 1px #e2e2e2; color: #0a0a0a; background: #fff;
+    opacity: calc(1 - var(--dist) * 0.28);
+    translate: calc(var(--dist) * 10px) 0;
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), translate 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s;
+  }
+  .tag.is-on { box-shadow: 0 0 0 1px #0a0a0a; }
+
+  /* Netzwerk & Arbeiten: gekippte Squircles, die sich beim Hover aufrichten */
+  .ncell .sq, .wcell .sq { aspect-ratio: 1 / 1; height: auto; rotate: var(--r); transition: rotate 0.8s cubic-bezier(0.16, 1, 0.3, 1), scale 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ncell:hover .sq, .wcell:hover .sq { rotate: 0deg; scale: 1.03; }
+  .sq.big.logo :global(img) { width: 56%; height: 56%; }
+
+  :global(.sticky-call) { background: #fff !important; box-shadow: 0 -1px 0 #ececec !important; }
+  :global(.sticky-call a[aria-label]) { color: #0a0a0a !important; }
+  @media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
 </style>

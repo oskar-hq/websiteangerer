@@ -2,8 +2,8 @@
 @import '@fontsource-variable/geist';
 
 /* ---------------------------------------------------------------
-   Museum-Prinzip: Die Seite ist nahezu farblos, die Marken sind die Bilder.
-   Hellblau (--accent) NUR für Handlungs-Elemente: Anruf, WhatsApp, aktiver Filter.
+   Reines Weiß, Schwarz für Handlungen, Grau für zweite Zeilen.
+   Farbe kommt nur aus Logos, Creator-Fotos und Arbeiten.
 ---------------------------------------------------------------- */
 @theme inline {
   --color-bg: var(--bg);
@@ -11,48 +11,34 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-on-accent: var(--on-accent);
   --font-sans: 'Geist Variable', system-ui, sans-serif;
 }
 
 :root {
-  /* Neumorphism: Flächen = Grundfarbe, Tiefe nur über Licht (#FAFBFF) und Schatten (#161B1D) */
-  --bg: #eef1f7;
-  --surface: #eef1f7;
-  --surface-2: #e4ebf1;
-  --fg: #1e2833;
-  --muted: #7d8994;
-  --soft: #b5bfc6;
-  --line: #dde3ea;
-  --accent: #5bb8ff;
-  --on-accent: #0e1a2b;
-  --light: rgb(250 251 255 / 1);
-  --dark: rgb(22 27 29 / 0.16);
-  --neu-sm: -5px -5px 10px var(--light), 5px 5px 10px var(--dark);
-  --neu: -10px -10px 20px var(--light), 10px 10px 20px var(--dark);
-  --neu-lg: -20px -20px 40px var(--light), 20px 20px 40px rgb(22 27 29 / 0.2);
-  --neu-in: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);
-  --neu-accent: -10px -10px 22px var(--light), 12px 12px 26px rgb(30 110 190 / 0.32), inset 0 0 0 0 transparent;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f3f3f3;
+  --fg: #0a0a0a;
+  --muted: #8e8e8e;
+  --line: #e8e8e8;
+  --neu-sm: 0 0 0 1px #e6e6e6;
+  --neu-lg: 0 30px 60px -28px rgb(0 0 0 / 0.3);
+  --neu-in: inset 0 0 0 1px #e6e6e6;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
-  --section: clamp(96px, 12vw, 176px);
 }
 
-/* Neumorphe Bausteine */
-.neu { background: var(--surface); box-shadow: var(--neu); }
-.neu-sm { background: var(--surface); box-shadow: var(--neu-sm); }
-.neu-lg { background: var(--surface); box-shadow: var(--neu-lg); }
-.neu-in { background: var(--surface); box-shadow: var(--neu-in); }
-.neu-press { transition: box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
-.neu-press:active { box-shadow: var(--neu-in); transform: scale(0.99); }
+/* Bausteine, die Detailansicht und Anruf-Leiste nutzen */
+.neu-sm { background: #fff; box-shadow: var(--neu-sm); }
+.neu-press { transition: box-shadow 0.4s var(--ease-out), transform 0.4s var(--ease-out); }
+.neu-press:active { transform: scale(0.98); }
 .btn-call {
-  background: var(--accent);
-  color: var(--on-accent);
-  box-shadow: var(--neu-accent);
-  transition: box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  background: #0a0a0a;
+  color: #fff;
+  transition: transform 0.4s var(--ease-out), background-color 0.3s;
 }
-.btn-call:active { box-shadow: inset 5px 5px 12px rgb(20 90 160 / 0.4), inset -5px -5px 12px rgb(160 215 255 / 0.6); transform: scale(0.99); }
+.btn-call:hover { background: #000; transform: translateY(-1px); }
+.btn-call:active { transform: scale(0.98); }
 
 @layer base {
   html {
@@ -84,7 +70,7 @@
   }
 }
 
-/* Große Headlines: eng gesetzt */
+/* Große Headlines (Detailansicht) */
 .display {
   font-weight: 500;
   letter-spacing: -0.055em;
@@ -94,11 +80,10 @@
 .meta {
   font-size: 12px;
   line-height: 1.35;
-  letter-spacing: 0;
   font-feature-settings: 'tnum' 1;
 }
 
-/* Einblenden beim Scrollen – ruhig, langsam, gestaffelt über --d */
+/* Einblenden beim Scrollen – ruhig, gestaffelt über --d */
 html.js [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 14px, 0);
@@ -112,34 +97,8 @@ html.js [data-reveal].is-in {
   transform: none;
 }
 
-[data-tile][hidden] {
-  display: none !important;
-}
-
 .pb-safe {
   padding-bottom: max(12px, env(safe-area-inset-bottom));
-}
-
-@media (max-width: 767px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-  /* Feed-Seiten: jede Wischbewegung rastet genau auf den nächsten Screen */
-  html.feed {
-    scroll-snap-type: y mandatory;
-  }
-  /* Ein Screen im Feed: exakt Bildschirmhöhe, Platz für Kopfleiste oben und Anruf-Leiste unten */
-  .screen {
-    height: 100svh;
-    padding-top: 72px;
-    padding-bottom: 108px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    overflow: hidden;
-  }
 }
 
 /* Orbit-Drehung (Hero) */
@@ -150,11 +109,6 @@ html.js [data-reveal].is-in {
 }
 @keyframes orbit {
   to { --spin: 360deg; }
-}
-
-::view-transition-group(*) {
-  animation-duration: 0.6s;
-  animation-timing-function: var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -169,8 +123,5 @@ html.js [data-reveal].is-in {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-  html {
-    scroll-snap-type: none;
   }
 }

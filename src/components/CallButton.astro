@@ -1,7 +1,7 @@
 ---
 /**
- * Anruf-Button im Liquid-Glass-Look: grüner Hörer auf Glas, Lichtkante, Glanz-Sweep.
- * size steuert die Maße; pulse legt zwei grüne Ringe dahinter (Hero & Abschluss).
+ * Anruf-Button im Stil der iOS-Kontaktkarte: weiße Pille, blauer Hörer im hellgrauen Kreis.
+ * size steuert die Maße.
  */
 import Icon from './Icon.astro';
 import { tel } from '../site.config';
@@ -9,55 +9,63 @@ import { tel } from '../site.config';
 interface Props {
   size: 'header' | 'hero' | 'end' | 'bar' | 'dialog';
   label?: string;
-  pulse?: boolean;
-  /** Versatz für Sheen/Wiggle/Puls, damit nicht alle Buttons gleichzeitig glänzen */
-  i?: number;
   class?: string;
 }
-const { size, label = 'Marvin anrufen', pulse = false, i = 0, class: cls } = Astro.props;
-const big = size === 'hero' || size === 'end' || size === 'dialog' || size === 'bar';
+const { size, label = 'Marvin anrufen', class: cls } = Astro.props;
 const magnet = size === 'hero' || size === 'end' ? '0.2' : size === 'header' ? '0.25' : undefined;
+const big = size === 'hero' || size === 'end';
 ---
 
-{pulse ? (
-  <div class:list={['relative', cls]}>
-    <span data-pulse style={`--i:${i * 2}`}></span>
-    <span data-pulse style={`--i:${i * 2 + 1}`}></span>
-    <a href={tel} class:list={['lg call', big && 'lg-call']} data-size={size} data-magnet={magnet} data-cursor="Jetzt anrufen" aria-label="Marvin anrufen" style={`--i:${i}`}>
-      <span class="lg-sheen" aria-hidden="true"></span>
-      <span class="call-in" data-magnet-inner><Icon name="phone-fill" class="lg-phone call-ico" data-wiggle style={`--i:${i}`} />{label}</span>
-    </a>
-  </div>
-) : (
-  <a href={tel} class:list={['lg call', big && 'lg-call', cls]} data-size={size} data-magnet={magnet} style={`--i:${i}`}>
-    <span class="lg-sheen" aria-hidden="true"></span>
-    <span class="call-in" data-magnet-inner><Icon name="phone-fill" class="lg-phone call-ico" data-wiggle style={`--i:${i}`} />{label}</span>
-  </a>
-)}
+<a
+  href={tel}
+  class:list={['btn call', cls]}
+  data-size={size}
+  data-magnet={magnet}
+  data-cursor={big ? 'Jetzt anrufen' : undefined}
+  aria-label={label === 'Anrufen' ? 'Marvin anrufen' : undefined}
+>
+  <span class="call-in" data-magnet-inner>
+    <span class="call-ico" aria-hidden="true"><Icon name="phone-fill" size={24} /></span>
+    {label}
+  </span>
+</a>
 
 <style>
   .call {
-    --h: 44px; --fs: 15px; --ico: 17px; --pl: 16px; --pr: 20px; --gap: 8px;
+    --h: 44px; --fs: 15px; --ico: 34px; --glyph: 17px; --pr: 18px; --gap: 9px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: var(--h);
-    padding: 0 var(--pr) 0 var(--pl);
+    padding: 0 var(--pr) 0 calc((var(--h) - var(--ico)) / 2);
     font-size: var(--fs);
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     white-space: nowrap;
   }
   .call-in { display: flex; align-items: center; gap: var(--gap); }
-  .call :global(.call-ico) { width: var(--ico); height: var(--ico); }
+  .call-ico {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--ico);
+    height: var(--ico);
+    border-radius: 999px;
+    background: #f2f2f4;
+    color: var(--blue);
+    transition: background 0.3s, color 0.3s;
+  }
+  .call-ico :global(svg) { width: var(--glyph); height: var(--glyph); }
+  @media (hover: hover) {
+    .call:hover .call-ico { background: var(--blue); color: #fff; }
+  }
 
-  .call[data-size='header'] { letter-spacing: -0.01em; }
-  .call[data-size='hero'] { --h: 58px; --fs: 18px; --ico: 22px; --pl: 20px; --pr: 24px; --gap: 10px; }
-  .call[data-size='end'] { --h: 68px; --fs: 21px; --ico: 26px; --pl: 24px; --pr: 30px; --gap: 12px; }
-  .call[data-size='bar'] { --h: 52px; --fs: 17px; --ico: 21px; --pl: 20px; --pr: 20px; --gap: 10px; letter-spacing: -0.02em; flex: 1; }
-  .call[data-size='dialog'] { --h: 60px; --fs: 17px; --ico: 22px; --pl: 24px; --pr: 30px; --gap: 10px; letter-spacing: -0.02em; }
+  .call[data-size='hero'] { --h: 60px; --fs: 18px; --ico: 48px; --glyph: 22px; --pr: 26px; --gap: 12px; }
+  .call[data-size='end'] { --h: 68px; --fs: 20px; --ico: 54px; --glyph: 24px; --pr: 30px; --gap: 14px; }
+  .call[data-size='bar'] { --h: 52px; --fs: 17px; --ico: 40px; --glyph: 19px; --pr: 22px; --gap: 10px; flex: 1; }
+  .call[data-size='dialog'] { --h: 60px; --fs: 17px; --ico: 48px; --glyph: 21px; --pr: 28px; --gap: 12px; }
   @media (min-width: 768px) {
-    .call[data-size='hero'] { --h: 76px; --fs: 23px; --ico: 28px; --pl: 28px; --pr: 34px; --gap: 12px; }
-    .call[data-size='end'] { --h: 100px; --fs: 33px; --ico: 38px; --pl: 38px; --pr: 48px; --gap: 16px; --rim: 2.5px; }
+    .call[data-size='hero'] { --h: 72px; --fs: 22px; --ico: 58px; --glyph: 26px; --pr: 32px; --gap: 14px; }
+    .call[data-size='end'] { --h: 92px; --fs: 30px; --ico: 76px; --glyph: 34px; --pr: 42px; --gap: 18px; }
   }
 </style>

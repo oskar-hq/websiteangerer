@@ -98,8 +98,8 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         </div>
       </div>
       <div data-reveal style="--d:160ms" class="flex items-center gap-2">
-        <a href={wa} target="_blank" rel="noopener" data-cursor="WhatsApp" class="lg hidden size-11 place-items-center md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={18} /></a>
-        <CallButton size="header" label="Anrufen" i={1} />
+        <a href={wa} target="_blank" rel="noopener" data-cursor="WhatsApp" class="btn hidden size-11 place-items-center md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={18} /></a>
+        <CallButton size="header" label="Anrufen" />
       </div>
     </div>
   </header>
@@ -128,7 +128,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           })}
         </div>
         <div data-intro-tile class="absolute top-0 left-0 z-[200] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-          <CallButton size="hero" pulse i={0} />
+          <CallButton size="hero" />
         </div>
       </div>
 
@@ -201,8 +201,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         ))}
       </div>
       <div class="mt-[72px] flex justify-center">
-        <button type="button" data-more-btn data-magnet="0.25" class="lg inline-flex h-14 items-center px-7 text-[16px] font-semibold tracking-[-0.015em]" style="--i:2">
-          <span class="lg-sheen" aria-hidden="true"></span>
+        <button type="button" data-more-btn data-magnet="0.25" class="btn inline-flex h-14 items-center px-7 text-[16px] font-semibold tracking-[-0.015em]" style="--i:2">
           <span data-magnet-inner class="flex items-center gap-2.5">Alle {works.length} zeigen<Icon name="arrow-down" size={16} /></span>
         </button>
       </div>
@@ -226,7 +225,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <!-- ABSCHLUSS -->
     <section id="kontakt" class="relative isolate mx-auto max-w-[1440px] px-3 pt-28 pb-28 md:px-7 md:pt-44 md:pb-10">
       <div data-reveal class="flex flex-col items-center">
-        <CallButton size="end" pulse i={1} />
+        <CallButton size="end" />
         <button type="button" data-copy data-cursor="Nummer kopieren" class="glass-chip mt-6 flex h-[34px] items-center gap-2.5 rounded-full pr-1.5 pl-4 text-[13px] font-medium tabular-nums">
           {site.phoneDisplay}<span data-copy-label class="copy-label flex h-6 items-center rounded-full bg-white/80 px-[9px] font-mono text-[10px] text-muted">KOPIEREN</span>
         </button>
@@ -253,12 +252,12 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
   <dialog id="lb" class="lb" aria-label="Arbeit ansehen">
     <div class="flex h-[92px] items-center justify-between px-3 md:px-7">
       <span data-lb-counter class="glass-chip flex h-8 items-center rounded-full px-3.5 font-mono text-[11px] tabular-nums"></span>
-      <button type="button" data-lb-close class="lg grid size-11 place-items-center" aria-label="Schließen"><Icon name="close" size={12} /></button>
+      <button type="button" data-lb-close class="btn grid size-11 place-items-center" aria-label="Schließen"><Icon name="close" size={12} /></button>
     </div>
     <div class="flex min-h-0 flex-1 items-center justify-center gap-6 px-3 md:px-7">
-      <button type="button" data-lb-step="-1" class="lg hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Vorherige"><Icon name="arrow" size={18} style="rotate:180deg" /></button>
+      <button type="button" data-lb-step="-1" class="btn hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Vorherige"><Icon name="arrow" size={18} style="rotate:180deg" /></button>
       <img data-lb-img alt="" class="lb-img" />
-      <button type="button" data-lb-step="1" class="lg hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Nächste"><Icon name="arrow" size={18} /></button>
+      <button type="button" data-lb-step="1" class="btn hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Nächste"><Icon name="arrow" size={18} /></button>
     </div>
     <div class="px-3 pt-7 pb-9 text-center md:px-7">
       <p data-lb-title class="m-0 text-[20px] font-semibold tracking-[-0.03em]"></p>

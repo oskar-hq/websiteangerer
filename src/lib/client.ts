@@ -1,6 +1,6 @@
 /**
- * Seitenverhalten der Liquid-Glass-Startseite:
- * Einblenden, Header-Zustand, Menü, 3D-Orbit, Cursor, Magnet- & Kipp-Effekte, Glas-Lichtpunkt,
+ * Seitenverhalten der Startseite:
+ * Einblenden, Header-Zustand, Menü, 3D-Orbit, Cursor, Magnet- & Kipp-Effekte,
  * Filter, Lightbox, Disziplin-Vorschau, Nummer kopieren, Detailansicht für Marken/Creator.
  */
 const root = document.documentElement;
@@ -87,24 +87,13 @@ document.addEventListener('mouseover', (e) => {
 });
 root.addEventListener('mouseleave', () => { if (cursor) cursor.style.opacity = '0'; });
 
-/* ---------- Maus & Glas-Lichtpunkt ---------- */
+/* ---------- Maus ---------- */
 const mouse = { x: innerWidth / 2, y: innerHeight / 2, nx: 0, ny: 0 };
 addEventListener('mousemove', (e) => {
   mouse.x = e.clientX; mouse.y = e.clientY;
   mouse.nx = e.clientX / innerWidth - 0.5; mouse.ny = e.clientY / innerHeight - 0.5;
   if (cursor) cursor.style.opacity = useCursor() ? '1' : '0';
 }, { passive: true });
-document.addEventListener('pointermove', (e) => {
-  const g = (e.target as HTMLElement).closest?.<HTMLElement>('.lg');
-  if (!g) return;
-  const r = g.getBoundingClientRect();
-  g.style.setProperty('--mx', `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
-  g.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
-}, { passive: true });
-document.addEventListener('pointerout', (e) => {
-  const g = (e.target as HTMLElement).closest?.<HTMLElement>('.lg');
-  if (g && !g.contains(e.relatedTarget as Node)) { g.style.removeProperty('--mx'); g.style.removeProperty('--my'); }
-});
 
 /* ---------- Drück-Feedback ---------- */
 type Animated = HTMLElement & { __pa?: Animation };

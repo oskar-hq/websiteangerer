@@ -46,8 +46,8 @@ const { clients, works } = Astro.props;
         </div>
       )}
       <div data-dlg class="mt-7 flex gap-2">
-        <CallButton size="dialog" label="Marvin dazu anrufen" i={5} class="flex-1 md:flex-none" />
-        <a href={wa} target="_blank" rel="noopener" class="lg flex h-[60px] items-center justify-center gap-2.5 px-6 text-[17px] font-semibold tracking-[-0.02em]" aria-label="WhatsApp schreiben">
+        <CallButton size="dialog" label="Marvin dazu anrufen" class="flex-1 md:flex-none" />
+        <a href={wa} target="_blank" rel="noopener" class="btn flex h-[60px] items-center justify-center gap-2.5 px-6 text-[17px] font-semibold tracking-[-0.02em]" aria-label="WhatsApp schreiben">
           <Icon name="whatsapp" size={21} /><span class="hidden md:inline">WhatsApp</span>
         </a>
       </div>
@@ -57,7 +57,7 @@ const { clients, works } = Astro.props;
 
 <dialog id="client-dialog" class="cd" aria-label="Details">
   <div class="cd-panel">
-    <button type="button" class="lg cd-close grid size-11 place-items-center" data-close aria-label="Schließen">
+    <button type="button" class="btn cd-close grid size-11 place-items-center" data-close aria-label="Schließen">
       <Icon name="close" size={12} />
     </button>
     <div class="cd-body"></div>

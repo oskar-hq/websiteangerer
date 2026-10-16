@@ -1,6 +1,6 @@
 # Website Marvin Angerer
 
-Astro + Tailwind, statisch. Eine Startseite im Liquid-Glass-Look: hellgrauer Grund, in der Mitte der gläserne Anruf-Button, drumherum kreisen
+Astro + Tailwind, statisch. Eine Startseite : hellgrauer Grund, in der Mitte der Anruf-Button mit blauem Hörer, drumherum kreisen
 Marken, Creator und Arbeiten als gekippte Squircles. Farbe kommt nur aus Logos, Fotos und Arbeiten.
 
 ## Entwickeln

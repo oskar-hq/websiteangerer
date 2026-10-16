@@ -1,0 +1,132 @@
+---
+/**
+ * Hero-Orbit: In der Mitte der Anruf als weiche, hellblaue Taste.
+ * Drumherum kreisen Marken, Creator und Arbeiten langsam als neumorphe Squircles.
+ */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { withBase, type Work } from '../lib/works';
+
+interface Props { clients: CollectionEntry<'clients'>[]; works: Work[] }
+const { clients, works } = Astro.props;
+
+type Item = { kind: 'logo' | 'face' | 'work'; c?: CollectionEntry<'clients'>; w?: Work; size: number; tilt: number };
+const by = (id: string) => clients.find((c) => c.id === id)!;
+const wk = (k: string) => works.find((w) => w.id.endsWith(k))!;
+// Reihenfolge um den Kreis: Headliner groß, dazwischen Creator und Arbeiten
+const items: Item[] = [
+  { kind: 'logo', c: by('redbull'), size: 1.15, tilt: -6 },
+  { kind: 'face', c: by('viscabarca'), size: 0.86, tilt: 5 },
+  { kind: 'logo', c: by('amd'), size: 1.1, tilt: 4 },
+  { kind: 'work', w: wk('plakat-knabe'), size: 1.0, tilt: -5 },
+  { kind: 'logo', c: by('nvidia'), size: 0.82, tilt: 7 },
+  { kind: 'logo', c: by('warnerbros'), size: 1.12, tilt: -4 },
+  { kind: 'face', c: by('anaelic'), size: 0.84, tilt: -7 },
+  { kind: 'logo', c: by('ubisoft'), size: 1.05, tilt: 6 },
+  { kind: 'work', w: wk('thumb-shaolin'), size: 0.95, tilt: 5 },
+  { kind: 'logo', c: by('twitch'), size: 0.8, tilt: -5 },
+  { kind: 'face', c: by('elotrix'), size: 0.86, tilt: 4 },
+];
+const n = items.length;
+---
+
+<div class="orbit-wrap" aria-label="Unser Netzwerk arbeitet für">
+  <div class="orbit-ring">
+    {items.map((it, i) => {
+      const wide = it.kind === 'logo' && (it.c?.data.aspect ?? 1) > 2;
+      // breite Wortmarken bekommen eine querformatige Kachel
+      const style = `--a:${(360 / n) * i - 90}deg; --s:${it.size}; --tilt:${it.tilt}deg; --d:${200 + i * 90}ms${wide ? '; --ow:1.55; --oh:0.82' : ''}`;
+      if (it.kind === 'work' && it.w) {
+        return (
+          <a href={`${withBase('arbeiten/')}`} class="orb" style={style} aria-label={`Arbeit: ${it.w.data.title}`}>
+            <span class="orb-in neu p-[7%]" data-reveal style={`--d:${200 + i * 90}ms`}>
+              <Image src={it.w.data.image} alt="" widths={[240, 400]} sizes="160px" class="h-full w-full rounded-[22%] object-cover" />
+            </span>
+          </a>
+        );
+      }
+      const c = it.c!;
+      return (
+        <button type="button" class="orb" style={style} data-client={c.id} aria-label={`${c.data.name} – Details`}>
+          <span class:list={['orb-in neu', it.kind === 'face' ? 'p-[7%]' : wide ? 'px-[14%] py-[18%]' : 'p-[18%]']} data-reveal style={`--d:${200 + i * 90}ms`}>
+            {it.kind === 'logo' && c.data.logo ? (
+              <img src={withBase(c.data.logo)} alt={c.data.name} class="h-full w-full object-contain" />
+            ) : c.data.photo ? (
+              <Image src={c.data.photo} alt={c.data.name} width={200} height={200} class="h-full w-full rounded-[22%] object-cover" />
+            ) : null}
+          </span>
+        </button>
+      );
+    })}
+  </div>
+
+  <div class="center" data-reveal style="--d:80ms">
+    <span class="me neu-in" aria-hidden="true"><span class="me-in neu-lg">MA</span></span>
+    <span class="meta mt-4 hidden text-center text-muted md:block">Marvin Angerer</span>
+  </div>
+</div>
+
+<style>
+  .orbit-wrap {
+    --rx: 138px;
+    --ry: 118px;
+    --w: 66px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  @media (min-width: 768px) {
+    .orbit-wrap { --rx: min(19vw, 270px); --ry: min(30svh, 270px); --w: 100px; }
+  }
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    animation: orbit 220s linear infinite;
+  }
+  .orbit-ring:hover, .orbit-ring:focus-within { animation-play-state: paused; }
+  .orb {
+    --t: calc(var(--a) + var(--spin));
+    --depth: calc((sin(var(--t)) + 1) / 2);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--w) * var(--s) * var(--ow, 1));
+    height: calc(var(--w) * var(--s) * var(--oh, 1));
+    translate: calc(-50% + cos(var(--t)) * var(--rx)) calc(-50% + sin(var(--t)) * var(--ry));
+    scale: calc(0.84 + 0.16 * var(--depth));
+    rotate: var(--tilt);
+    z-index: 1;
+  }
+  .orb-in {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 28%;
+    transition: box-shadow 0.7s var(--ease-out), scale 0.7s var(--ease-out), rotate 0.7s var(--ease-out), opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out);
+  }
+  .orb:hover .orb-in, .orb:focus-visible .orb-in { box-shadow: var(--neu-lg); scale: 1.06; rotate: calc(var(--tilt) * -1); }
+  .orb:active .orb-in { box-shadow: var(--neu-in); }
+
+  .center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -40%;
+    z-index: 2;
+  }
+  /* Marvin in der Mitte: eingelassene Mulde, darin eine erhabene Scheibe (Porträt-Platzhalter) */
+  .me { display: grid; place-items: center; width: 120px; height: 120px; border-radius: 34%; margin: 0 auto; }
+  .me-in {
+    display: grid; place-items: center;
+    width: 84px; height: 84px; border-radius: 30%;
+    font-size: 30px; font-weight: 500; letter-spacing: -0.04em; color: var(--fg);
+  }
+  @media (min-width: 768px) {
+    .me { width: 168px; height: 168px; }
+    .me-in { width: 118px; height: 118px; font-size: 42px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-ring { animation: none; }
+  }
+</style>

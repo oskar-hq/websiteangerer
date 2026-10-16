@@ -6,10 +6,10 @@ import { tel, wa } from '../site.config';
 
 <div class="sticky-call fixed inset-x-0 bottom-0 z-40 px-4 pt-6 pb-safe md:hidden">
   <div class="flex gap-2">
-    <a href={tel} class="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-accent text-[16px] font-semibold tracking-[-0.01em] text-on-accent transition-transform active:scale-[0.98]">
+    <a href={tel} class="btn-call flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full text-[16px] font-semibold tracking-[-0.01em]">
       <Icon name="phone" size={19} /> Marvin anrufen
     </a>
-    <a href={wa} target="_blank" rel="noopener" class="flex size-14 items-center justify-center rounded-full bg-bg text-fg shadow-[inset_0_0_0_1.5px_var(--accent)] transition-transform active:scale-[0.98]" aria-label="WhatsApp schreiben">
+    <a href={wa} target="_blank" rel="noopener" class="neu-sm neu-press flex size-14 items-center justify-center rounded-full text-[#2f8fdc]" aria-label="WhatsApp schreiben">
       <Icon name="whatsapp" size={23} />
     </a>
   </div>
@@ -17,5 +17,5 @@ import { tel, wa } from '../site.config';
 
 <style>
   /* bewusst kein Verlauf: ruhige, volle Fläche */
-  .sticky-call { background: var(--bg); box-shadow: 0 -1px 0 var(--line); padding-top: 12px; }
+  .sticky-call { background: var(--bg); padding-top: 14px; box-shadow: 0 -12px 24px -16px rgb(22 27 29 / 0.25); }
 </style>

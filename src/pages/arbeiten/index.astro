@@ -18,7 +18,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <a href={`${base}/`} class="group flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
       <Icon name="arrow" size={16} class="rotate-180 transition-transform duration-500 group-hover:-translate-x-1" /> {site.name}
     </a>
-    <a href={tel} class="hidden h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-semibold text-on-accent md:inline-flex">
+    <a href={tel} class="btn-call hidden h-11 items-center gap-2 rounded-full px-5 text-[13px] font-semibold md:inline-flex">
       <Icon name="phone" size={14} /> Anrufen
     </a>
   </header>
@@ -30,7 +30,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     </div>
 
     <div class="sticky top-0 z-20 -mx-4 mt-8 bg-bg px-4 md:mx-0 md:mt-12 md:px-0">
-      <div class="filter flex gap-1.5 overflow-x-auto py-3 [scrollbar-width:none]" role="toolbar" aria-label="Nach Disziplin filtern">
+      <div class="filter flex gap-3 overflow-x-auto px-1 py-4 [scrollbar-width:none]" role="toolbar" aria-label="Nach Disziplin filtern">
         <button type="button" data-filter="all" aria-pressed="true">Alle</button>
         {disciplines.map((d) => <button type="button" data-filter={d.id} aria-pressed="false">{d.label} <span class="tabular-nums opacity-60">{counts[d.id] ?? 0}</span></button>)}
       </div>
@@ -47,14 +47,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
 <style>
   .filter button {
     flex-shrink: 0;
-    height: 34px;
-    padding: 0 14px;
+    height: 38px;
+    padding: 0 16px;
     border-radius: 999px;
     font-size: 13px;
     color: var(--muted);
     background: var(--surface);
-    transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
+    box-shadow: var(--neu-sm);
+    transition: box-shadow 0.4s var(--ease-out), color 0.4s var(--ease-out), background-color 0.4s var(--ease-out);
   }
   .filter button:hover { color: var(--fg); }
-  .filter button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+  .filter button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); font-weight: 600; box-shadow: inset 4px 4px 9px rgb(20 90 160 / 0.35), inset -4px -4px 9px rgb(160 215 255 / 0.6); }
 </style>

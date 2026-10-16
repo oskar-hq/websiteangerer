@@ -7,13 +7,15 @@ import WorkMedia from './WorkMedia.astro';
 import { disciplineLabel, type Work } from '../lib/works';
 interface Props { work: Work; i: number; crop?: boolean; sizes?: string }
 const { work: w, i, crop = false, sizes = '(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw' } = Astro.props;
+// Dateiname als ruhige Bildunterschrift (wie ein Fenster auf dem Schreibtisch)
+const file = `${w.id.replace(/^\d+-/, '')}.${w.data.medium === 'video' ? 'mp4' : 'jpg'}`;
 ---
-<figure data-tile data-discipline={w.data.discipline} data-colorize class="work group mb-10 snap-start scroll-mt-16 break-inside-avoid md:mb-4 md:scroll-mt-0" style={`view-transition-name: w${i}`}>
-  <div class:list={['relative overflow-hidden rounded-[4px] bg-surface', crop && 'md:aspect-[4/3]']}>
+<figure data-tile data-discipline={w.data.discipline} data-colorize class="work neu group mb-8 snap-start scroll-mt-16 break-inside-avoid rounded-[26px] p-2 md:mb-6 md:scroll-mt-0" style={`view-transition-name: w${i}`}>
+  <div class:list={['relative overflow-hidden rounded-[19px] bg-[var(--surface-2)]', crop && 'md:aspect-[4/3]']}>
     <WorkMedia work={w} sizes={sizes} class:list={['media h-auto max-h-[78svh] w-full object-cover', crop ? 'md:absolute md:inset-0 md:h-full md:max-h-none' : 'md:max-h-none']} />
   </div>
-  <figcaption class="meta flex justify-between gap-4 pt-2.5 md:pb-3">
-    <span class="min-w-0 truncate"><span class="text-fg">{w.data.title}</span> <span class="text-muted">· {w.data.client}</span></span>
+  <figcaption class="meta flex justify-between gap-4 px-2.5 pb-1.5 pt-3">
+    <span class="min-w-0 truncate"><span class="text-fg">{file}</span> <span class="text-muted">· {w.data.client}</span></span>
     <span class="shrink-0 text-muted">{disciplineLabel(w.data.discipline)}</span>
   </figcaption>
 </figure>
@@ -21,6 +23,10 @@ const { work: w, i, crop = false, sizes = '(min-width: 1024px) 30vw, (min-width:
   .work :global(.media) {
     filter: grayscale(1) contrast(0.92) brightness(1.04);
     transition: filter 1.2s var(--ease-out), transform 1.4s var(--ease-out);
+  }
+  .work { transition: box-shadow 0.7s var(--ease-out), opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out); }
+  @media (hover: hover) { .work:hover { box-shadow: var(--neu-lg); } }
+  .work :global(.media) {
   }
   .work.is-color :global(.media) { filter: none; }
   @media (hover: hover) and (pointer: fine) {

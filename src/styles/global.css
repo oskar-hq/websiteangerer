@@ -17,18 +17,42 @@
 }
 
 :root {
-  --bg: #fafaf7;
-  --surface: #f2f2ee;
-  --fg: #182230;
-  --muted: #7b818c;
-  --line: #e6e6e1;
+  /* Neumorphism: Flächen = Grundfarbe, Tiefe nur über Licht (#FAFBFF) und Schatten (#161B1D) */
+  --bg: #eef1f7;
+  --surface: #eef1f7;
+  --surface-2: #e4ebf1;
+  --fg: #1e2833;
+  --muted: #7d8994;
+  --soft: #b5bfc6;
+  --line: #dde3ea;
   --accent: #5bb8ff;
   --on-accent: #0e1a2b;
+  --light: rgb(250 251 255 / 1);
+  --dark: rgb(22 27 29 / 0.16);
+  --neu-sm: -5px -5px 10px var(--light), 5px 5px 10px var(--dark);
+  --neu: -10px -10px 20px var(--light), 10px 10px 20px var(--dark);
+  --neu-lg: -20px -20px 40px var(--light), 20px 20px 40px rgb(22 27 29 / 0.2);
+  --neu-in: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);
+  --neu-accent: -10px -10px 22px var(--light), 12px 12px 26px rgb(30 110 190 / 0.32), inset 0 0 0 0 transparent;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
-  /* Abschnitts-Rhythmus: mind. 80px Mobile, 120px Desktop */
   --section: clamp(96px, 12vw, 176px);
 }
+
+/* Neumorphe Bausteine */
+.neu { background: var(--surface); box-shadow: var(--neu); }
+.neu-sm { background: var(--surface); box-shadow: var(--neu-sm); }
+.neu-lg { background: var(--surface); box-shadow: var(--neu-lg); }
+.neu-in { background: var(--surface); box-shadow: var(--neu-in); }
+.neu-press { transition: box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+.neu-press:active { box-shadow: var(--neu-in); transform: scale(0.99); }
+.btn-call {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--neu-accent);
+  transition: box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+.btn-call:active { box-shadow: inset 5px 5px 12px rgb(20 90 160 / 0.4), inset -5px -5px 12px rgb(160 215 255 / 0.6); transform: scale(0.99); }
 
 @layer base {
   html {
@@ -62,7 +86,7 @@
 
 /* Große Headlines: eng gesetzt */
 .display {
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.055em;
   line-height: 0.92;
 }
@@ -100,6 +124,16 @@ html.js [data-reveal].is-in {
   html {
     scroll-snap-type: y proximity;
   }
+}
+
+/* Orbit-Drehung (Hero) */
+@property --spin {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+@keyframes orbit {
+  to { --spin: 360deg; }
 }
 
 ::view-transition-group(*) {

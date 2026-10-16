@@ -38,17 +38,17 @@ const { clients, works } = Astro.props;
         ))}
       </dl>
       {ws.length > 0 && (
-        <div class="-mx-5 mt-8 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:px-0">
+        <div class="-mx-5 mt-8 flex gap-4 overflow-x-auto px-5 py-3 [scrollbar-width:none] md:mx-0 md:px-0">
           {ws.map((w) => (
-            <Image src={w.data.image} alt={`${w.data.kind}: ${w.data.title}`} widths={[480, 800]} sizes="320px" class="h-40 w-auto shrink-0 rounded-[4px] bg-surface object-cover md:h-44" />
+            <Image src={w.data.image} alt={`${w.data.kind}: ${w.data.title}`} widths={[480, 800]} sizes="320px" class="h-40 w-auto shrink-0 rounded-[18px] object-cover shadow-[var(--neu-sm)] md:h-44" />
           ))}
         </div>
       )}
       <div class="mt-8 flex gap-2 md:mt-10">
-        <a href={tel} class="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-accent text-[16px] font-semibold text-on-accent md:flex-none md:px-8">
+        <a href={tel} class="btn-call flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full text-[16px] font-semibold md:flex-none md:px-8">
           <Icon name="phone" size={18} /> Marvin dazu anrufen
         </a>
-        <a href={wa} target="_blank" rel="noopener" class="flex h-14 items-center justify-center gap-2.5 rounded-full px-5 text-[16px] font-medium shadow-[inset_0_0_0_1.5px_var(--accent)] md:px-7" aria-label="WhatsApp schreiben">
+        <a href={wa} target="_blank" rel="noopener" class="neu-sm neu-press flex h-14 items-center justify-center gap-2.5 rounded-full px-5 text-[16px] font-medium text-[#2f8fdc] md:px-7" aria-label="WhatsApp schreiben">
           <Icon name="whatsapp" size={21} /><span class="hidden md:inline">WhatsApp</span>
         </a>
       </div>
@@ -80,7 +80,7 @@ const { clients, works } = Astro.props;
     overflow: visible;
   }
   .cd::backdrop {
-    background: rgb(24 34 48 / 0.42);
+    background: rgb(30 40 51 / 0.28);
     opacity: 0;
     transition: opacity 0.5s var(--ease-out);
   }
@@ -88,7 +88,8 @@ const { clients, works } = Astro.props;
   .cd-panel {
     position: relative;
     background: var(--bg);
-    border-radius: 18px 18px 0 0;
+    border-radius: 32px 32px 0 0;
+    box-shadow: var(--neu-lg);
     max-height: 90svh;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -103,14 +104,15 @@ const { clients, works } = Astro.props;
     width: 40px; height: 40px; border-radius: 999px;
     display: grid; place-items: center;
     background: var(--surface); color: var(--fg);
-    transition: background-color 0.3s;
+    box-shadow: var(--neu-sm);
+    transition: box-shadow 0.4s var(--ease-out);
   }
-  .cd-close:hover { background: #ebebe6; }
+  .cd-close:active { box-shadow: var(--neu-in); }
   @media (min-width: 768px) {
     .cd { --dl: 84px; width: min(880px, calc(100vw - 80px)); margin: auto; }
     .cd-panel {
-      border-radius: 10px;
-      padding: 48px 48px 44px;
+      border-radius: 36px;
+      padding: 52px 52px 48px;
       max-height: calc(100svh - 80px);
       transform: translate3d(0, 16px, 0);
       opacity: 0;

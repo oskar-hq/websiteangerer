@@ -1,0 +1,49 @@
+---
+/** Werkzeug zum Vergleichen der Entwürfe – gehört nicht zum Design. */
+interface Props { current: 'v1' | 'v2' | 'v3' | 'hub' }
+const { current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const items = [
+  { id: 'v1', label: 'V1', name: 'Ruhe' },
+  { id: 'v2', label: 'V2', name: 'Nacht' },
+  { id: 'v3', label: 'V3', name: 'Index' },
+];
+---
+
+<nav
+  aria-label="Entwurf wechseln"
+  class="vs fixed right-3 top-3 z-[60] flex items-center gap-0.5 rounded-full p-1 md:bottom-5 md:left-5 md:right-auto md:top-auto"
+>
+  <a href={`${base}/`} class:list={['vs-item', current === 'hub' && 'is-on']} title="Übersicht aller Entwürfe">
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M0 0h5v5H0zM7 0h5v5H7zM0 7h5v5H0zM7 7h5v5H7z"/></svg>
+    <span class="sr-only">Übersicht</span>
+  </a>
+  {items.map((i) => (
+    <a href={`${base}/${i.id}/`} class:list={['vs-item', current === i.id && 'is-on']} aria-current={current === i.id ? 'page' : undefined}>
+      {i.label}<span class="hidden md:inline"> {i.name}</span>
+    </a>
+  ))}
+</nav>
+
+<style>
+  .vs {
+    background: rgb(11 20 38 / 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 8px 24px rgb(0 0 0 / 0.18);
+    font-family: 'Geist Mono Variable', ui-monospace, monospace;
+    font-size: 11px;
+  }
+  .vs-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    color: rgb(246 245 241 / 0.62);
+    transition: color 0.2s, background 0.2s;
+  }
+  .vs-item:hover { color: #f6f5f1; }
+  .vs-item.is-on { background: #f6f5f1; color: #0b1426; }
+</style>

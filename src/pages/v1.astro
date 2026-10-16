@@ -1,0 +1,231 @@
+---
+/**
+ * V1 „Ruhe“ – Trade-Republic-Gefühl: Off-White, große Typo, sehr wenig Farbe.
+ */
+import Base from '../layouts/Base.astro';
+import WorkMedia from '../components/WorkMedia.astro';
+import StickyCall from '../components/StickyCall.astro';
+import LogoMark from '../components/LogoMark.astro';
+import Icon from '../components/Icon.astro';
+import { site, tel, wa, disciplines } from '../site.config';
+import { getWorks, disciplineLabel, countBy } from '../lib/works';
+
+const works = await getWorks();
+const counts = countBy(works);
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base theme="v1" current="v1" title={`${site.name} – V1 Ruhe`}>
+  <!-- Header: Desktop sticky & verdichtet nach dem Hero -->
+  <header class="v1-head absolute inset-x-0 top-0 z-40 md:fixed">
+    <div class="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 md:h-20 md:px-10">
+      <a href="#top" class="flex items-baseline gap-1 text-[17px] font-semibold tracking-[-0.03em] md:text-[19px]">
+        {site.name}<span class="inline-block size-[7px] translate-y-[-1px] rounded-full bg-accent"></span>
+      </a>
+      <nav class="hidden items-center gap-8 text-[14px] text-muted md:flex">
+        <a href="#wand" class="transition-colors hover:text-fg">Arbeiten</a>
+        <a href="#disziplinen" class="transition-colors hover:text-fg">Disziplinen</a>
+        <a href={tel} class="v1-head-cta inline-flex h-10 items-center gap-2 rounded-full bg-fg px-5 text-[14px] font-medium text-bg transition-[background,color] hover:bg-accent hover:text-on-accent">
+          <Icon name="phone" size={15} /> {site.phoneDisplay}
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="pb-24 md:pb-0">
+    <!-- 1 · HERO / Visitenkarte -->
+    <section data-hero class="relative flex min-h-svh flex-col pb-[84px] md:pb-0">
+      <div class="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-end px-4 pb-6 pt-24 md:px-10 md:pb-8 md:pt-24">
+        <p class="label mb-6 text-muted md:mb-10" data-reveal>Vertrieb · Netzwerk · Deutschland</p>
+        <h1 class="display text-[clamp(3.25rem,15vw,4.5rem)] md:text-[min(10vw,16svh)]">
+          <span class="block" data-reveal style="--d:60ms">Ein Name.</span>
+          <span class="block" data-reveal style="--d:160ms">Ein Anruf.</span>
+        </h1>
+
+        <div class="mt-6 grid gap-8 md:mt-10 md:grid-cols-12 md:items-end">
+          <p class="display text-[clamp(1.6rem,7vw,2rem)] font-medium leading-[1.04] tracking-[-0.04em] text-muted md:col-span-7 md:text-[clamp(2.25rem,3.6vw,3.5rem)]" data-reveal style="--d:280ms">
+            Das Beste, was <span class="text-fg">Deutschland</span> zu bieten hat.
+          </p>
+          <div class="hidden gap-3 md:col-span-5 md:flex md:justify-end" data-reveal style="--d:380ms">
+            <a href={tel} class="inline-flex h-14 items-center gap-3 rounded-full bg-accent pl-6 pr-7 text-[16px] font-semibold text-on-accent transition-transform hover:-translate-y-0.5">
+              <Icon name="phone" size={18} /> Anrufen
+            </a>
+            <a href={wa} target="_blank" rel="noopener" class="inline-flex h-14 items-center gap-3 rounded-full border border-fg/15 px-6 text-[16px] font-medium transition-colors hover:border-fg">
+              <Icon name="whatsapp" size={19} /> WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo-Leiste -->
+      <div class="border-t border-line" data-reveal style="--d:480ms">
+        <div class="mx-auto flex max-w-[1440px] items-center gap-6 py-5 md:px-10 md:py-7">
+          <span class="label hidden shrink-0 text-muted md:block">Kunden &amp; Creator<br /><span class="opacity-60">Platzhalter</span></span>
+          <div class="relative flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] md:[mask-image:none]">
+            <div class="marquee md:!animate-none md:!w-full md:justify-between">
+              {[0, 1].map((dup) => (
+                <ul class:list={['flex shrink-0 items-center gap-10 pr-10 text-[17px] text-fg/45 md:gap-0 md:pr-0 md:w-full md:justify-between md:text-[19px]', dup === 1 && 'md:hidden']} aria-hidden={dup === 1 ? 'true' : undefined}>
+                  {site.logos.map((l, i) => <li><LogoMark name={l} i={i} /></li>)}
+                </ul>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · DIE WAND -->
+    <section id="wand" class="scroll-mt-0 md:scroll-mt-20" data-wall data-active="all">
+      <div class="mx-auto max-w-[1440px] px-4 pt-20 md:px-10 md:pt-40">
+        <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div data-reveal>
+            <p class="label mb-4 text-muted">Die Wand — <span data-count>{pad(works.length)}</span> Arbeiten</p>
+            <h2 class="display text-[clamp(2.4rem,11vw,3rem)] md:text-[clamp(3.5rem,5.6vw,5.5rem)]">Arbeiten aus<br />dem Netzwerk.</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter: Mobile sticky Chip-Leiste, Desktop Text-Tabs -->
+      <div class="sticky top-0 z-30 mt-8 bg-bg/88 backdrop-blur-md md:static md:mt-14 md:bg-transparent md:backdrop-blur-none">
+        <div class="mx-auto max-w-[1440px] md:px-10">
+          <div class="v1-filter flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] md:gap-8 md:overflow-visible md:border-b md:border-line md:px-0 md:py-0" role="toolbar" aria-label="Nach Disziplin filtern">
+            <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+            {disciplines.map((d) => (
+              <button type="button" data-filter={d.id} aria-pressed="false">{d.label}<sup class="ml-1 hidden text-[10px] text-muted md:inline">{counts[d.id] ?? 0}</sup></button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="mx-auto max-w-[1440px] md:px-10 md:pt-12">
+        <div class="v1-wall md:columns-2 md:gap-6 lg:columns-3 lg:gap-8">
+          {works.map((w, i) => (
+            <figure
+              data-tile
+              data-discipline={w.data.discipline}
+              class="v1-tile group mb-12 snap-start scroll-mt-16 break-inside-avoid md:mb-8 md:scroll-mt-0 lg:mb-10"
+              style={`view-transition-name: w${i}`}
+            >
+              <div class="relative overflow-hidden bg-surface md:rounded-[10px]">
+                <WorkMedia
+                  work={w}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw"
+                  class="h-auto max-h-[80svh] w-full object-cover transition-transform duration-[1.2s] ease-[var(--ease-out)] md:max-h-none md:group-hover:scale-[1.025]"
+                />
+                <div class="pointer-events-none absolute left-3 top-3 flex gap-1.5">
+                  {w.data.placeholder && <span class="ph-badge">Platzhalter</span>}
+                  {w.data.medium === 'video' && <span class="ph-badge v1-play">▶ Video</span>}
+                </div>
+              </div>
+              <figcaption class="flex items-start justify-between gap-4 px-4 pt-3.5 md:px-0.5 md:pt-3">
+                <span class="min-w-0">
+                  <span class="block truncate text-[15px] font-medium tracking-[-0.01em]">{w.data.title}</span>
+                  <span class="block truncate text-[14px] text-muted">{w.data.client}</span>
+                </span>
+                <span class="label shrink-0 pt-0.5 text-right text-muted">
+                  {disciplineLabel(w.data.discipline)}<br /><span class="opacity-60">{w.data.kind}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · DISZIPLINEN -->
+    <section id="disziplinen" class="mx-auto max-w-[1440px] px-4 pt-24 md:px-10 md:pt-44">
+      <p class="label mb-8 text-muted md:mb-12" data-reveal>Disziplinen</p>
+      <ul class="border-t border-line">
+        {disciplines.map((d, i) => (
+          <li class="border-b border-line" data-reveal style={`--d:${i * 70}ms`}>
+            <a href="#wand" data-filter={d.id} class="v1-disc group grid grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-3 py-6 md:grid-cols-[4rem_minmax(0,1.1fr)_minmax(0,1fr)_8rem] md:py-9">
+              <span class="label text-muted">{pad(i + 1)}</span>
+              <span class="display text-[2.25rem] transition-transform duration-500 ease-[var(--ease-out)] group-hover:translate-x-2 md:text-[clamp(3rem,5vw,4.75rem)]">{d.label}</span>
+              <span class="label col-start-2 mt-2 text-[13px] text-muted md:col-start-auto md:mt-0 md:font-body md:text-[16px] md:tracking-normal">{d.line}</span>
+              <span class="row-start-1 col-start-3 flex items-center justify-end gap-2 text-[13px] text-muted md:row-auto md:col-auto">
+                <span class="label">{pad(counts[d.id] ?? 0)}</span>
+                <Icon name="arrow" size={18} class="transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-accent-ink" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 4 · ABSCHLUSS -->
+    <section class="mx-auto max-w-[1440px] px-4 pb-10 pt-28 md:px-10 md:pb-12 md:pt-52">
+      <div class="grid gap-10 md:grid-cols-12 md:items-end">
+        <div class="md:col-span-8">
+          <p class="label mb-6 text-muted" data-reveal>Ein Netzwerk. Ein Ansprechpartner.</p>
+          <h2 class="display text-[clamp(3.25rem,15vw,4.5rem)] md:text-[clamp(5rem,9vw,9rem)]" data-reveal style="--d:80ms">Ein Anruf.</h2>
+          <a href={tel} class="mt-6 inline-block text-[clamp(1.5rem,7vw,2rem)] font-medium tracking-[-0.03em] text-muted transition-colors hover:text-accent-ink md:mt-8 md:text-[clamp(2rem,3.2vw,3rem)]" data-reveal style="--d:160ms">
+            {site.phoneDisplay}
+          </a>
+        </div>
+        <div class="flex flex-col gap-3 md:col-span-4 md:items-end" data-reveal style="--d:240ms">
+          <a href={tel} class="inline-flex h-14 items-center justify-center gap-3 rounded-full bg-accent px-8 text-[16px] font-semibold text-on-accent transition-transform hover:-translate-y-0.5 md:w-64">
+            <Icon name="phone" size={18} /> Anrufen
+          </a>
+          <a href={wa} target="_blank" rel="noopener" class="inline-flex h-14 items-center justify-center gap-3 rounded-full border border-fg/15 px-8 text-[16px] font-medium transition-colors hover:border-fg md:w-64">
+            <Icon name="whatsapp" size={19} /> WhatsApp schreiben
+          </a>
+        </div>
+      </div>
+      <footer class="label mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-muted md:mt-40">
+        <span>© 2026 {site.name}</span>
+        <span class="flex gap-6"><a href="#" class="hover:text-fg">Impressum</a><a href="#" class="hover:text-fg">Datenschutz</a></span>
+      </footer>
+    </section>
+  </main>
+
+  <StickyCall variant="light" />
+</Base>
+
+<style>
+  .v1-head { transition: background 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out); }
+  :global(html[data-after-hero]) .v1-head {
+    @media (min-width: 768px) {
+      background: rgb(246 245 241 / 0.82);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 var(--line);
+    }
+  }
+  .v1-filter button {
+    flex-shrink: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--muted);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+  .v1-filter button[aria-pressed='true'] { background: var(--fg); color: var(--bg); box-shadow: none; }
+  @media (min-width: 768px) {
+    .v1-filter button {
+      height: auto;
+      padding: 0 0 16px;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      font-size: 15px;
+      position: relative;
+    }
+    .v1-filter button:hover { color: var(--fg); }
+    .v1-filter button[aria-pressed='true'] { background: none; color: var(--fg); }
+    .v1-filter button::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.45s var(--ease-out);
+    }
+    .v1-filter button[aria-pressed='true']::after { transform: scaleX(1); }
+  }
+  .v1-tile .v1-play { transition: opacity 0.3s; }
+  @media (hover: hover) { .v1-tile:hover .v1-play { opacity: 0; } }
+</style>

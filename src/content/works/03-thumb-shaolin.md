@@ -1,0 +1,11 @@
+---
+title: "1 Tag Shaolin Training"
+client: "Creator-Kanal (Platzhalter)"
+discipline: design
+medium: image
+kind: "Thumbnail"
+image: "../../assets/works/thumb-g3-21.jpg"
+order: 30
+placeholder: true
+featured: false
+---

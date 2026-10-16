@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+import VersionSwitch from '../components/VersionSwitch.astro';
+import { site } from '../site.config';
+
+interface Props {
+  theme: 'v1' | 'v2' | 'v3' | 'hub';
+  title?: string;
+  current?: 'v1' | 'v2' | 'v3' | 'hub';
+}
+const { theme, title = `${site.name} – Netzwerk`, current = theme } = Astro.props;
+const themeColor = { v1: '#F6F5F1', v2: '#070E1C', v3: '#FFFFFF', hub: '#0B1426' }[theme];
+---
+
+<!doctype html>
+<html lang="de" class={`theme-${theme}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content={themeColor} />
+    <meta name="description" content={site.claim} />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <link rel="icon" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body class="min-h-svh bg-bg text-fg">
+    <slot />
+    <VersionSwitch current={current} />
+    <script>
+      import '../lib/client.ts';
+    </script>
+  </body>
+</html>

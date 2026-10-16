@@ -1,0 +1,83 @@
+---
+/** Übersicht: alle Entwürfe zum Vergleichen. */
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../site.config';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const versions = [
+  {
+    id: 'v1',
+    name: 'Ruhe',
+    line: 'Trade-Republic-Gefühl. Off-White, riesige Typo, fast keine Farbe. Hellblau nur am Anruf.',
+    font: 'Geist + Geist Mono',
+    colors: ['#F6F5F1', '#0B1426', '#5BB8FF'],
+  },
+  {
+    id: 'v2',
+    name: 'Nacht',
+    line: 'Sehr dunkles Blau, der Name als Marke. Die Arbeiten laufen im Hero und leuchten beim Hover.',
+    font: 'Bricolage Grotesque + Inter',
+    colors: ['#070E1C', '#EEF1F6', '#5BB8FF'],
+  },
+  {
+    id: 'v3',
+    name: 'Index',
+    line: 'Redaktionell. Haarlinien, Nummern, Serif-Italic als Akzent. Die Wand als ruhiges Kontaktbogen-Raster.',
+    font: 'Instrument Sans + Instrument Serif',
+    colors: ['#FFFFFF', '#0B1426', '#0A6FD1'],
+  },
+];
+---
+
+<Base theme="hub" current="hub" title={`Entwürfe – ${site.name}`}>
+  <main class="mx-auto max-w-[1440px] px-4 pb-24 pt-20 md:px-10 md:pt-28">
+    <p class="label mb-6 text-muted">Website {site.name} · Designentwürfe · Stand 10/2026</p>
+    <h1 class="display max-w-4xl text-[clamp(2.6rem,10vw,6rem)]">Drei Richtungen.<br /><span class="text-muted">Eine wählen.</span></h1>
+    <p class="mt-6 max-w-xl text-[16px] text-muted">
+      Alle drei Entwürfe nutzen dieselben Inhalte: Hero als Visitenkarte, die Wand, Disziplinen, Abschluss mit Anruf.
+      Unten links (Desktop) bzw. oben rechts (Mobile) kannst du jederzeit zwischen den Versionen wechseln.
+      Alle Bilder, Logos, Kunden und Nummern sind <span class="text-fg">Platzhalter</span>.
+    </p>
+
+    <ul class="mt-14 grid gap-10 md:mt-20 lg:grid-cols-3 lg:gap-8">
+      {versions.map((v) => (
+        <li>
+          <a href={`${base}/${v.id}/`} class="hub-card group block">
+            <div class="hub-frame relative aspect-[16/10] overflow-hidden rounded-[12px] bg-surface shadow-[0_0_0_1px_var(--line)]">
+              <iframe src={`${base}/${v.id}/`} title={`Vorschau ${v.name}`} loading="lazy" tabindex="-1" aria-hidden="true" class="pointer-events-none absolute left-0 top-0 h-[900px] w-[1440px] origin-top-left border-0"></iframe>
+            </div>
+            <div class="mt-5 flex items-baseline justify-between gap-4">
+              <h2 class="text-[22px] font-semibold tracking-[-0.03em]"><span class="label mr-2 align-middle text-muted">{v.id.toUpperCase()}</span>{v.name}</h2>
+              <span class="flex items-center gap-1.5 text-[14px] text-muted transition-colors group-hover:text-accent">Ansehen <Icon name="arrow" size={16} /></span>
+            </div>
+            <p class="mt-2 text-[15px] text-muted">{v.line}</p>
+            <div class="label mt-4 flex items-center gap-3 text-muted">
+              <span class="flex gap-1">{v.colors.map((c) => <span class="size-3.5 rounded-full shadow-[0_0_0_1px_rgb(255_255_255/0.15)]" style={`background:${c}`} />)}</span>
+              {v.font}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-24 border-t border-line pt-6 text-[14px] text-muted">
+      <p class="max-w-xl"><span class="text-fg">Feedback-Tipp:</span> Mix ist ausdrücklich erlaubt, z. B. „Hero aus V2, Wand aus V3, Typo aus V1“. Am besten Mobile und Desktop getrennt beurteilen.</p>
+    </div>
+  </main>
+</Base>
+
+<script>
+  const fit = () =>
+    document.querySelectorAll<HTMLElement>('.hub-frame').forEach((f) => {
+      const ifr = f.querySelector('iframe');
+      if (ifr) ifr.style.transform = `scale(${f.clientWidth / 1440})`;
+    });
+  fit();
+  window.addEventListener('resize', fit);
+</script>
+
+<style>
+  .hub-card .hub-frame { transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
+  .hub-card:hover .hub-frame { transform: translateY(-4px); box-shadow: 0 0 0 1px #5bb8ff88, 0 30px 60px -30px rgb(91 184 255 / 0.4); }
+</style>

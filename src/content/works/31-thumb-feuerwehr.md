@@ -1,0 +1,11 @@
+---
+title: "Feuerwehr für einen Tag"
+client: "Creator-Kanal (Platzhalter)"
+discipline: design
+medium: image
+kind: "Thumbnail"
+image: "../../assets/works/thumb-g2-01.jpg"
+order: 310
+placeholder: true
+featured: false
+---

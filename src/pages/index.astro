@@ -1,152 +1,222 @@
 ---
 /**
- * Startseite – nach der Orbit-Referenz („Your catalog, instantly re-shot“).
- * Reines Weiß, gekippte Bild-Squircles im Kreis um eine zentrale Kachel,
- * Headline unten links mit grauer zweiter Zeile, schwarze Menü-Pille, Begriffs-Liste am rechten Rand.
+ * Startseite – Liquid Glass.
+ * Heller Grund mit treibenden Lichtflecken, Glas-Header, 3D-Orbit aus Marken, Creatorn und Arbeiten
+ * um den zentralen Anruf-Button. Darunter Netzwerk, filterbare Arbeiten mit Lightbox, Disziplinen, Abschluss.
+ * Verhalten: src/lib/client.ts
  */
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ClientDialog from '../components/ClientDialog.astro';
 import StickyCall from '../components/StickyCall.astro';
+import CallButton from '../components/CallButton.astro';
 import Icon from '../components/Icon.astro';
-import { site, tel, wa, disciplines } from '../site.config';
-import { getWorks, pick, withBase, disciplineLabel } from '../lib/works';
+import { site, wa, disciplines } from '../site.config';
+import { getWorks, pick, withBase, disciplineLabel, countBy } from '../lib/works';
 
 const works = await getWorks();
 const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
 const w = (k: string) => pick(works, k);
 const cl = (id: string) => clients.find((c) => c.id === id)!;
+const counts = countBy(works);
+const pad2 = (n: number) => String(n).padStart(2, '0');
 
-// Orbit: Arbeiten, Creator und Marken im Wechsel – Größe, Neigung, Deckkraft wie in der Referenz
-type O = { img?: ImageMetadata; logo?: string; client?: string; s: number; r: number; o?: number; gray?: boolean };
+// Orbit: Arbeiten, Creator und Marken im Wechsel – Größe (s), Neigung (r), Deckkraft (o)
+type O = { img?: ImageMetadata; logo?: string; client?: string; s: number; r: number; o?: number };
 const orbit: O[] = [
   { img: w('mgmt-cosplay').data.image, s: 0.62, r: -8, o: 0.35 },
   { logo: 'logos/redbull.svg', client: 'redbull', s: 1.0, r: 10 },
   { img: w('thumb-shaolin').data.image, s: 1.05, r: -6 },
   { img: cl('viscabarca').data.photo, client: 'viscabarca', s: 0.95, r: 12 },
   { logo: 'logos/amd.svg', client: 'amd', s: 0.95, r: -4 },
-  { img: w('plakat-knabe').data.image, s: 1.08, r: 6, gray: true },
+  { img: w('plakat-knabe').data.image, s: 1.08, r: 6 },
   { img: cl('anaelic').data.photo, client: 'anaelic', s: 0.9, r: -10 },
   { logo: 'logos/ubisoft.svg', client: 'ubisoft', s: 0.85, r: 8 },
-  { img: w('thumb-monster').data.image, s: 1.0, r: -12, gray: true },
+  { img: w('thumb-monster').data.image, s: 1.0, r: -12 },
   { logo: 'logos/warnerbros-games.png', client: 'warnerbros', s: 1.0, r: 4 },
   { img: cl('elotrix').data.photo, client: 'elotrix', s: 0.9, r: -6 },
 ];
 const n = orbit.length;
 const shown = 12;
+
+// Daten für Lightbox & Disziplin-Vorschau
+const workData = await Promise.all(
+  works.map(async (wk) => ({
+    title: wk.data.title,
+    discipline: wk.data.discipline,
+    meta: `${wk.data.kind} · ${wk.data.client} · ${disciplineLabel(wk.data.discipline)}`,
+    full: (await getImage({ src: wk.data.image, width: Math.min(1400, wk.data.image.width), format: 'webp' })).src,
+    small: (await getImage({ src: wk.data.image, width: Math.min(480, wk.data.image.width), format: 'webp' })).src,
+  })),
+);
+
+const menu = [
+  { label: 'Netzwerk', href: '#netzwerk', count: pad2(clients.length) },
+  { label: 'Arbeiten', href: '#arbeiten', count: pad2(works.length) },
+  { label: 'Disziplinen', href: '#disziplinen', count: pad2(disciplines.length) },
+  { label: 'Kontakt', href: '#kontakt', count: '→' },
+];
+const filters = [{ id: 'all', label: 'Alle', n: works.length }, ...disciplines.map((d) => ({ id: d.id, label: d.label, n: counts[d.id] ?? 0 }))];
+const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracking-[-0.05em] md:text-[min(5.2vw,4.6rem)]';
 ---
 
 <Base>
-  <header class="fixed inset-x-0 top-0 z-30">
-    <div class="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 md:h-[92px] md:px-7">
-      <a href="#top" class="mark" aria-label={site.name}>
-        <span class="grid grid-cols-3 gap-[2px]">
-          {[1,0,1, 1,1,0, 1,0,1].map((v) => <span class:list={['size-[8px] rounded-[1px]', v ? 'bg-black' : 'bg-transparent']}></span>)}
-        </span>
-        <span class="ml-2 hidden text-[13px] font-semibold tracking-[-0.02em] md:inline">{site.name}<sup class="ml-0.5 text-[8px]">®</sup></span>
-      </a>
-      <nav class="hidden h-10 items-center gap-1 rounded-full bg-black p-1 pl-4 text-[14px] text-white md:flex">
-        <a href="#netzwerk" class="flex items-center gap-2 pr-3"><span class="flex flex-col gap-[3px]"><span class="block h-px w-4 bg-white"></span><span class="block h-px w-4 bg-white"></span></span> Menü</a>
-        <a href={tel} class="grid size-8 place-items-center rounded-full bg-[#2a2a2a] transition-colors hover:bg-[#3a3a3a]" aria-label="Anrufen"><Icon name="phone" size={15} /></a>
-        <a href="#netzwerk" class="rounded-full bg-[#2a2a2a] px-3 py-1.5 text-[13px] tabular-nums">{clients.length} Marken</a>
-      </nav>
-      <div class="flex items-center gap-2">
-        <a href={wa} target="_blank" rel="noopener" class="hidden size-9 place-items-center rounded-full shadow-[0_0_0_1px_#e3e3e3] transition-colors hover:bg-[#f4f4f4] md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={16} /></a>
-        <a href={tel} class="inline-flex h-10 items-center rounded-full bg-black px-5 text-[14px] font-medium text-white md:h-11 md:px-6 md:text-[15px]">Anrufen</a>
+  <!-- Treibende Lichtflecken -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <span data-blob class="blob left-[-8%] top-[-12%] size-[56vw] max-h-[760px] max-w-[760px] [--c:#fff]"></span>
+    <span data-blob class="blob right-[-12%] top-[-6%] size-[60vw] max-h-[820px] max-w-[820px] [--c:#dcdce0]"></span>
+    <span data-blob class="blob left-[30%] top-[45%] size-[50vw] max-h-[680px] max-w-[680px] [--c:#fff]"></span>
+    <span data-blob class="blob bottom-[-18%] left-[-14%] size-[52vw] max-h-[700px] max-w-[700px] [--c:#e0e0e4]"></span>
+  </div>
+
+  <!-- Eigener Cursor (nur Desktop mit Maus) -->
+  <div data-cursor-el aria-hidden="true" class="cursor">
+    <span data-cdot class="cursor-dot"></span>
+    <span data-clabel class="cursor-label"></span>
+  </div>
+
+  <header class="hdr fixed inset-x-0 top-0 z-[1000]">
+    <div class="hdr-bar mx-auto flex h-[60px] max-w-[1384px] items-center justify-between rounded-full pr-2 pl-[22px]">
+      <a href="#top" data-reveal class="text-[16px] font-semibold tracking-[-0.03em]" aria-label={site.name}>{site.name}</a>
+      <div data-reveal style="--d:80ms" class="relative hidden md:flex">
+        <nav class="nav flex h-11 items-center gap-1 rounded-full p-1 text-[14px]">
+          <button type="button" data-menu-btn aria-expanded="false" class="flex h-9 items-center gap-2.5 rounded-full pr-4 pl-3.5 font-medium transition-colors duration-300 hover:bg-white/70">
+            <span class="burger" aria-hidden="true"><span></span><span></span></span>
+            <span data-menu-label>Menü</span>
+          </button>
+          <a href="#netzwerk" class="nav-count flex h-9 items-center rounded-full px-3.5 text-[13px] font-medium tabular-nums">{clients.length} Marken</a>
+        </nav>
+        <div data-menu class="menu">
+          {menu.map((m) => (
+            <a href={m.href} data-menu-link class="flex items-baseline justify-between rounded-[20px] px-4 py-3.5 transition-colors duration-300 hover:bg-white/85">
+              <span class="text-[22px] font-semibold tracking-[-0.035em]">{m.label}</span>
+              <span class="font-mono text-[11px] text-muted">{m.count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+      <div data-reveal style="--d:160ms" class="flex items-center gap-2">
+        <a href={wa} target="_blank" rel="noopener" data-cursor="WhatsApp" class="lg hidden size-11 place-items-center md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={18} /></a>
+        <CallButton size="header" label="Anrufen" i={1} />
       </div>
     </div>
   </header>
 
-  <main id="top">
+  <main id="top" class="relative z-[1]">
     <!-- HERO -->
-    <section class="hero relative mx-auto h-svh min-h-[680px] max-w-[1440px] overflow-hidden px-4 md:min-h-[760px] md:px-7" data-hero>
-      <div class="orbit" aria-label="Unser Netzwerk arbeitet für">
-        <div class="ring">
+    <section class="relative isolate mx-auto h-svh min-h-[680px] max-w-[1440px] overflow-hidden px-3 md:min-h-[760px] md:px-7" data-hero>
+      <div data-stage class="stage">
+        <div data-ring class="absolute inset-0" aria-label="Unser Netzwerk arbeitet für">
           {orbit.map((o, i) => {
-            const style = `--a:${(360 / n) * i - 100}deg; --s:${o.s}; --r:${o.r}deg; --o:${o.o ?? 1}`;
-            const inner = o.logo ? (
-              <span class="sq logo"><img src={withBase(o.logo)} alt="" /></span>
-            ) : (
-              <span class:list={['sq', o.gray && 'gray']}><Image src={o.img!} alt="" widths={[240, 400]} sizes="160px" /></span>
+            const attrs = { class: 'orb', 'data-a': (360 / n) * i - 100, 'data-o': o.o ?? 1, style: `--s:${o.s}` };
+            const inner = (
+              <span class="sq-frame orb-frame" style={`rotate:${o.r}deg`}>
+                {o.logo ? (
+                  <span class="sq-inner is-logo"><img src={withBase(o.logo)} alt="" draggable="false" class="size-[62%] object-contain" /></span>
+                ) : (
+                  <span class="sq-inner"><Image src={o.img!} alt="" widths={[240, 400]} sizes="130px" draggable="false" class="size-full object-cover" /></span>
+                )}
+              </span>
             );
             return o.client ? (
-              <button type="button" class="orb" style={style} data-client={o.client} aria-label={`${cl(o.client).data.name} – Details`}><span class="orb-in" data-reveal style={`--d:${150 + i * 70}ms`}>{inner}</span></button>
+              <button type="button" {...attrs} data-client={o.client} data-cursor={cl(o.client).data.name} aria-label={`${cl(o.client).data.name} – Details`}>{inner}</button>
             ) : (
-              <a href="#arbeiten" class="orb" style={style} aria-label="Arbeiten ansehen"><span class="orb-in" data-reveal style={`--d:${150 + i * 70}ms`}>{inner}</span></a>
+              <a href="#arbeiten" {...attrs} data-cursor="Arbeiten" aria-label="Arbeiten ansehen">{inner}</a>
             );
           })}
         </div>
-        <div class="center" data-reveal style="--d:60ms">
-          <a href={tel} class="tile" aria-label="Marvin anrufen"><Icon name="phone" size={22} /></a>
-          <p class="mt-3 text-center text-[12px]">Marvin anrufen</p>
+        <div data-intro-tile class="absolute top-0 left-0 z-[200] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
+          <CallButton size="hero" pulse i={0} />
         </div>
       </div>
 
-      <!-- Begriffs-Liste am rechten Rand -->
-      <ul class="tags hidden md:flex" aria-hidden="true">
-        {[...disciplines, ...disciplines.slice(0, 1)].map((d, i) => <li class="tag" data-tag style={`--k:${i}`}>{d.label}</li>)}
-      </ul>
-
-      <div class="absolute inset-x-4 bottom-[104px] flex items-end justify-between md:inset-x-7 md:bottom-12">
-        <h1 class="text-[clamp(2.6rem,12vw,3.2rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]">
-          <span class="block" data-reveal style="--d:200ms">Ein Name,</span>
-          <span class="block text-[#8e8e8e]" data-reveal style="--d:300ms">ein Anruf.</span>
+      <div data-hero-foot class="absolute inset-x-3 bottom-[104px] flex items-end justify-between md:inset-x-7 md:bottom-12">
+        <h1 class={h1}>
+          <span class="line-mask"><span data-line style="--d:900ms">Ein Name,</span></span>
+          <span class="line-mask"><span data-line style="--d:1000ms" class="text-soft">ein Anruf.</span></span>
         </h1>
-        <span class="absolute bottom-0 left-1/2 hidden -translate-x-1/2 pb-3 text-[11px] md:block">©2026</span>
-        <a href="#netzwerk" class="hidden pb-3 text-[11px] tracking-[0.02em] md:block">RUNTERSCROLLEN</a>
+        <span data-reveal style="--d:1200ms" class="absolute bottom-0 left-1/2 hidden -translate-x-1/2 pb-3 text-[11px] text-muted md:block">©2026</span>
+        <a href="#netzwerk" data-reveal style="--d:1250ms" class="glass-chip mb-1.5 hidden h-9 items-center gap-2.5 rounded-full pr-3.5 pl-2.5 text-[11px] font-medium tracking-[0.02em] md:flex">
+          <span class="mouse"><span data-scrollhint></span></span>
+          RUNTERSCROLLEN
+        </a>
       </div>
     </section>
 
     <!-- NETZWERK -->
-    <section id="netzwerk" class="mx-auto max-w-[1440px] px-4 pt-24 md:px-7 md:pt-40">
-      <h2 class="text-[clamp(2.4rem,11vw,3rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]" data-reveal>
-        Unser Netzwerk<br /><span class="text-[#8e8e8e]">arbeitet für.</span>
-      </h2>
-      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-14">
+    <section id="netzwerk" class="mx-auto max-w-[1440px] px-3 pt-24 md:px-7 md:pt-40">
+      <div class="flex items-end justify-between gap-6">
+        <h2 class={h1}>
+          <span class="line-mask"><span data-line>Unser Netzwerk</span></span>
+          <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">arbeitet für.</span></span>
+        </h2>
+        <span data-reveal style="--d:200ms" class="hidden pb-2 font-mono text-[11px] text-muted md:block">{clients.length} MARKEN &amp; CREATOR</span>
+      </div>
+      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-14">
         {clients.map((c, i) => (
-          <button type="button" data-client={c.id} class="ncell group" style={`--r:${[-6, 5, -3, 8, -8, 3, 6, -5][i % 8]}deg`} data-reveal aria-label={`${c.data.name} – Details`}>
-            {c.data.logo ? (
-              <span class="sq logo big"><img src={withBase(c.data.logo)} alt={c.data.name} /></span>
-            ) : (
-              <span class="sq big"><Image src={c.data.photo!} alt={c.data.name} width={360} height={360} /></span>
-            )}
-            <span class="mt-4 block text-center text-[12px]">{c.data.name}</span>
+          <button type="button" data-client={c.id} data-tilt data-cursor="Details" data-reveal style={`--d:${(i % 4) * 80}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
+            <span data-tilt-el class="sq-frame aspect-square p-[7px]" style={`rotate:${[-6, 5, -3, 8, -8, 3, 6, -5][i % 8]}deg`}>
+              {c.data.logo ? (
+                <span class="sq-inner is-logo"><img src={withBase(c.data.logo)} alt={c.data.name} draggable="false" class="size-[56%] object-contain" /></span>
+              ) : (
+                <span class="sq-inner"><Image src={c.data.photo!} alt={c.data.name} width={360} height={360} draggable="false" class="size-full object-cover" /></span>
+              )}
+            </span>
+            <span class="mt-4 block text-[13px] font-semibold tracking-[-0.01em]">{c.data.name}</span>
+            <span class="block text-[12px] text-muted">{c.data.kind === 'creator' ? 'Creator' : c.data.tier === 1 ? 'Headliner' : 'Marke'}</span>
           </button>
         ))}
       </div>
     </section>
 
     <!-- ARBEITEN -->
-    <section id="arbeiten" class="mx-auto max-w-[1440px] px-4 pt-28 md:px-7 md:pt-44">
-      <div class="flex items-end justify-between gap-6">
-        <h2 class="text-[clamp(2.4rem,11vw,3rem)] font-medium leading-[0.98] tracking-[-0.055em] md:text-[min(5.2vw,4.6rem)]" data-reveal>
-          Arbeiten,<br /><span class="text-[#8e8e8e]">die man kennt.</span>
+    <section id="arbeiten" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
+      <div class="flex flex-wrap items-end justify-between gap-7">
+        <h2 class={h1}>
+          <span class="line-mask"><span data-line>Arbeiten,</span></span>
+          <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">die man kennt.</span></span>
         </h2>
-        <span class="hidden pb-2 text-[11px] md:block">{works.length} ARBEITEN</span>
+        <div data-reveal style="--d:150ms" class="flex max-w-full flex-col items-end gap-3.5">
+          <span class="font-mono text-[11px] text-muted tabular-nums"><span data-work-count>{works.length}</span> ARBEITEN</span>
+          <div data-filter-bar class="filter no-scrollbar relative flex max-w-full gap-0.5 overflow-x-auto rounded-full p-[5px]">
+            <span data-thumb class="filter-thumb"></span>
+            {filters.map((f, i) => (
+              <button type="button" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'} class="filter-btn relative flex h-9 items-center gap-1.5 rounded-full px-[15px] text-[13px] font-medium whitespace-nowrap">
+                {f.label}<span class="font-mono text-[10px] opacity-60">{f.n}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-16" data-more>
+      <div data-grid class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-16">
         {works.map((wk, i) => (
-          <figure class:list={['wcell group', i >= shown && 'more hidden']} style={`--r:${[4, -6, 7, -3, -8, 5, -4, 6][i % 8]}deg`} data-reveal>
-            <span class:list={['sq big', i % 3 === 1 && 'gray']}><Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[300, 500]} sizes="(min-width: 768px) 22vw, 44vw" /></span>
-            <figcaption class="mt-4 text-center text-[12px]">{wk.data.title}<span class="block text-[#8e8e8e]">{disciplineLabel(wk.data.discipline)}</span></figcaption>
+          <figure data-work={i} data-disc={wk.data.discipline} data-tilt data-cursor="Ansehen" data-reveal hidden={i >= shown} style={`--d:${(i % 4) * 80}ms`} class="card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
+            <span data-tilt-el class="sq-frame aspect-square p-[7px]" style={`rotate:${[4, -6, 7, -3, -8, 5, -4, 6][i % 8]}deg`}>
+              <span class="sq-inner work-img"><Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[300, 500]} sizes="(min-width: 768px) 22vw, 44vw" draggable="false" class="size-full object-cover" /></span>
+            </span>
+            <figcaption class="mt-4 text-center text-[13px] font-semibold tracking-[-0.01em]">{wk.data.title}<span class="block text-[12px] font-normal text-muted">{disciplineLabel(wk.data.discipline)}</span></figcaption>
           </figure>
         ))}
       </div>
-      <div class="mt-14 flex justify-center">
-        <button type="button" class="inline-flex h-11 items-center gap-2 rounded-full bg-black px-6 text-[14px] font-medium text-white" data-more-btn>Alle {works.length} zeigen</button>
+      <div class="mt-[72px] flex justify-center">
+        <button type="button" data-more-btn data-magnet="0.25" class="lg inline-flex h-14 items-center px-7 text-[16px] font-semibold tracking-[-0.015em]" style="--i:2">
+          <span class="lg-sheen" aria-hidden="true"></span>
+          <span data-magnet-inner class="flex items-center gap-2.5">Alle {works.length} zeigen<Icon name="arrow-down" size={16} /></span>
+        </button>
       </div>
     </section>
 
     <!-- DISZIPLINEN -->
-    <section class="mx-auto max-w-[1440px] px-4 pt-28 md:px-7 md:pt-44">
-      <ul>
+    <section id="disziplinen" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
+      <ul data-disc-list class="disc-list m-0 flex list-none flex-col gap-1 rounded-[36px] p-2">
         {disciplines.map((d, i) => (
-          <li class="border-t border-[#ececec] py-5 last:border-b md:py-7" data-reveal style={`--d:${i * 70}ms`}>
-            <span class="grid gap-1 md:grid-cols-[1fr_1fr] md:items-baseline">
-              <span class="text-[clamp(2rem,9vw,2.4rem)] font-medium leading-none tracking-[-0.05em] md:text-[min(4.2vw,3.6rem)]">{d.label}</span>
-              <span class="text-[14px] text-[#8e8e8e] md:text-[16px]">{d.line}</span>
+          <li data-disc-row={d.id} data-reveal data-cursor="Arbeiten zeigen" style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
+            <span class="grid items-baseline gap-1 md:grid-cols-[1fr_1fr_120px]">
+              <span class="disc-label text-[clamp(2rem,9vw,2.4rem)] leading-[1.05] font-semibold tracking-[-0.045em] md:text-[min(4.2vw,3.6rem)]">{d.label}</span>
+              <span class="text-[14px] text-muted md:text-[16px]">{d.line}</span>
+              <span class="hidden text-right font-mono text-[11px] text-muted tabular-nums md:block">{pad2(counts[d.id] ?? 0)} Arbeiten</span>
             </span>
           </li>
         ))}
@@ -154,91 +224,201 @@ const shown = 12;
     </section>
 
     <!-- ABSCHLUSS -->
-    <section class="relative mx-auto max-w-[1440px] px-4 pb-28 pt-28 md:px-7 md:pb-16 md:pt-44">
-      <div class="flex flex-col items-center">
-        <a href={tel} class="tile" aria-label="Marvin anrufen"><Icon name="phone" size={22} /></a>
-        <p class="mt-3 text-[12px]">{site.phoneDisplay}</p>
+    <section id="kontakt" class="relative isolate mx-auto max-w-[1440px] px-3 pt-28 pb-28 md:px-7 md:pt-44 md:pb-10">
+      <div data-reveal class="flex flex-col items-center">
+        <CallButton size="end" pulse i={1} />
+        <button type="button" data-copy data-cursor="Nummer kopieren" class="glass-chip mt-6 flex h-[34px] items-center gap-2.5 rounded-full pr-1.5 pl-4 text-[13px] font-medium tabular-nums">
+          {site.phoneDisplay}<span data-copy-label class="copy-label flex h-6 items-center rounded-full bg-white/80 px-[9px] font-mono text-[10px] text-muted">KOPIEREN</span>
+        </button>
       </div>
-      <h2 class="mt-24 text-[clamp(2.6rem,12vw,3.2rem)] font-medium leading-[0.98] tracking-[-0.055em] md:mt-32 md:text-[min(5.2vw,4.6rem)]" data-reveal>
-        Ein Name,<br /><span class="text-[#8e8e8e]">ein Anruf.</span>
+      <h2 class="mt-24 text-[clamp(3rem,14vw,4rem)] leading-[0.92] font-semibold tracking-[-0.055em] md:mt-32 md:text-[min(9vw,8.5rem)]">
+        <span class="line-mask"><span data-line>Ein Name,</span></span>
+        <span class="line-mask"><span data-line style="--d:110ms" class="text-soft">ein Anruf.</span></span>
       </h2>
-      <footer class="mt-14 flex flex-wrap items-center justify-between gap-4 text-[11px] md:mt-16">
+      <footer data-reveal class="glass-chip mt-16 flex flex-wrap items-center justify-between gap-4 rounded-full px-[22px] py-3.5 text-[12px]">
         <span>©2026 {site.name}</span>
-        <span class="flex flex-wrap gap-5"><a href="#">Impressum</a><a href="#">Datenschutz</a></span>
+        <span class="flex flex-wrap gap-5"><a href="#top" class="text-muted transition-colors hover:text-fg">Nach oben ↑</a><a href="#" class="transition-colors hover:text-muted">Impressum</a><a href="#" class="transition-colors hover:text-muted">Datenschutz</a></span>
       </footer>
     </section>
   </main>
 
+  <!-- Vorschau-Stapel beim Hover über Disziplinen (Desktop) -->
+  <div data-preview aria-hidden="true" class="preview hidden md:block">
+    <div data-preview-stack class="preview-stack">
+      <img alt="" data-p="2" /><img alt="" data-p="1" /><img alt="" data-p="0" />
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <dialog id="lb" class="lb" aria-label="Arbeit ansehen">
+    <div class="flex h-[92px] items-center justify-between px-3 md:px-7">
+      <span data-lb-counter class="glass-chip flex h-8 items-center rounded-full px-3.5 font-mono text-[11px] tabular-nums"></span>
+      <button type="button" data-lb-close class="lg grid size-11 place-items-center" aria-label="Schließen"><Icon name="close" size={12} /></button>
+    </div>
+    <div class="flex min-h-0 flex-1 items-center justify-center gap-6 px-3 md:px-7">
+      <button type="button" data-lb-step="-1" class="lg hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Vorherige"><Icon name="arrow" size={18} style="rotate:180deg" /></button>
+      <img data-lb-img alt="" class="lb-img" />
+      <button type="button" data-lb-step="1" class="lg hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Nächste"><Icon name="arrow" size={18} /></button>
+    </div>
+    <div class="px-3 pt-7 pb-9 text-center md:px-7">
+      <p data-lb-title class="m-0 text-[20px] font-semibold tracking-[-0.03em]"></p>
+      <p data-lb-meta class="mt-1 text-[13px] text-muted"></p>
+    </div>
+  </dialog>
+
   <StickyCall />
   <ClientDialog clients={clients} works={works} />
+  <script type="application/json" id="works-data" set:html={JSON.stringify(workData)} />
 </Base>
 
-<script>
-  // Begriffs-Liste: aktiver Eintrag wandert langsam weiter
-  const tags = Array.from(document.querySelectorAll<HTMLElement>('[data-tag]'));
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let active = 2;
-  const paint = () => tags.forEach((t, i) => { t.style.setProperty('--dist', String(Math.abs(i - active))); t.classList.toggle('is-on', i === active); });
-  paint();
-  if (!reduce && tags.length) setInterval(() => { active = (active + 1) % tags.length; paint(); }, 2600);
-
-  const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
-  btn?.addEventListener('click', () => {
-    document.querySelectorAll('[data-more] .more').forEach((el) => el.classList.remove('hidden', 'more'));
-    btn.remove();
-  });
-</script>
-
 <style>
-  .mark { display: inline-flex; align-items: center; }
+  .blob {
+    position: absolute;
+    border-radius: 999px;
+    background: radial-gradient(closest-side, var(--c), transparent);
+    filter: blur(40px);
+    opacity: 0.75;
+  }
+
+  /* Cursor */
+  .cursor { position: fixed; left: 0; top: 0; z-index: 3000; pointer-events: none; display: none; opacity: 0; transition: opacity 0.3s; }
+  :global(html.has-cursor) .cursor { display: block; }
+  .cursor-dot {
+    position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 999px; background: #0a0a0a;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 4px 12px -2px rgb(0 0 0 / 0.25);
+    transition: scale 0.45s var(--ease-out);
+  }
+  .cursor-label {
+    position: absolute; left: 0; top: 0; translate: -50% -50%; height: 40px; padding: 0 18px; display: flex; align-items: center;
+    border-radius: 999px; color: var(--fg); font-size: 13px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; scale: 0;
+    transition: scale 0.45s var(--ease-out);
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.78), rgb(255 255 255 / 0.45));
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: inset 0 1px 0.5px rgb(255 255 255 / 0.95), 0 0 0 0.5px rgb(255 255 255 / 0.8), 0 10px 30px -8px rgb(0 0 0 / 0.3);
+  }
+  .cursor.has-label .cursor-dot { scale: 0; }
+  .cursor.has-label .cursor-label { scale: 1; }
+
+  /* Header */
+  .hdr { padding: 10px 12px; transition: padding 0.6s var(--ease-out); }
+  @media (min-width: 768px) { .hdr { padding: 18px 28px; } }
+  :global(html.is-scrolled) .hdr { padding-top: 10px; padding-bottom: 10px; }
+  .hdr-bar {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.12));
+    -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0.5px rgb(255 255 255 / 0.8), 0 0 0 0.5px rgb(255 255 255 / 0.6);
+    transition: background 0.6s, box-shadow 0.6s;
+  }
+  :global(html.is-scrolled) .hdr-bar {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.4));
+    box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px rgb(255 255 255 / 0.9), 0 14px 40px -16px rgb(0 0 0 / 0.3);
+  }
+  .nav { background: rgb(255 255 255 / 0.4); box-shadow: inset 0 1px 0.5px rgb(255 255 255 / 0.9), 0 0 0 0.5px rgb(0 0 0 / 0.12); }
+  .nav-count { background: rgb(255 255 255 / 0.65); box-shadow: inset 0 1px 0.5px #fff, 0 2px 8px -4px rgb(0 0 0 / 0.25); transition: background 0.3s; }
+  .nav-count:hover { background: #fff; }
+  .burger { position: relative; display: block; width: 16px; height: 7px; }
+  .burger > span {
+    position: absolute; left: 0; display: block; height: 1.5px; width: 16px; border-radius: 2px; background: var(--fg);
+    transition: rotate 0.5s var(--ease-out), top 0.5s var(--ease-out);
+  }
+  .burger > span:first-child { top: 0; }
+  .burger > span:last-child { top: 5px; }
+  :global(html.menu-open) .burger > span:first-child { top: 3px; rotate: 45deg; }
+  :global(html.menu-open) .burger > span:last-child { top: 3px; rotate: -45deg; }
+  .menu {
+    position: absolute; left: 50%; top: 56px; width: 320px; margin-left: -160px; transform-origin: 50% 0; border-radius: 28px; padding: 8px;
+    opacity: 0; transform: translate3d(0, -10px, 0) scale(0.92); pointer-events: none;
+    transition: opacity 0.4s var(--ease-out), transform 0.6s var(--ease-spring);
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.82), rgb(255 255 255 / 0.55));
+    -webkit-backdrop-filter: blur(30px) saturate(200%); backdrop-filter: blur(30px) saturate(200%);
+    box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px rgb(255 255 255 / 0.9), 0 30px 60px -20px rgb(0 0 0 / 0.35);
+  }
+  :global(html.menu-open) .menu { opacity: 1; transform: none; pointer-events: auto; }
 
   /* Orbit */
-  .orbit { --rx: 128px; --ry: 150px; --w: 68px; position: absolute; left: 50%; top: 42%; width: 0; height: 0; }
-  @media (min-width: 768px) { .orbit { --rx: 250px; --ry: 220px; --w: 116px; top: 48%; } }
-  .ring { position: absolute; inset: 0; animation: orbit 260s linear infinite; }
-  .ring:hover { animation-play-state: paused; }
-  .orb {
-    --t: calc(var(--a) + var(--spin));
-    position: absolute; left: 0; top: 0;
-    width: calc(var(--w) * var(--s)); height: calc(var(--w) * var(--s));
-    translate: calc(-50% + cos(var(--t)) * var(--rx)) calc(-50% + sin(var(--t)) * var(--ry));
-    opacity: var(--o);
+  .stage { --w: 68px; position: absolute; left: 50%; top: 42%; width: 0; height: 0; }
+  @media (min-width: 768px) { .stage { --w: 116px; top: 48%; } }
+  .orb { position: absolute; left: 0; top: 0; width: calc(var(--w) * var(--s)); height: calc(var(--w) * var(--s)); opacity: 0; will-change: translate, scale, opacity; }
+  .orb-frame { width: 100%; height: 100%; padding: 5px; }
+  @media (hover: hover) {
+    .orb:hover .orb-frame { rotate: 0deg !important; scale: 1.12; box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px #fff, 0 24px 50px -14px rgb(0 0 0 / 0.22); }
   }
-  .orb-in { display: block; width: 100%; height: 100%; rotate: var(--r); transition: rotate 0.8s cubic-bezier(0.16, 1, 0.3, 1), scale 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s, transform 1.2s; }
-  .orb:hover .orb-in { rotate: 0deg; scale: 1.06; }
 
-  .sq { display: block; width: 100%; height: 100%; border-radius: 30%; overflow: hidden; background: #f1f1f1; }
-  .sq :global(img) { width: 100%; height: 100%; object-fit: cover; }
-  .sq.gray :global(img) { filter: grayscale(1); }
-  .sq.logo { display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px -24px rgb(0 0 0 / 0.35); }
-  .sq.logo :global(img) { width: 62%; height: 62%; object-fit: contain; }
+  .mouse { position: relative; display: block; width: 16px; height: 22px; border-radius: 999px; box-shadow: inset 0 0 0 1.3px var(--fg); }
+  .mouse > span { position: absolute; left: 6.5px; top: 4px; width: 3px; height: 5px; border-radius: 2px; background: var(--fg); display: block; animation: scrollhint 1.6s linear infinite; }
+  @keyframes scrollhint { from { transform: translateY(0); opacity: 1; } to { transform: translateY(8px); opacity: 0; } }
 
-  .center { position: absolute; left: 0; top: 0; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; z-index: 2; }
-  .tile {
-    display: grid; place-items: center; width: 84px; height: 84px; border-radius: 22px; color: #8a8a8a;
-    background: #fff; box-shadow: 0 0 0 1px #d9d9d9; transition: color 0.3s, box-shadow 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Karten: Glas-Squircles, die sich beim Hover aufrichten und kippen */
+  .card { perspective: 800px; }
+  @media (hover: hover) {
+    .card:hover .sq-frame { rotate: 0deg !important; scale: 1.04; box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px #fff, 0 26px 50px -16px rgb(0 0 0 / 0.22); }
+    .card:hover .work-img :global(img) { scale: 1.08; }
   }
-  .tile:hover { color: #000; box-shadow: 0 0 0 1px #000; transform: translateY(-2px); }
-  @media (min-width: 768px) { .tile { width: 106px; height: 106px; border-radius: 24px; } }
+  .work-img { display: block; }
+  .work-img :global(img) { transition: scale 1.2s var(--ease-out); }
 
-  /* Begriffs-Liste rechts, nach außen hin blasser */
-  .tags { position: absolute; right: -28px; top: 50%; translate: 0 -50%; flex-direction: column; align-items: flex-end; gap: 8px; }
-  .tag {
-    --dist: 3;
-    padding: 7px 14px; border-radius: 8px; font-size: 14px; white-space: nowrap;
-    box-shadow: 0 0 0 1px #e2e2e2; color: #0a0a0a; background: #fff;
-    opacity: calc(1 - var(--dist) * 0.28);
-    translate: calc(var(--dist) * 10px) 0;
-    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), translate 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s;
+  /* Filter */
+  .filter {
+    background: var(--glass-panel);
+    -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+    box-shadow: var(--glass-panel-shadow);
   }
-  .tag.is-on { box-shadow: 0 0 0 1px #0a0a0a; }
+  .filter-thumb {
+    position: absolute; left: 0; top: 5px; bottom: 5px; width: 0; border-radius: 999px;
+    background: linear-gradient(180deg, #fff, #f1f1f3);
+    box-shadow: inset 0 1px 0 #fff, 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 6px 14px -6px rgb(0 0 0 / 0.3);
+    transition: translate 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), width 0.65s cubic-bezier(0.34, 1.25, 0.5, 1);
+  }
+  .filter-btn { color: var(--muted); transition: color 0.45s; }
+  .filter-btn[aria-pressed='true'] { color: var(--fg); }
 
-  /* Netzwerk & Arbeiten: gekippte Squircles, die sich beim Hover aufrichten */
-  .ncell .sq, .wcell .sq { aspect-ratio: 1 / 1; height: auto; rotate: var(--r); transition: rotate 0.8s cubic-bezier(0.16, 1, 0.3, 1), scale 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-  .ncell:hover .sq, .wcell:hover .sq { rotate: 0deg; scale: 1.03; }
-  .sq.big.logo :global(img) { width: 56%; height: 56%; }
+  /* Disziplinen */
+  .disc-list {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.25));
+    -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px rgb(255 255 255 / 0.8), 0 24px 60px -30px rgb(0 0 0 / 0.3);
+  }
+  .disc-row { transition: opacity 0.5s var(--ease-out), background 0.5s, box-shadow 0.5s; }
+  .disc-label { display: inline-block; transition: translate 0.7s var(--ease-out); }
+  .disc-list.has-hover .disc-row:not(.is-hover) { opacity: 0.4; }
+  .disc-row.is-hover { background: rgb(255 255 255 / 0.75); box-shadow: inset 0 1px 0.5px #fff, 0 12px 30px -16px rgb(0 0 0 / 0.35); }
+  @media (min-width: 768px) { .disc-row.is-hover .disc-label { translate: 14px 0; } }
 
-  :global(.sticky-call) { background: #fff !important; box-shadow: 0 -1px 0 #ececec !important; }
-  :global(.sticky-call a[aria-label]) { color: #0a0a0a !important; }
-  @media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
+  .copy-label { transition: color 0.3s; }
+  .copy-label.is-done { color: #248a3d; }
+
+  /* Vorschau */
+  .preview { position: fixed; left: 0; top: 0; z-index: 500; pointer-events: none; }
+  .preview-stack {
+    position: relative; width: 220px; height: 220px; translate: -50% -50%; opacity: 0; scale: 0.6;
+    transition: opacity 0.45s var(--ease-out), scale 0.6s var(--ease-spring);
+  }
+  .preview-stack.is-on { opacity: 1; scale: 1; }
+  .preview-stack img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 30%;
+    border: 5px solid rgb(255 255 255 / 0.75); box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.45);
+    transition: rotate 0.8s var(--ease-out), translate 0.8s var(--ease-out);
+  }
+  .preview-stack img:not([src]) { display: none; }
+  .preview-stack img[data-p='0'] { rotate: -2deg; }
+  .preview-stack img[data-p='1'] { rotate: 8deg; translate: 34px 14px; }
+  .preview-stack img[data-p='2'] { rotate: -10deg; translate: -30px 22px; }
+
+  /* Lightbox */
+  .lb {
+    position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+    color: var(--fg); flex-direction: column;
+    background: rgb(255 255 255 / 0.62);
+    -webkit-backdrop-filter: blur(36px) saturate(180%); backdrop-filter: blur(36px) saturate(180%);
+    opacity: 0; transition: opacity 0.5s var(--ease-out);
+  }
+  .lb[open] { display: flex; }
+  .lb::backdrop { background: transparent; }
+  .lb.is-open { opacity: 1; }
+  .lb-img {
+    max-width: min(1000px, 100%); max-height: 100%; min-height: 0; border-radius: 36px; object-fit: contain;
+    border: 8px solid rgb(255 255 255 / 0.7); box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.5);
+    transform: translate3d(0, 24px, 0) scale(0.94); transition: transform 0.7s cubic-bezier(0.34, 1.2, 0.5, 1);
+  }
+  .lb.is-open .lb-img { transform: none; }
 </style>

@@ -1,127 +1,305 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 /* ---------------------------------------------------------------
-   Reines Weiß, Schwarz für Handlungen, Grau für zweite Zeilen.
-   Farbe kommt nur aus Logos, Creator-Fotos und Arbeiten.
+   Liquid Glass: helles Grau als Grund, darüber Glasflächen mit
+   Lichtkante, Tiefe und weichem Schatten. Farbe kommt nur aus
+   Logos, Fotos, Arbeiten – und dem grünen Hörer.
 ---------------------------------------------------------------- */
 @theme inline {
   --color-bg: var(--bg);
-  --color-surface: var(--surface);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-line: var(--line);
-  --font-sans: 'Geist Variable', system-ui, sans-serif;
+  --color-soft: var(--soft);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Geist Variable', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
 }
 
 :root {
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #f3f3f3;
-  --fg: #0a0a0a;
-  --muted: #8e8e8e;
-  --line: #e8e8e8;
-  --neu-sm: 0 0 0 1px #e6e6e6;
-  --neu-lg: 0 30px 60px -28px rgb(0 0 0 / 0.3);
-  --neu-in: inset 0 0 0 1px #e6e6e6;
+  --bg: #f2f2f3;
+  --fg: #1d1d1f;
+  --muted: #6e6e73;
+  --soft: #8e8e93;
+  --green: #28b84c;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
-}
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.5, 1);
 
-/* Bausteine, die Detailansicht und Anruf-Leiste nutzen */
-.neu-sm { background: #fff; box-shadow: var(--neu-sm); }
-.neu-press { transition: box-shadow 0.4s var(--ease-out), transform 0.4s var(--ease-out); }
-.neu-press:active { transform: scale(0.98); }
-.btn-call {
-  background: #0a0a0a;
-  color: #fff;
-  transition: transform 0.4s var(--ease-out), background-color 0.3s;
+  /* weiche Glasfläche (Panels, Kacheln, Leisten) */
+  --glass-panel: linear-gradient(160deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.3));
+  --glass-panel-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px rgb(255 255 255 / 0.8), 0 10px 30px -12px rgb(0 0 0 / 0.25);
 }
-.btn-call:hover { background: #000; transform: translateY(-1px); }
-.btn-call:active { transform: scale(0.98); }
 
 @layer base {
   html {
     background: var(--bg);
     color: var(--fg);
-    font-family: 'Geist Variable', system-ui, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
   body {
     background: var(--bg);
     font-size: 16px;
     line-height: 1.45;
   }
-  ::selection {
-    background: var(--fg);
-    color: var(--bg);
-  }
-  :focus-visible {
-    outline: 2px solid var(--fg);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
-  img,
-  video {
-    display: block;
-    max-width: 100%;
-  }
+  * { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: var(--fg); color: #fff; }
+  :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; border-radius: 999px; }
+  img, video { display: block; max-width: 100%; }
+  button { cursor: pointer; }
 }
 
-/* Große Headlines (Detailansicht) */
-.display {
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.92;
-}
-/* Kleine, präzise Metadaten */
-.meta {
-  font-size: 12px;
-  line-height: 1.35;
-  font-feature-settings: 'tnum' 1;
-}
-
-/* Einblenden beim Scrollen – ruhig, gestaffelt über --d */
-html.js [data-reveal] {
-  opacity: 0;
-  transform: translate3d(0, 14px, 0);
+/* ===============================================================
+   Liquid-Glass-Button
+   Aufbau wie ein echtes Glasstück:
+   1. Körper   – milchiger Verlauf, oben heller, unten dichter
+   2. Lichtfleck – folgt dem Zeiger (--mx/--my, per JS gesetzt)
+   3. Lichtkante – 1.5px-Rand, hell an oberer linker und unterer rechter Kante
+   4. Glanz    – Lichtwölbung oben + schräger Lichtstreifen, der beim Hover einläuft
+   5. Tiefe    – innere Schattierung unten, mehrstufiger weicher Schlagschatten
+================================================================ */
+.lg {
+  --mx: 30%;
+  --my: 0%;
+  --rim: 1.5px;
+  --glare: 0;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 999px;
+  color: #1c2430;
+  background:
+    radial-gradient(90% 120% at var(--mx) var(--my), rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 62%),
+    linear-gradient(180deg, rgb(250 250 252 / 0.74) 0%, rgb(226 226 231 / 0.6) 52%, rgb(203 203 210 / 0.58) 100%);
+  -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(1.04);
+  backdrop-filter: blur(18px) saturate(190%) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(255 255 255 / 0.6),
+    inset 0 12px 18px -14px rgb(255 255 255 / 0.95),
+    inset 0 -16px 24px -18px rgb(30 36 48 / 0.18),
+    0 0 0 0.5px rgb(0 0 0 / 0.16),
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 12px 22px -12px rgb(0 0 0 / 0.22),
+    0 30px 56px -28px rgb(0 0 0 / 0.32);
   transition:
-    opacity 1.2s var(--ease-out),
-    transform 1.2s var(--ease-out);
-  transition-delay: var(--d, 0ms);
+    box-shadow 0.5s var(--ease-out),
+    background-color 0.3s,
+    --glare 0.6s var(--ease-out);
 }
-html.js [data-reveal].is-in {
-  opacity: 1;
-  transform: none;
+.lg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: var(--rim);
+  pointer-events: none;
+  background:
+    linear-gradient(118deg, #fff 0%, rgb(255 255 255 / 0.45) 16%, rgb(255 255 255 / 0.05) 38%, rgb(255 255 255 / 0) 58%, rgb(255 255 255 / 0.45) 82%, #fff 100%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.15) 50%, rgb(255 255 255 / 0.7));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
-
-.pb-safe {
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
+.lg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 50% -18%, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0) 72%),
+    linear-gradient(104deg, rgb(255 255 255 / 0) 0 28%, rgb(255 255 255 / calc(0.1 + var(--glare) * 0.35)) 35%, rgb(255 255 255 / 0) 41%, rgb(255 255 255 / 0) 60%, rgb(255 255 255 / calc(0.05 + var(--glare) * 0.22)) 65%, rgb(255 255 255 / 0) 70%);
+  background-size: 100% 100%, 220% 100%;
+  background-position: 0 0, calc(100% - var(--glare) * 60%) 0;
 }
-
-/* Orbit-Drehung (Hero) */
-@property --spin {
-  syntax: '<angle>';
+.lg > * { position: relative; z-index: 3; }
+.lg > .lg-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(110deg, rgb(255 255 255 / 0) 35%, rgb(255 255 255 / 0.75) 48%, rgb(255 255 255 / 0) 62%);
+  translate: -130% 0;
+  animation: sheen 5.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  animation-delay: calc(2.4s + var(--i, 0) * 0.3s);
+}
+@media (hover: hover) {
+  .lg:hover {
+    --glare: 1;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      inset 0 -1px 0 rgb(255 255 255 / 0.75),
+      inset 0 12px 18px -12px #fff,
+      inset 0 -16px 24px -18px rgb(30 36 48 / 0.16),
+      0 0 0 0.5px rgb(0 0 0 / 0.14),
+      0 1px 2px rgb(0 0 0 / 0.05),
+      0 18px 30px -14px rgb(0 0 0 / 0.24),
+      0 42px 70px -30px rgb(0 0 0 / 0.36);
+  }
+}
+@property --glare {
+  syntax: '<number>';
   inherits: true;
-  initial-value: 0deg;
+  initial-value: 0;
 }
-@keyframes orbit {
-  to { --spin: 360deg; }
+
+/* Anruf-CTA: dickeres Glas, kräftigere Kante, tieferer Schatten */
+.lg-call {
+  --rim: 2px;
+  color: #17202c;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.5);
+  background:
+    radial-gradient(80% 130% at var(--mx) var(--my), rgb(255 255 255 / 0.45), rgb(255 255 255 / 0) 60%),
+    linear-gradient(180deg, rgb(232 232 236 / 0.62) 0%, rgb(212 212 218 / 0.55) 48%, rgb(188 188 196 / 0.55) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(200%) brightness(1.02);
+  backdrop-filter: blur(14px) saturate(200%) brightness(1.02);
+  box-shadow:
+    inset 0 1.5px 0 #fff,
+    inset 0 -1.5px 0 rgb(255 255 255 / 0.7),
+    inset 0 16px 22px -16px #fff,
+    inset 0 -22px 30px -22px rgb(30 36 48 / 0.22),
+    inset 0 0 0 4px rgb(255 255 255 / 0.08),
+    0 0 0 0.5px rgb(0 0 0 / 0.18),
+    0 2px 3px rgb(0 0 0 / 0.06),
+    0 18px 34px -16px rgb(0 0 0 / 0.26),
+    0 46px 80px -34px rgb(0 0 0 / 0.4);
 }
+@media (hover: hover) {
+  .lg-call:hover {
+    box-shadow:
+      inset 0 1.5px 0 #fff,
+      inset 0 -1.5px 0 rgb(255 255 255 / 0.8),
+      inset 0 16px 22px -14px #fff,
+      inset 0 -22px 30px -22px rgb(30 36 48 / 0.2),
+      inset 0 0 0 4px rgb(255 255 255 / 0.12),
+      0 0 0 0.5px rgb(0 0 0 / 0.16),
+      0 2px 3px rgb(0 0 0 / 0.05),
+      0 26px 44px -18px rgb(0 0 0 / 0.28),
+      0 60px 100px -40px rgb(0 0 0 / 0.42);
+  }
+}
+/* Kante beim CTA: unten und an den Enden fast weiß, oben feine graue Glaslinie (wie Referenz) */
+.lg-call::before {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.55) 0%, rgb(255 255 255 / 0.2) 40%, rgb(255 255 255 / 0.55) 75%, #fff 100%),
+    linear-gradient(90deg, #fff 0%, rgb(255 255 255 / 0) 14%, rgb(255 255 255 / 0) 86%, #fff 100%);
+}
+.lg-call::after {
+  background:
+    radial-gradient(75% 55% at 50% -10%, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 72%),
+    radial-gradient(60% 40% at 50% 112%, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0) 70%),
+    linear-gradient(104deg, rgb(255 255 255 / 0) 0 28%, rgb(255 255 255 / calc(0.08 + var(--glare) * 0.4)) 35%, rgb(255 255 255 / 0) 41%, rgb(255 255 255 / 0) 60%, rgb(255 255 255 / calc(0.04 + var(--glare) * 0.25)) 65%, rgb(255 255 255 / 0) 70%);
+  background-size: 100% 100%, 100% 100%, 220% 100%;
+  background-position: 0 0, 0 0, calc(100% - var(--glare) * 60%) 0;
+}
+
+/* Grüner Hörer – leuchtet leicht aus dem Glas heraus */
+.lg-phone {
+  display: block;
+  flex-shrink: 0;
+  color: var(--green);
+  filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.7)) drop-shadow(0 4px 8px rgb(40 184 76 / 0.35));
+}
+
+/* Glas-Rahmen für Squircles (Orbit, Netzwerk, Arbeiten) */
+.sq-frame {
+  position: relative;
+  display: block;
+  border-radius: 32%;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.35));
+  box-shadow: inset 0 1px 0.5px #fff, inset 0 -1px 1px rgb(255 255 255 / 0.5), 0 0 0 0.5px rgb(255 255 255 / 0.8), 0 18px 40px -18px rgb(0 0 0 / 0.3);
+  transition: rotate 0.9s var(--ease-out), scale 0.9s var(--ease-out), box-shadow 0.6s, transform 0.5s var(--ease-out);
+}
+.sq-inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 29%;
+  overflow: hidden;
+  background: #f2f2f4;
+}
+.sq-inner.is-logo { background: rgb(255 255 255 / 0.7); }
+.sq-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(165deg, rgb(255 255 255 / 0.36) 0%, rgb(255 255 255 / 0) 36%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35);
+  pointer-events: none;
+}
+
+/* Kleine Glas-Pillen (Telefonnummer, Footer, Zähler) */
+.glass-chip {
+  background: rgb(255 255 255 / 0.55);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px rgb(255 255 255 / 0.8);
+}
+
+/* ---------- Einblenden (per WAAPI in client.ts, hier nur Startzustand) ---------- */
+html.js [data-reveal]:not(.is-in) { opacity: 0; }
+html.js [data-line]:not(.is-in) { transform: translate3d(0, 108%, 0); }
+.line-mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.line-mask > span { display: block; }
+
+/* ---------- Dauer-Animationen ---------- */
+@keyframes sheen {
+  0% { translate: -130% 0; }
+  22%, 100% { translate: 130% 0; }
+}
+@keyframes pulse {
+  0% { transform: scale(1.1); opacity: 0.9; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes wiggle {
+  0%, 25%, 100% { transform: rotate(0) scale(1); }
+  3.5% { transform: rotate(-18deg) scale(1.08); }
+  7% { transform: rotate(16deg) scale(1.08); }
+  10.5% { transform: rotate(-16deg) scale(1.08); }
+  14% { transform: rotate(14deg) scale(1.08); }
+  17.5% { transform: rotate(-10deg) scale(1.08); }
+  21% { transform: rotate(6deg) scale(1.08); }
+}
+[data-pulse] {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1.5px rgb(52 199 89 / 0.45);
+  pointer-events: none;
+  opacity: 0;
+  animation: pulse 3s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  animation-delay: calc(1.4s + var(--i, 0) * 1.5s);
+}
+[data-wiggle] {
+  animation: wiggle 3s ease-in-out infinite;
+  animation-delay: calc(1.8s + var(--i, 0) * 0.7s);
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+html.has-cursor [data-cursor],
+html.has-cursor [data-cursor] * { cursor: none; }
+html.is-locked { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
-  html.js [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+  html.js [data-reveal]:not(.is-in) { opacity: 1; }
+  html.js [data-line]:not(.is-in) { transform: none; }
   *,
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
+    animation: none !important;
     scroll-behavior: auto !important;
   }
 }

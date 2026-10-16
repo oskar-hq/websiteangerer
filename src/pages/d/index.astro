@@ -1,0 +1,261 @@
+---
+/**
+ * Entwurf D – ausschließlich nach Tracebit.
+ * Warmes Papier, Pfirsich-Licht, dickes schwarzes Sternzeichen mit Haarlinien,
+ * fette Grotesk-Headline links, Mono-Fließtext, schwarze Buttons, Logo-Reihe, Video-Panel.
+ */
+import '../../styles/d.css';
+import { Image, getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ClientDialog from '../../components/ClientDialog.astro';
+import StickyCall from '../../components/StickyCall.astro';
+import Icon from '../../components/Icon.astro';
+import { site, tel, wa } from '../../site.config';
+import { getWorks, pick, withBase, disciplineLabel } from '../../lib/works';
+
+const works = await getWorks();
+const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
+// Raster-Logo auf eigener Farbfläche passt nicht in die einfarbige Reihe
+const brands = clients.filter((c) => c.data.kind === 'brand' && c.id !== 'hidrofugal');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pad = (n: number) => String(n).padStart(2, '0');
+const logoH = (c: (typeof clients)[number], h: number) => `${(h * c.data.scale) / Math.sqrt(c.data.aspect)}px`;
+const reel = pick(works, 'video-boxen');
+const reelPoster = await getImage({ src: reel.data.image, width: 1400, format: 'webp' });
+const shown = 9;
+---
+
+<Base title={`${site.name} – Entwurf D`} htmlClass="theme-d">
+  <!-- Ankündigungsleiste -->
+  <div class="bg-[#211c1c] text-white">
+    <div class="mx-auto flex h-12 max-w-[1440px] items-center justify-center gap-10 px-4 text-[12.5px] font-medium md:text-[13px]">
+      <a href="#netzwerk" class="truncate hover:opacity-80">Neu im Netzwerk: Ylva Labs – KI für Outreach →</a>
+      <a href="#arbeiten" class="hidden hover:opacity-80 md:inline">Jetzt ansehen: {works.length} Arbeiten für Marken & Creator →</a>
+    </div>
+  </div>
+
+  <div class="relative overflow-hidden">
+    <!-- Licht + Linien + Sternzeichen -->
+    <div class="tb-glow pointer-events-none absolute inset-0"></div>
+    <svg class="star pointer-events-none absolute" viewBox="-800 -800 1600 1600" aria-hidden="true">
+      <g stroke="#211c1c" fill="none">
+        <line x1="-800" y1="-1180" x2="800" y2="1180" stroke-opacity="0.45" />
+        <line x1="-800" y1="290" x2="800" y2="-290" stroke-opacity="0.45" />
+        <line x1="-800" y1="560" x2="800" y2="-560" stroke-opacity="0.2" />
+        <line x1="-12" y1="-800" x2="12" y2="800" stroke-opacity="0.18" />
+        <line x1="-800" y1="-400" x2="800" y2="420" stroke-opacity="0.12" />
+      </g>
+      <g stroke="#211c1c" stroke-width="13">
+        <line x1="0" y1="-86" x2="4" y2="86" />
+        <line x1="-86" y1="28" x2="86" y2="-28" />
+        <line x1="-34" y1="-54" x2="34" y2="44" />
+      </g>
+    </svg>
+
+    <header class="relative z-20">
+      <div class="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 md:h-[72px] md:px-20">
+        <a href="#top" class="flex items-center gap-0.5 text-[22px] font-semibold tracking-[-0.045em] md:text-[26px]">
+          <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true">
+            <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a8b" /><stop offset="1" stop-color="#e2453c" /></linearGradient></defs>
+            <g stroke="url(#lg)" stroke-width="2.6"><line x1="12" y1="1" x2="13" y2="29" /><line x1="2" y1="17" x2="24" y2="10" /><line x1="6" y1="7" x2="19" y2="24" /></g>
+          </svg>
+          {site.name}
+        </a>
+        <nav class="hidden items-center rounded-xl bg-white/60 px-2 py-1.5 text-[15px] md:flex">
+          <a href="#netzwerk" class="rounded-lg px-3.5 py-1.5 hover:bg-white">Netzwerk</a>
+          <a href="#ablauf" class="rounded-lg px-3.5 py-1.5 hover:bg-white">Ablauf</a>
+          <a href="#arbeiten" class="rounded-lg px-3.5 py-1.5 hover:bg-white">Arbeiten</a>
+          <a href="#kontakt" class="rounded-lg px-3.5 py-1.5 hover:bg-white">Kontakt</a>
+        </nav>
+        <div class="flex items-center gap-1.5">
+          <a href={tel} class="tb-btn inline-flex h-9 items-center px-3.5 text-[14px] font-medium md:h-10 md:px-4 md:text-[15px]">Anrufen</a>
+          <a href={wa} target="_blank" rel="noopener" class="tb-btn-2 hidden h-10 items-center px-4 text-[15px] font-medium md:inline-flex">WhatsApp</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="relative z-10">
+      <!-- HERO -->
+      <section class="mx-auto max-w-[1440px] px-4 pt-[110px] md:px-20 md:pt-[190px]" data-hero>
+        <h1 class="text-[clamp(3rem,13.5vw,3.6rem)] font-semibold leading-[0.98] tracking-[-0.05em] md:text-[min(6vw,5.6rem)] md:leading-[1]">
+          <span class="block" data-reveal style="--d:60ms">Ein Name.</span>
+          <span class="block" data-reveal style="--d:160ms">Ein Anruf.</span>
+        </h1>
+        <p class="mono mt-6 max-w-[42rem] text-[15px] leading-[1.6] text-[#3a3330] md:mt-7 md:text-[18px] md:leading-[1.45]" data-reveal style="--d:260ms">
+          Das Beste, was Deutschland zu bieten hat. Marvin vermittelt Profis für Design, Video, Social Media, Management und Software – die gleichen, die für Red Bull, AMD und die größten Creator arbeiten.
+        </p>
+        <div class="mt-8 flex items-center gap-2" data-reveal style="--d:340ms">
+          <a href={tel} class="tb-btn inline-flex h-12 items-center gap-2 px-5 text-[15px] font-medium">Marvin anrufen <Icon name="arrow" size={14} /></a>
+        </div>
+      </section>
+
+      <!-- Logo-Reihe -->
+      <section class="mx-auto mt-12 max-w-[1440px] md:mt-[72px] md:px-8" data-reveal style="--d:420ms">
+        <div class="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)] md:[mask-image:none]">
+          <div class="logos-run flex w-max items-center md:w-full">
+            {[0, 1].map((dup) => (
+              <ul class:list={['flex shrink-0 items-center gap-14 pr-14 md:w-full md:justify-between md:gap-0 md:pr-0', dup === 1 && 'md:hidden']} aria-hidden={dup === 1 ? 'true' : undefined}>
+                {brands.map((c) => (
+                  <li><button type="button" data-client={c.id} class="mono-logo block" aria-label={`${c.data.name} – Details`}><img src={withBase(c.data.logo!)} alt={c.data.name} style={`height:${logoH(c, 40)}`} class="w-auto" /></button></li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Video-Panel -->
+      <section class="mx-auto mt-12 max-w-[1440px] px-4 md:mt-14 md:px-20">
+        <div class="vpanel relative overflow-hidden rounded-[14px] px-4 pt-14 md:px-[12%] md:pt-20" data-reveal>
+          <button type="button" class="tb-btn absolute left-1/2 top-3 z-10 inline-flex h-10 -translate-x-1/2 items-center px-4 text-[15px] font-semibold md:top-4 md:h-12 md:text-[17px]" data-vtoggle>Pause</button>
+          <div class="vdev overflow-hidden rounded-t-[18px] bg-[#fbfaf8] p-2 pb-0 md:p-3 md:pb-0">
+            <video class="aspect-video w-full rounded-t-[12px] object-cover" muted loop playsinline autoplay preload="metadata" poster={reelPoster.src} data-vid>
+              <source src={withBase(reel.data.video!)} type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+
+      <!-- NETZWERK -->
+      <section id="netzwerk" class="mx-auto max-w-[1440px] px-4 pt-28 md:px-20 md:pt-40">
+        <div class="grid gap-6 md:grid-cols-2 md:items-end">
+          <h2 class="text-[clamp(2.4rem,10.5vw,3rem)] font-semibold leading-[1] tracking-[-0.045em] md:text-[4.25rem]" data-reveal>Unser Netzwerk<br />arbeitet für</h2>
+          <p class="mono text-[14px] leading-[1.6] text-[var(--muted)] md:text-[16px]" data-reveal style="--d:100ms">Marken, Creator und Mittelstand. Jede Karte zeigt, was gemacht wurde – und welcher Profi aus dem Netzwerk es gemacht hat.</p>
+        </div>
+        <div class="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 md:mt-16 md:grid-cols-3 md:gap-4">
+          {clients.map((c, i) => (
+            <button type="button" data-client={c.id} class="ncard group text-left" data-reveal style={`--d:${(i % 3) * 80}ms`} aria-label={`${c.data.name} – Details`}>
+              <span class="flex h-20 items-center md:h-24">
+                {c.data.logo ? (
+                  <img src={withBase(c.data.logo)} alt={c.data.name} style={`height:${logoH(c, c.data.tier === 1 ? 64 : 48)}`} class="w-auto max-w-[70%] object-contain" />
+                ) : (
+                  <span class="flex items-center gap-3">
+                    <Image src={c.data.photo!} alt={c.data.name} width={160} height={160} class="size-14 rounded-full object-cover" />
+                    <span class="text-[20px] font-semibold tracking-[-0.03em]">{c.data.name}</span>
+                  </span>
+                )}
+              </span>
+              <span class="mono mt-6 block border-t border-[var(--line)] pt-4 text-[13px] leading-[1.6] text-[var(--muted)]">
+                {c.data.items.map((it) => <span class="block"><span class="text-[var(--fg)]">{it.what}</span> — {it.who}</span>)}
+              </span>
+              <span class="mono mt-4 inline-flex items-center gap-1 text-[13px] font-medium">Details <Icon name="arrow" size={13} class="transition-transform group-hover:translate-x-1" /></span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <!-- ABLAUF -->
+      <section id="ablauf" class="mx-auto max-w-[1440px] px-4 pt-28 md:px-20 md:pt-40">
+        <h2 class="text-[clamp(2.4rem,10.5vw,3rem)] font-semibold leading-[1] tracking-[-0.045em] md:text-[4.25rem]" data-reveal>So einfach ist das.</h2>
+        <ol class="mt-12 grid gap-10 md:mt-16 md:grid-cols-3 md:gap-8">
+          {[
+            ['Anrufen', 'Du erzählst Marvin, was du brauchst: Plakat, Kampagne, Thumbnails, Reels, Creator oder Software.'],
+            ['Marvin findet den Profi', 'Aus dem Netzwerk kommt genau der Profi, der das schon für die Großen gemacht hat.'],
+            ['Umsetzung', 'Du bekommst Ergebnis und Ansprechpartner in einem – ohne Agentur-Schleifen.'],
+          ].map(([t, d], i) => (
+            <li class="border-t border-[#211c1c] pt-5" data-reveal style={`--d:${i * 100}ms`}>
+              <span class="mono text-[13px] text-[var(--muted)]">{pad(i + 1)}</span>
+              <h3 class="mt-3 text-[24px] font-semibold tracking-[-0.03em] md:text-[28px]">{t}</h3>
+              <p class="mono mt-3 text-[14px] leading-[1.6] text-[var(--muted)]">{d}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- ARBEITEN -->
+      <section id="arbeiten" class="mx-auto max-w-[1440px] px-4 pt-28 md:px-20 md:pt-40">
+        <div class="flex items-end justify-between gap-6">
+          <h2 class="text-[clamp(2.4rem,10.5vw,3rem)] font-semibold leading-[1] tracking-[-0.045em] md:text-[4.25rem]" data-reveal>Arbeiten</h2>
+          <span class="mono pb-2 text-[13px] text-[var(--muted)]">{pad(works.length)} gesamt</span>
+        </div>
+        <div class="mt-12 grid gap-4 sm:grid-cols-2 md:mt-16 lg:grid-cols-3" data-more>
+          {works.map((wk, i) => (
+            <figure class:list={['wcard group', i >= shown && 'more hidden']} data-reveal>
+              <div class="overflow-hidden rounded-[10px] bg-[#e7e1da]">
+                <Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[480, 800]} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 92vw" class="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+              </div>
+              <figcaption class="mono flex justify-between gap-4 px-1 pt-3 text-[13px]">
+                <span class="truncate">{wk.data.title}</span>
+                <span class="shrink-0 text-[var(--muted)]">{disciplineLabel(wk.data.discipline)}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="mt-10">
+          <button type="button" class="tb-btn-2 inline-flex h-11 items-center gap-2 px-4 text-[14px] font-medium" data-more-btn>Alle {works.length} Arbeiten anzeigen <Icon name="arrow-down" size={14} /></button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ABSCHLUSS -->
+  <section id="kontakt" class="relative mt-28 overflow-hidden md:mt-40">
+    <div class="tb-glow pointer-events-none absolute inset-0"></div>
+    <svg class="star-2 pointer-events-none absolute" viewBox="-400 -400 800 800" aria-hidden="true">
+      <g stroke="#211c1c" fill="none"><line x1="-400" y1="-590" x2="400" y2="590" stroke-opacity="0.35" /><line x1="-400" y1="145" x2="400" y2="-145" stroke-opacity="0.35" /></g>
+      <g stroke="#211c1c" stroke-width="9"><line x1="0" y1="-60" x2="3" y2="60" /><line x1="-60" y1="20" x2="60" y2="-20" /><line x1="-24" y1="-38" x2="24" y2="31" /></g>
+    </svg>
+    <div class="relative mx-auto max-w-[1440px] px-4 pb-28 pt-24 md:px-20 md:pb-40 md:pt-32">
+      <h2 class="text-[clamp(2.8rem,13vw,3.5rem)] font-semibold leading-[1] tracking-[-0.05em] md:text-[min(6vw,5.6rem)]" data-reveal>Ein Anruf genügt.</h2>
+      <p class="mono mt-6 max-w-[38rem] text-[15px] leading-[1.6] text-[#3a3330] md:text-[18px]" data-reveal style="--d:100ms">{site.phoneDisplay} · Mo–Fr erreichbar. Oder schreib Marvin direkt auf WhatsApp.</p>
+      <div class="mt-8 flex flex-wrap gap-2" data-reveal style="--d:180ms">
+        <a href={tel} class="tb-btn inline-flex h-12 items-center gap-2 px-5 text-[15px] font-medium">Marvin anrufen <Icon name="arrow" size={14} /></a>
+        <a href={wa} target="_blank" rel="noopener" class="tb-btn-2 inline-flex h-12 items-center px-5 text-[15px] font-medium">WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mono mx-auto flex max-w-[1440px] flex-wrap justify-between gap-4 border-t border-[var(--line)] px-4 pb-28 pt-6 text-[12px] text-[var(--muted)] md:px-20 md:pb-8">
+    <span>© 2026 {site.name}</span>
+    <span class="flex flex-wrap gap-5"><a href={`${base}/`}>Entwurf A</a><a href={`${base}/b/`}>B</a><a href={`${base}/c/`}>C</a><a href={`${base}/e/`}>E</a><a href="#">Impressum</a><a href="#">Datenschutz</a></span>
+  </footer>
+
+  <StickyCall />
+  <ClientDialog clients={clients} works={works} />
+</Base>
+
+<script>
+  const v = document.querySelector<HTMLVideoElement>('[data-vid]');
+  const t = document.querySelector<HTMLButtonElement>('[data-vtoggle]');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { v?.pause(); if (t) t.textContent = 'Abspielen'; }
+  t?.addEventListener('click', () => {
+    if (!v) return;
+    if (v.paused) { v.play(); t.textContent = 'Pause'; } else { v.pause(); t.textContent = 'Abspielen'; }
+  });
+  const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
+  btn?.addEventListener('click', () => {
+    document.querySelectorAll('[data-more] .more').forEach((el) => el.classList.remove('hidden', 'more'));
+    btn.remove();
+  });
+</script>
+
+<style>
+  .star { width: 1600px; height: 1600px; left: calc(76% - 800px); top: calc(300px - 800px); }
+  @media (max-width: 767px) { .star { width: 900px; height: 900px; left: calc(72% - 450px); top: calc(150px - 450px); } }
+  .star-2 { width: 800px; height: 800px; right: -100px; top: -160px; }
+  @media (max-width: 767px) { .star-2 { width: 500px; height: 500px; right: -180px; top: -140px; } }
+
+  .mono-logo img { filter: grayscale(1) brightness(0.15); transition: filter 0.5s; }
+  .mono-logo:hover img { filter: none; }
+  .logos-run { animation: run 42s linear infinite; }
+  @media (min-width: 768px) { .logos-run { animation: none; } }
+  @keyframes run { to { transform: translate3d(-50%, 0, 0); } }
+
+  .vpanel {
+    background:
+      radial-gradient(60% 80% at 10% 10%, rgb(255 180 165 / 0.75), transparent 70%),
+      radial-gradient(50% 70% at 90% 20%, rgb(255 225 200 / 0.8), transparent 70%),
+      linear-gradient(#f7ece6, #f1e9e3);
+  }
+  .vdev { box-shadow: 0 0 0 1px rgb(33 28 28 / 0.08), 0 30px 60px -30px rgb(33 28 28 / 0.4); }
+
+  .ncard {
+    display: block; background: #fbfaf8; border: 1px solid var(--line); border-radius: 12px; padding: 22px 22px 20px;
+    transition: border-color 0.3s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ncard:hover { border-color: #c9c0b8; }
+  :global(.theme-d .sticky-call) { background: var(--bg) !important; }
+  :global(.theme-d .sticky-call .btn-call) { border-radius: 10px; }
+  :global(.theme-d .sticky-call a[aria-label]) { color: #211c1c !important; border-radius: 10px; }
+</style>

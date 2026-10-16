@@ -27,6 +27,7 @@ const { size, sub = `Mobil · ${site.phoneDisplay}` } = Astro.props;
   .contact {
     --pad: 8px; --photo: 52px; --name: 18px; --sub: 12px; --call: 48px; --glyph: 22px; --gap: 14px;
     display: inline-flex;
+    width: max-content;
     padding: var(--pad);
     text-align: left;
   }
@@ -39,7 +40,7 @@ const { size, sub = `Mobil · ${site.phoneDisplay}` } = Astro.props;
     object-fit: cover;
     box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgb(0 0 0 / 0.08);
   }
-  .contact-text { display: flex; flex-direction: column; min-width: 0; padding-right: 8px; }
+  .contact-text { display: flex; flex-direction: column; flex-shrink: 0; padding-right: 8px; }
   .contact-name { font-size: var(--name); font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; white-space: nowrap; }
   .contact-sub { margin-top: 2px; font-size: var(--sub); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .contact-call {

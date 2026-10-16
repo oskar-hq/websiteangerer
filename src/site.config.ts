@@ -17,7 +17,11 @@ export const site = {
 };
 
 export const tel = `tel:${site.phone}`;
-export const wa = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(site.whatsappText)}`;
+/** WhatsApp-Link mit vorausgefülltem Text */
+export const waWith = (text: string) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
+/** Text, wenn jemand über ein bestimmtes Projekt oder eine Marke kommt */
+export const waFrom = (what: string) => waWith(`Hey Marvin, ich bin über „${what}“ auf deiner Website zu dir gelangt und möchte kurz sprechen.`);
+export const wa = waWith(site.whatsappText);
 
 export const disciplines = [
   { id: 'design', label: 'Design', line: 'Plakate, Key Visuals, Thumbnails, Corporate Design.' },

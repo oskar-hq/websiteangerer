@@ -14,7 +14,7 @@ import StickyCall from '../components/StickyCall.astro';
 import CallButton from '../components/CallButton.astro';
 import ContactCard from '../components/ContactCard.astro';
 import Icon from '../components/Icon.astro';
-import { site, wa, disciplines } from '../site.config';
+import { site, wa, waFrom, disciplines } from '../site.config';
 import { getWorks, pick, withBase, disciplineLabel, countBy } from '../lib/works';
 
 const works = await getWorks();
@@ -48,6 +48,7 @@ const workData = await Promise.all(
     title: wk.data.title,
     discipline: wk.data.discipline,
     meta: `${wk.data.kind} · ${wk.data.client} · ${disciplineLabel(wk.data.discipline)}`,
+    wa: waFrom(wk.data.title),
     full: (await getImage({ src: wk.data.image, width: Math.min(1400, wk.data.image.width), format: 'webp' })).src,
     small: (await getImage({ src: wk.data.image, width: Math.min(480, wk.data.image.width), format: 'webp' })).src,
   })),
@@ -263,6 +264,12 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <div class="px-3 pt-7 pb-9 text-center md:px-7">
       <p data-lb-title class="m-0 text-[20px] font-semibold tracking-[-0.03em]"></p>
       <p data-lb-meta class="mt-1 text-[13px] text-muted"></p>
+      <div class="mt-5 flex justify-center gap-2">
+        <CallButton size="bar" label="Marvin dazu anrufen" class="flex-none!" />
+        <a data-lb-wa href={wa} target="_blank" rel="noopener" class="btn flex h-[52px] items-center justify-center gap-2.5 px-5 text-[17px] font-semibold tracking-[-0.02em]" aria-label="WhatsApp schreiben">
+          <Icon name="whatsapp" size={21} /><span class="hidden md:inline">WhatsApp</span>
+        </a>
+      </div>
     </div>
   </dialog>
 

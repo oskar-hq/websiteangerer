@@ -12,6 +12,7 @@ import Base from '../layouts/Base.astro';
 import ClientDialog from '../components/ClientDialog.astro';
 import StickyCall from '../components/StickyCall.astro';
 import CallButton from '../components/CallButton.astro';
+import ContactCard from '../components/ContactCard.astro';
 import Icon from '../components/Icon.astro';
 import { site, wa, disciplines } from '../site.config';
 import { getWorks, pick, withBase, disciplineLabel, countBy } from '../lib/works';
@@ -128,7 +129,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           })}
         </div>
         <div data-intro-tile class="absolute top-0 left-0 z-[200] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-          <CallButton size="hero" />
+          <ContactCard size="hero" />
         </div>
       </div>
 
@@ -225,7 +226,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <!-- ABSCHLUSS -->
     <section id="kontakt" class="relative isolate mx-auto max-w-[1440px] px-3 pt-28 pb-28 md:px-7 md:pt-44 md:pb-10">
       <div data-reveal class="flex flex-col items-center">
-        <CallButton size="end" />
+        <ContactCard size="end" sub="Direkt durchwählen" />
         <button type="button" data-copy data-cursor="Nummer kopieren" class="glass-chip mt-6 flex h-[34px] items-center gap-2.5 rounded-full pr-1.5 pl-4 text-[13px] font-medium tabular-nums">
           {site.phoneDisplay}<span data-copy-label class="copy-label flex h-6 items-center rounded-full bg-white/80 px-[9px] font-mono text-[10px] text-muted">KOPIEREN</span>
         </button>

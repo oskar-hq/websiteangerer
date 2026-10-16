@@ -1,0 +1,66 @@
+---
+/**
+ * Kontaktzeile wie in der iOS-Kontakte-App: rundes Foto, Name, rechts der blaue Hörer.
+ * Die ganze Zeile ist der Anruf-Link.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import photo from '../assets/people/marvin.jpg';
+import { site, tel } from '../site.config';
+
+interface Props { size: 'hero' | 'end'; sub?: string }
+const { size, sub = `Mobil · ${site.phoneDisplay}` } = Astro.props;
+---
+
+<a href={tel} class="btn contact" data-size={size} data-magnet="0.15" data-cursor="Jetzt anrufen" aria-label={`${site.name} anrufen`}>
+  <span class="contact-in" data-magnet-inner>
+    <Image src={photo} alt="" width={160} height={160} class="contact-photo" loading="eager" />
+    <span class="contact-text">
+      <span class="contact-name">{site.name}</span>
+      <span class="contact-sub">{sub}</span>
+    </span>
+    <span class="contact-call" aria-hidden="true"><Icon name="phone-fill" size={24} /></span>
+  </span>
+</a>
+
+<style>
+  .contact {
+    --pad: 8px; --photo: 52px; --name: 18px; --sub: 12px; --call: 48px; --glyph: 22px; --gap: 14px;
+    display: inline-flex;
+    padding: var(--pad);
+    text-align: left;
+  }
+  .contact-in { display: flex; align-items: center; gap: var(--gap); }
+  .contact :global(.contact-photo) {
+    width: var(--photo);
+    height: var(--photo);
+    flex-shrink: 0;
+    border-radius: 999px;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgb(0 0 0 / 0.08);
+  }
+  .contact-text { display: flex; flex-direction: column; min-width: 0; padding-right: 8px; }
+  .contact-name { font-size: var(--name); font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; white-space: nowrap; }
+  .contact-sub { margin-top: 2px; font-size: var(--sub); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .contact-call {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--call);
+    height: var(--call);
+    border-radius: 999px;
+    background: #f2f2f4;
+    color: var(--blue);
+    transition: background 0.3s, color 0.3s;
+  }
+  .contact-call :global(svg) { width: var(--glyph); height: var(--glyph); }
+  @media (hover: hover) {
+    .contact:hover .contact-call { background: var(--blue); color: #fff; }
+  }
+
+  .contact[data-size='end'] { --pad: 10px; --photo: 60px; --name: 20px; --sub: 13px; --call: 56px; --glyph: 24px; --gap: 16px; }
+  @media (min-width: 768px) {
+    .contact[data-size='hero'] { --pad: 10px; --photo: 64px; --name: 22px; --sub: 13px; --call: 58px; --glyph: 26px; --gap: 18px; }
+    .contact[data-size='end'] { --pad: 12px; --photo: 84px; --name: 30px; --sub: 15px; --call: 76px; --glyph: 32px; --gap: 22px; }
+  }
+</style>

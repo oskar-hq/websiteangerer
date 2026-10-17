@@ -12,7 +12,7 @@ interface Props { size: 'hero' | 'end'; sub?: string }
 const { size, sub = 'Rückruf anfordern' } = Astro.props;
 ---
 
-<button type="button" class="btn contact" data-callback="" data-size={size} data-magnet="0.15" data-cursor="Rückruf anfordern" aria-label={`Rückruf von ${site.name} anfordern`}>
+<button type="button" class="btn contact" data-callback="" data-size={size} data-magnet="0.15" aria-label={`Rückruf von ${site.name} anfordern`}>
   <span class="contact-in" data-magnet-inner>
     <Image src={photo} alt="" width={160} height={160} class="contact-photo" loading="eager" />
     <span class="contact-text">

@@ -50,7 +50,6 @@ const workData = await Promise.all(
     discipline: wk.data.discipline,
     meta: `${wk.data.kind} · ${wk.data.client} · ${disciplineLabel(wk.data.discipline)}`,
     full: (await getImage({ src: wk.data.image, width: Math.min(1400, wk.data.image.width), format: 'webp' })).src,
-    small: (await getImage({ src: wk.data.image, width: Math.min(480, wk.data.image.width), format: 'webp' })).src,
   })),
 );
 
@@ -72,12 +71,6 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <span data-blob class="blob right-[-12%] top-[-6%] size-[60vw] max-h-[820px] max-w-[820px] [--c:#dcdce0]"></span>
     <span data-blob class="blob left-[30%] top-[45%] size-[50vw] max-h-[680px] max-w-[680px] [--c:#fff]"></span>
     <span data-blob class="blob bottom-[-18%] left-[-14%] size-[52vw] max-h-[700px] max-w-[700px] [--c:#e0e0e4]"></span>
-  </div>
-
-  <!-- Eigener Cursor (nur Desktop mit Maus) -->
-  <div data-cursor-el aria-hidden="true" class="cursor">
-    <span data-cdot class="cursor-dot"></span>
-    <span data-clabel class="cursor-label"></span>
   </div>
 
   <header class="hdr fixed inset-x-0 top-0 z-[1000]">
@@ -123,9 +116,9 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
               </span>
             );
             return o.client ? (
-              <button type="button" {...attrs} data-client={o.client} data-cursor={cl(o.client).data.name} aria-label={`${cl(o.client).data.name} – Details`}>{inner}</button>
+              <button type="button" {...attrs} data-client={o.client} aria-label={`${cl(o.client).data.name} – Details`}>{inner}</button>
             ) : (
-              <a href="#arbeiten" {...attrs} data-cursor="Arbeiten" aria-label="Arbeiten ansehen">{inner}</a>
+              <a href="#arbeiten" {...attrs} aria-label="Arbeiten ansehen">{inner}</a>
             );
           })}
         </div>
@@ -158,7 +151,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </div>
       <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-14">
         {clients.map((c, i) => (
-          <button type="button" data-client={c.id} data-tilt data-cursor="Details" data-reveal style={`--d:${(i % 4) * 80}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
+          <button type="button" data-client={c.id} data-tilt data-reveal style={`--d:${(i % 4) * 80}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
             <span data-tilt-el class="sq-frame aspect-square p-[7px]" style={`rotate:${[-6, 5, -3, 8, -8, 3, 6, -5][i % 8]}deg`}>
               {c.data.logo ? (
                 <span class="sq-inner is-logo"><img src={withBase(c.data.logo)} alt={c.data.name} draggable="false" class="size-[56%] object-contain" /></span>
@@ -194,7 +187,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </div>
       <div data-grid class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-16">
         {works.map((wk, i) => (
-          <figure data-work={i} data-disc={wk.data.discipline} data-tilt data-cursor="Ansehen" data-reveal hidden={i >= shown} style={`--d:${(i % 4) * 80}ms`} class="card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
+          <figure data-work={i} data-disc={wk.data.discipline} data-tilt data-reveal hidden={i >= shown} style={`--d:${(i % 4) * 80}ms`} class="card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
             <span data-tilt-el class="sq-frame aspect-square p-[7px]" style={`rotate:${[4, -6, 7, -3, -8, 5, -4, 6][i % 8]}deg`}>
               <span class="sq-inner work-img"><Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[300, 500]} sizes="(min-width: 768px) 22vw, 44vw" draggable="false" class="size-full object-cover" /></span>
             </span>
@@ -213,7 +206,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <section id="disziplinen" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
       <ul data-disc-list class="disc-list m-0 flex list-none flex-col gap-1 rounded-[36px] p-2">
         {disciplines.map((d, i) => (
-          <li data-disc-row={d.id} data-callback={counts[d.id] ? undefined : d.label} data-reveal data-cursor={counts[d.id] ? 'Arbeiten zeigen' : 'Rückruf anfordern'} style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
+          <li data-disc-row={d.id} data-callback={counts[d.id] ? undefined : d.label} data-reveal style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
             <span class="grid items-baseline gap-1 md:grid-cols-[1fr_1fr_120px]">
               <span class="disc-label text-[clamp(2rem,9vw,2.4rem)] leading-[1.05] font-semibold tracking-[-0.045em] md:text-[min(4.2vw,3.6rem)]">{d.label}</span>
               <span class="text-[14px] text-muted md:text-[16px]">{d.line}</span>
@@ -239,13 +232,6 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </footer>
     </section>
   </main>
-
-  <!-- Vorschau-Stapel beim Hover über Disziplinen (Desktop) -->
-  <div data-preview aria-hidden="true" class="preview hidden md:block">
-    <div data-preview-stack class="preview-stack">
-      <img alt="" data-p="2" /><img alt="" data-p="1" /><img alt="" data-p="0" />
-    </div>
-  </div>
 
   <!-- Lightbox -->
   <dialog id="lb" class="lb" aria-label="Arbeit ansehen">
@@ -281,25 +267,6 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     filter: blur(40px);
     opacity: 0.75;
   }
-
-  /* Cursor */
-  .cursor { position: fixed; left: 0; top: 0; z-index: 3000; pointer-events: none; display: none; opacity: 0; transition: opacity 0.3s; }
-  :global(html.has-cursor) .cursor { display: block; }
-  .cursor-dot {
-    position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 999px; background: #0a0a0a;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 4px 12px -2px rgb(0 0 0 / 0.25);
-    transition: scale 0.45s var(--ease-out);
-  }
-  .cursor-label {
-    position: absolute; left: 0; top: 0; translate: -50% -50%; height: 40px; padding: 0 18px; display: flex; align-items: center;
-    border-radius: 999px; color: var(--fg); font-size: 13px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; scale: 0;
-    transition: scale 0.45s var(--ease-out);
-    background: linear-gradient(160deg, rgb(255 255 255 / 0.78), rgb(255 255 255 / 0.45));
-    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: inset 0 1px 0.5px rgb(255 255 255 / 0.95), 0 0 0 0.5px rgb(255 255 255 / 0.8), 0 10px 30px -8px rgb(0 0 0 / 0.3);
-  }
-  .cursor.has-label .cursor-dot { scale: 0; }
-  .cursor.has-label .cursor-label { scale: 1; }
 
   /* Header */
   .hdr { padding: 10px 12px; transition: padding 0.6s var(--ease-out); }
@@ -386,23 +353,6 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
   .disc-row.is-hover { background: rgb(255 255 255 / 0.75); box-shadow: inset 0 1px 0.5px #fff, 0 12px 30px -16px rgb(0 0 0 / 0.35); }
   @media (min-width: 768px) { .disc-row.is-hover .disc-label { translate: 14px 0; } }
 
-
-  /* Vorschau */
-  .preview { position: fixed; left: 0; top: 0; z-index: 500; pointer-events: none; }
-  .preview-stack {
-    position: relative; width: 220px; height: 220px; translate: -50% -50%; opacity: 0; scale: 0.6;
-    transition: opacity 0.45s var(--ease-out), scale 0.6s var(--ease-spring);
-  }
-  .preview-stack.is-on { opacity: 1; scale: 1; }
-  .preview-stack img {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 30%;
-    border: 5px solid rgb(255 255 255 / 0.75); box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.45);
-    transition: rotate 0.8s var(--ease-out), translate 0.8s var(--ease-out);
-  }
-  .preview-stack img:not([src]) { display: none; }
-  .preview-stack img[data-p='0'] { rotate: -2deg; }
-  .preview-stack img[data-p='1'] { rotate: 8deg; translate: 34px 14px; }
-  .preview-stack img[data-p='2'] { rotate: -10deg; translate: -30px 22px; }
 
   /* Lightbox */
   .lb {

@@ -1,6 +1,6 @@
 /**
  * Seitenverhalten der Startseite:
- * Einblenden, Header-Zustand, Menü, 3D-Orbit, Cursor, Magnet- & Kipp-Effekte, Rückruf-Formular,
+ * Einblenden, Header-Zustand, Menü, 3D-Orbit, Magnet- & Kipp-Effekte, Rückruf-Formular,
  * Filter, Lightbox, Disziplin-Vorschau, Detailansicht für Marken/Creator.
  */
 const root = document.documentElement;
@@ -70,29 +70,11 @@ document.addEventListener('click', (e) => {
   if (state.menu && !(e.target as HTMLElement).closest('[data-menu],nav')) setMenu(false);
 });
 
-/* ---------- Cursor ---------- */
-const cursor = $('[data-cursor-el]');
-const label = $('[data-clabel]');
-const useCursor = () => fine && md;
-const syncCursorMode = () => root.classList.toggle('has-cursor', useCursor());
-syncCursorMode();
-let lastLabel = '';
-document.addEventListener('mouseover', (e) => {
-  const t = (e.target as HTMLElement).closest?.('[data-cursor]');
-  const txt = t ? t.getAttribute('data-cursor') || '' : '';
-  if (txt === lastLabel || !cursor || !label) return;
-  lastLabel = txt;
-  if (txt) label.textContent = txt;
-  cursor.classList.toggle('has-label', !!txt);
-});
-root.addEventListener('mouseleave', () => { if (cursor) cursor.style.opacity = '0'; });
-
 /* ---------- Maus ---------- */
 const mouse = { x: innerWidth / 2, y: innerHeight / 2, nx: 0, ny: 0 };
 addEventListener('mousemove', (e) => {
   mouse.x = e.clientX; mouse.y = e.clientY;
   mouse.nx = e.clientX / innerWidth - 0.5; mouse.ny = e.clientY / innerHeight - 0.5;
-  if (cursor) cursor.style.opacity = useCursor() ? '1' : '0';
 }, { passive: true });
 
 /* ---------- Drück-Feedback ---------- */
@@ -159,14 +141,13 @@ if (!reduce) {
 const ring = $('[data-ring]');
 const stage = $('[data-stage]');
 const heroFoot = $('[data-hero-foot]');
-const preview = $('[data-preview]');
 const orbs = ring ? $$('.orb', ring) : [];
 const orbData = orbs.map((el) => ({ a: +el.dataset.a!, o: +el.dataset.o! }));
 ring?.addEventListener('mouseenter', () => (state.hovering = true));
 ring?.addEventListener('mouseleave', () => (state.hovering = false));
 
 let spin = 0, speed = 1;
-const par = { x: 0, y: 0 }, cur = { x: mouse.x, y: mouse.y }, pv = { x: mouse.x, y: mouse.y };
+const par = { x: 0, y: 0 };
 const t0 = performance.now();
 let last = t0;
 const REV = 120_000;
@@ -198,21 +179,13 @@ function frame(t: number) {
   }
   if (stage) stage.style.opacity = String(1 - sp * 0.9);
   if (heroFoot) heroFoot.style.transform = `translate3d(0,${(-sp * vh * 0.18).toFixed(1)}px,0)`;
-  if (cursor && useCursor()) {
-    cur.x += (mouse.x - cur.x) * 0.2; cur.y += (mouse.y - cur.y) * 0.2;
-    cursor.style.transform = `translate3d(${cur.x}px,${cur.y}px,0)`;
-  }
-  if (preview && md) {
-    pv.x += (mouse.x - pv.x) * 0.1; pv.y += (mouse.y - pv.y) * 0.1;
-    preview.style.transform = `translate3d(${pv.x}px,${pv.y}px,0) rotate(${((mouse.x - pv.x) * 0.04).toFixed(2)}deg)`;
-  }
   blobs.forEach((b, i) => { b.style.translate = `${(par.x * (i % 2 ? -60 : 60)).toFixed(1)}px ${(par.y * 40 - scrollY * (0.05 + i * 0.02)).toFixed(1)}px`; });
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 /* ---------- Arbeiten: Filter, „Alle zeigen“ ---------- */
-type WorkData = { title: string; discipline: string; meta: string; full: string; small: string };
+type WorkData = { title: string; discipline: string; meta: string; full: string };
 const workData: WorkData[] = JSON.parse($('#works-data')?.textContent || '[]');
 const grid = $('[data-grid]');
 const cells = grid ? $$('[data-work]', grid) : [];
@@ -251,7 +224,7 @@ $$('[data-filter]').forEach((b) => b.addEventListener('click', () => setFilter(b
 moreBtn?.addEventListener('click', () => { showAll = true; applyFilter(false); observeReveal(grid!); });
 addEventListener('resize', () => {
   const m = innerWidth >= 768;
-  if (m !== md) { md = m; syncCursorMode(); }
+  md = m;
   moveThumb();
 });
 document.fonts?.ready.then(moveThumb);
@@ -316,19 +289,11 @@ if (lb) {
 
 /* ---------- Disziplinen ---------- */
 const discList = $('[data-disc-list]');
-const stack = $('[data-preview-stack]');
 $$('[data-disc-row]').forEach((row) => {
   const id = row.dataset.discRow!;
   row.addEventListener('mouseenter', () => {
     discList?.classList.add('has-hover');
     $$('[data-disc-row]').forEach((r) => r.classList.toggle('is-hover', r === row));
-    if (!stack) return;
-    const imgs = workData.filter((w) => w.discipline === id).slice(0, 3);
-    $$<HTMLImageElement>('img', stack).forEach((img) => {
-      const w = imgs[+img.dataset.p!];
-      if (w) img.src = w.small; else img.removeAttribute('src');
-    });
-    stack.classList.add('is-on');
   });
   // Zeilen mit [data-callback] (Disziplin ohne Arbeiten) öffnen stattdessen den Rückruf
   const go = () => { if (row.dataset.callback === undefined) { setFilter(id); scrollToId('arbeiten'); } };
@@ -338,7 +303,6 @@ $$('[data-disc-row]').forEach((row) => {
 discList?.addEventListener('mouseleave', () => {
   discList.classList.remove('has-hover');
   $$('[data-disc-row]').forEach((r) => r.classList.remove('is-hover'));
-  stack?.classList.remove('is-on');
 });
 
 /* ---------- Detailansicht Marke / Creator ---------- */

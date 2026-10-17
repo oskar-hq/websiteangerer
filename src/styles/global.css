@@ -123,8 +123,6 @@ html.js [data-line]:not(.is-in) { transform: translate3d(0, 108%, 0); }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-html.has-cursor [data-cursor],
-html.has-cursor [data-cursor] * { cursor: none; }
 html.is-locked { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {

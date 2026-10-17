@@ -16,7 +16,7 @@ export const site = {
  */
 export const callback = {
   endpoint: 'https://api.web3forms.com/submit',
-  accessKey: '',
+  accessKey: '0df4eda0-b143-47df-a735-deaa8dfb8847',
 };
 
 export const disciplines = [

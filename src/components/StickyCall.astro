@@ -1,16 +1,11 @@
 ---
 /** Mobile: schwebende Glas-Leiste im Daumenbereich, erscheint nach dem Hero. */
-import Icon from './Icon.astro';
 import CallButton from './CallButton.astro';
-import { wa } from '../site.config';
 ---
 
 <div class="sticky-call md:hidden" data-sticky>
   <div class="flex gap-2">
     <CallButton size="bar" />
-    <a href={wa} target="_blank" rel="noopener" class="btn grid size-[52px] shrink-0 place-items-center" aria-label="WhatsApp schreiben">
-      <Icon name="whatsapp" size={22} />
-    </a>
   </div>
 </div>
 

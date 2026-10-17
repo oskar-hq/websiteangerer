@@ -13,7 +13,7 @@ npm run build    # -> dist/
 
 ## Inhalte pflegen
 
-- **Kontakt & Disziplinen:** `src/site.config.ts` (Name, Telefon, WhatsApp, Disziplinen)
+- **Kontakt & Disziplinen:** `src/site.config.ts` (Name, Disziplinen, Rückruf-Formular: Web3Forms-Access-Key unter `callback.accessKey`)
 - **Marken & Creator:** eine JSON-Datei pro Eintrag in `src/content/clients/` (`tier: 1` = Headliner).
   Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
   Die Detailansicht („Unser Netzwerk arbeitet für …“) zeigt `items` (Leistung, Profi, Disziplin) und `works`.

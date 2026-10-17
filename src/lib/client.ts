@@ -212,7 +212,7 @@ function frame(t: number) {
 requestAnimationFrame(frame);
 
 /* ---------- Arbeiten: Filter, „Alle zeigen“ ---------- */
-type WorkData = { title: string; discipline: string; meta: string; full: string; small: string; wa: string };
+type WorkData = { title: string; discipline: string; meta: string; full: string; small: string };
 const workData: WorkData[] = JSON.parse($('#works-data')?.textContent || '[]');
 const grid = $('[data-grid]');
 const cells = grid ? $$('[data-work]', grid) : [];
@@ -273,7 +273,6 @@ function renderLb(dir = 0) {
   img.src = d.full; img.alt = d.title;
   $('[data-lb-title]', lb!)!.textContent = d.title;
   $('[data-lb-meta]', lb!)!.textContent = d.meta;
-  $<HTMLAnchorElement>('[data-lb-wa]', lb!)!.href = d.wa;
   $('[data-callback]', lb!)!.dataset.callback = d.title;
   $('[data-lb-counter]', lb!)!.textContent = `${String(lbIndex + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')}`;
   if (dir && !reduce) img.animate([{ opacity: 0, transform: `translate3d(${dir * 40}px,0,0) scale(.98)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: ease });
@@ -481,7 +480,7 @@ if (cb) {
       form.reset();
       form.classList.add('hidden'); done.classList.remove('hidden');
     } catch {
-      fail('Das hat leider nicht geklappt. Bitte versuch es gleich noch einmal oder schreib per WhatsApp.');
+      fail('Das hat leider nicht geklappt. Bitte versuch es gleich noch einmal.');
     } finally {
       submit.disabled = false;
     }

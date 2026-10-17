@@ -10,6 +10,7 @@ import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ClientDialog from '../components/ClientDialog.astro';
+import CallbackDialog from '../components/CallbackDialog.astro';
 import StickyCall from '../components/StickyCall.astro';
 import CallButton from '../components/CallButton.astro';
 import ContactCard from '../components/ContactCard.astro';
@@ -60,7 +61,8 @@ const menu = [
   { label: 'Disziplinen', href: '#disziplinen', count: pad2(disciplines.length) },
   { label: 'Kontakt', href: '#kontakt', count: '→' },
 ];
-const filters = [{ id: 'all', label: 'Alle', n: works.length }, ...disciplines.map((d) => ({ id: d.id, label: d.label, n: counts[d.id] ?? 0 }))];
+// Disziplinen ohne Arbeiten (z. B. Consulting) tauchen im Filter nicht auf – ihr Klick öffnet den Rückruf
+const filters = [{ id: 'all', label: 'Alle', n: works.length }, ...disciplines.filter((d) => counts[d.id]).map((d) => ({ id: d.id, label: d.label, n: counts[d.id] }))];
 const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracking-[-0.05em] md:text-[min(5.2vw,4.6rem)]';
 ---
 
@@ -101,7 +103,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </div>
       <div data-reveal style="--d:160ms" class="flex items-center gap-2">
         <a href={wa} target="_blank" rel="noopener" data-cursor="WhatsApp" class="btn hidden size-11 place-items-center md:grid" aria-label="WhatsApp"><Icon name="whatsapp" size={18} /></a>
-        <CallButton size="header" label="Anrufen" class="max-md:hidden!" />
+        <CallButton size="header" label="Rückruf" class="max-md:hidden!" />
       </div>
     </div>
   </header>
@@ -213,11 +215,11 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <section id="disziplinen" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
       <ul data-disc-list class="disc-list m-0 flex list-none flex-col gap-1 rounded-[36px] p-2">
         {disciplines.map((d, i) => (
-          <li data-disc-row={d.id} data-reveal data-cursor="Arbeiten zeigen" style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
+          <li data-disc-row={d.id} data-callback={counts[d.id] ? undefined : d.label} data-reveal data-cursor={counts[d.id] ? 'Arbeiten zeigen' : 'Rückruf anfordern'} style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
             <span class="grid items-baseline gap-1 md:grid-cols-[1fr_1fr_120px]">
               <span class="disc-label text-[clamp(2rem,9vw,2.4rem)] leading-[1.05] font-semibold tracking-[-0.045em] md:text-[min(4.2vw,3.6rem)]">{d.label}</span>
               <span class="text-[14px] text-muted md:text-[16px]">{d.line}</span>
-              <span class="hidden text-right font-mono text-[11px] text-muted tabular-nums md:block">{pad2(counts[d.id] ?? 0)} Arbeiten</span>
+              <span class="hidden text-right font-mono text-[11px] text-muted tabular-nums md:block">{counts[d.id] ? `${pad2(counts[d.id])} Arbeiten` : 'Gespräch →'}</span>
             </span>
           </li>
         ))}
@@ -227,10 +229,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <!-- ABSCHLUSS -->
     <section id="kontakt" class="relative isolate mx-auto max-w-[1440px] px-3 pt-28 pb-28 md:px-7 md:pt-44 md:pb-10">
       <div data-reveal class="flex flex-col items-center">
-        <ContactCard size="end" sub="Direkt durchwählen" />
-        <button type="button" data-copy data-cursor="Nummer kopieren" class="glass-chip mt-6 flex h-[34px] items-center gap-2.5 rounded-full pr-1.5 pl-4 text-[13px] font-medium tabular-nums">
-          {site.phoneDisplay}<span data-copy-label class="copy-label flex h-6 items-center rounded-full bg-white/80 px-[9px] font-mono text-[10px] text-muted">KOPIEREN</span>
-        </button>
+        <ContactCard size="end" />
       </div>
       <h2 class="mt-24 text-[clamp(3rem,14vw,4rem)] leading-[0.92] font-semibold tracking-[-0.055em] md:mt-32 md:text-[min(9vw,8.5rem)]">
         <span class="line-mask"><span data-line>Ein Name,</span></span>
@@ -265,7 +264,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       <p data-lb-title class="m-0 text-[20px] font-semibold tracking-[-0.03em]"></p>
       <p data-lb-meta class="mt-1 text-[13px] text-muted"></p>
       <div class="mt-5 flex justify-center gap-2">
-        <CallButton size="bar" label="Marvin dazu anrufen" class="flex-none!" />
+        <CallButton size="bar" class="flex-none!" />
         <a data-lb-wa href={wa} target="_blank" rel="noopener" class="btn flex h-[52px] items-center justify-center gap-2.5 px-5 text-[17px] font-semibold tracking-[-0.02em]" aria-label="WhatsApp schreiben">
           <Icon name="whatsapp" size={21} /><span class="hidden md:inline">WhatsApp</span>
         </a>
@@ -275,6 +274,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
 
   <StickyCall />
   <ClientDialog clients={clients} works={works} />
+  <CallbackDialog />
   <script type="application/json" id="works-data" set:html={JSON.stringify(workData)} />
 </Base>
 
@@ -391,8 +391,6 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
   .disc-row.is-hover { background: rgb(255 255 255 / 0.75); box-shadow: inset 0 1px 0.5px #fff, 0 12px 30px -16px rgb(0 0 0 / 0.35); }
   @media (min-width: 768px) { .disc-row.is-hover .disc-label { translate: 14px 0; } }
 
-  .copy-label { transition: color 0.3s; }
-  .copy-label.is-done { color: #248a3d; }
 
   /* Vorschau */
   .preview { position: fixed; left: 0; top: 0; z-index: 500; pointer-events: none; }

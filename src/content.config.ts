@@ -12,7 +12,7 @@ const works = defineCollection({
     z.object({
       title: z.string(),
       client: z.string(),
-      discipline: z.enum(['design', 'video', 'social', 'management', 'software']),
+      discipline: z.enum(['design', 'video', 'social', 'management', 'software', 'consulting']),
       medium: z.enum(['image', 'video']),
       /** Art der Arbeit, z. B. "Thumbnail", "Plakat", "Reel" */
       kind: z.string(),

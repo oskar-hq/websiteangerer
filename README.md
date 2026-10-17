@@ -23,7 +23,7 @@ npm run build    # -> dist/
 ---
 title: "Titel der Arbeit"
 client: "Kunde"
-discipline: design        # design | video | social | management | software
+discipline: design        # design | video | social | management | software | consulting
 medium: image             # image | video
 kind: "Thumbnail"         # freie Bezeichnung: Plakat, Reel, Spot …
 image: "../../assets/works/datei.jpg"

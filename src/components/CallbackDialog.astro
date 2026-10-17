@@ -1,0 +1,113 @@
+---
+/**
+ * Rückruf statt Nummer: Besucher hinterlassen Name und Telefonnummer, Marvin ruft zurück.
+ * Öffnet sich über jedes Element mit [data-callback] (Wert = Anlass, z. B. Marke oder Arbeit).
+ * Versand über Web3Forms (siehe callback in site.config.ts), Logik in src/lib/client.ts.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import photo from '../assets/people/marvin.jpg';
+import { site, callback } from '../site.config';
+
+const times = ['Egal', 'Vormittags', 'Mittags', 'Nachmittags', 'Abends'];
+---
+
+<dialog id="callback-dialog" class="cd cb" aria-labelledby="cb-title" data-endpoint={callback.endpoint} data-key={callback.accessKey}>
+  <div class="cd-panel">
+    <button type="button" class="btn cd-close grid size-11 place-items-center" data-close aria-label="Schließen">
+      <Icon name="close" size={12} />
+    </button>
+
+    <form data-cb-form novalidate>
+      <div class="flex items-center gap-4">
+        <Image src={photo} alt="" width={128} height={128} class="size-14 rounded-full object-cover md:size-16" />
+        <span data-cb-context class="cb-context hidden rounded-full px-3 py-1.5 text-[12px] font-medium"></span>
+      </div>
+      <h2 id="cb-title" class="mt-8 text-[clamp(2rem,8.4vw,2.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] md:text-[3rem]">
+        {site.name.split(' ')[0]} ruft <span class="text-soft">dich zurück.</span>
+      </h2>
+      <p class="mt-3 text-[15px] text-muted">Hinterlass deine Nummer – du bekommst einen Rückruf, meist noch am selben Tag.</p>
+
+      <div class="mt-8 grid gap-3 md:grid-cols-2">
+        <label class="cb-field">
+          <span>Name</span>
+          <input name="name" type="text" autocomplete="name" required placeholder="Vor- und Nachname" />
+        </label>
+        <label class="cb-field">
+          <span>Telefonnummer</span>
+          <input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+49 …" pattern="[+0-9 ()/\-]{6,}" />
+        </label>
+        <label class="cb-field md:col-span-2">
+          <span>Worum geht's? <em>optional</em></span>
+          <textarea name="message" rows="3" placeholder="Kurz dein Anliegen"></textarea>
+        </label>
+      </div>
+
+      <fieldset class="mt-5">
+        <legend class="text-[13px] font-medium text-muted">Wann passt es dir?</legend>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {times.map((t, i) => (
+            <label class="cb-chip">
+              <input type="radio" name="time" value={t} checked={i === 0} />
+              <span>{t}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Spam-Falle: bleibt für Menschen unsichtbar -->
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+
+      <p data-cb-error class="mt-5 hidden text-[14px] text-[#d70015]" role="alert"></p>
+
+      <button type="submit" data-cb-submit class="cb-submit mt-7 flex h-[60px] w-full items-center justify-center gap-2.5 rounded-full text-[17px] font-semibold tracking-[-0.02em] md:w-auto md:px-9">
+        <Icon name="phone-fill" size={20} /> Rückruf anfordern
+      </button>
+      <p class="mt-4 text-[12px] text-muted">Deine Nummer wird nur für den Rückruf genutzt und nicht weitergegeben.</p>
+    </form>
+
+    <div data-cb-done class="hidden py-6 text-center" role="status">
+      <span class="mx-auto grid size-16 place-items-center rounded-full bg-[var(--blue)] text-white"><Icon name="phone-fill" size={28} /></span>
+      <h2 class="mt-6 text-[2rem] leading-none font-semibold tracking-[-0.045em]">Danke<span data-cb-name></span>!</h2>
+      <p class="mt-3 text-[15px] text-muted">{site.name.split(' ')[0]} meldet sich bei dir.</p>
+      <button type="button" data-close class="btn mt-8 h-12 px-7 text-[15px] font-semibold">Schließen</button>
+    </div>
+  </div>
+</dialog>
+
+<style is:global>
+  .cb-context { background: rgb(0 122 255 / 0.1); color: var(--blue); }
+  .cb-field { display: flex; flex-direction: column; gap: 6px; }
+  .cb-field > span { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .cb-field em { font-style: normal; opacity: 0.6; }
+  .cb-field input,
+  .cb-field textarea {
+    width: 100%;
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font: inherit;
+    font-size: 16px;
+    color: var(--fg);
+    background: rgb(255 255 255 / 0.8);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08);
+    outline: none;
+    resize: vertical;
+    transition: box-shadow 0.25s;
+  }
+  .cb-field input:focus,
+  .cb-field textarea:focus { box-shadow: inset 0 0 0 2px var(--blue); }
+  .cb-field input[aria-invalid='true'] { box-shadow: inset 0 0 0 2px #d70015; }
+  .cb-chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .cb-chip span {
+    display: flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    background: rgb(255 255 255 / 0.8); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08);
+    transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+  }
+  .cb-chip input:checked + span { background: var(--fg); color: #fff; box-shadow: none; }
+  .cb-chip input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .cb-submit { background: var(--blue); color: #fff; transition: background 0.3s, opacity 0.3s; }
+  .cb-submit:hover { background: #006ae0; }
+  .cb-submit[disabled] { opacity: 0.6; cursor: progress; }
+</style>

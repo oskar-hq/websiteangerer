@@ -17,6 +17,16 @@ export const site = {
 };
 
 export const tel = `tel:${site.phone}`;
+
+/**
+ * Rückruf-Formular: Besucher hinterlassen ihre Nummer, Marvin bekommt eine E-Mail.
+ * Dienst: Web3Forms (kostenlos). Auf https://web3forms.com mit Marvins E-Mail einen
+ * Access Key erzeugen und hier eintragen. Solange er leer ist, wird nichts verschickt.
+ */
+export const callback = {
+  endpoint: 'https://api.web3forms.com/submit',
+  accessKey: '',
+};
 /** WhatsApp-Link mit vorausgefülltem Text */
 export const waWith = (text: string) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
 /** Text, wenn jemand über ein bestimmtes Projekt oder eine Marke kommt */
@@ -29,6 +39,7 @@ export const disciplines = [
   { id: 'social', label: 'Social Media', line: 'Formate, Content-Pläne, laufende Betreuung.' },
   { id: 'management', label: 'Management', line: 'Vermittlung in die Creator-Welt, Booking, Events.' },
   { id: 'software', label: 'Software', line: 'KI & Optimierung für Outreach und Operatives – Ylva Labs.' },
+  { id: 'consulting', label: 'Consulting', line: 'Social-Media-Content-Strategie, Business Development für Kreativ-Dienstleister, Sales.' },
 ] as const;
 
 export type DisciplineId = (typeof disciplines)[number]['id'];

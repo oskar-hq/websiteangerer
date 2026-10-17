@@ -1,7 +1,7 @@
 /**
  * Seitenverhalten der Startseite:
- * Einblenden, Header-Zustand, Menü, 3D-Orbit, Cursor, Magnet- & Kipp-Effekte,
- * Filter, Lightbox, Disziplin-Vorschau, Nummer kopieren, Detailansicht für Marken/Creator.
+ * Einblenden, Header-Zustand, Menü, 3D-Orbit, Cursor, Magnet- & Kipp-Effekte, Rückruf-Formular,
+ * Filter, Lightbox, Disziplin-Vorschau, Detailansicht für Marken/Creator.
  */
 const root = document.documentElement;
 const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
@@ -274,6 +274,7 @@ function renderLb(dir = 0) {
   $('[data-lb-title]', lb!)!.textContent = d.title;
   $('[data-lb-meta]', lb!)!.textContent = d.meta;
   $<HTMLAnchorElement>('[data-lb-wa]', lb!)!.href = d.wa;
+  $('[data-callback]', lb!)!.dataset.callback = d.title;
   $('[data-lb-counter]', lb!)!.textContent = `${String(lbIndex + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')}`;
   if (dir && !reduce) img.animate([{ opacity: 0, transform: `translate3d(${dir * 40}px,0,0) scale(.98)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: ease });
 }
@@ -301,7 +302,7 @@ if (lb) {
     const t = e.target as HTMLElement;
     const step = t.closest<HTMLElement>('[data-lb-step]');
     if (step) { stepLb(+step.dataset.lbStep!); return; }
-    if (t.closest('a')) return;
+    if (t.closest('a,[data-callback]')) return;
     if (t.closest('[data-lb-close]') || !t.closest('[data-lb-img]')) closeLb();
   });
   lb.addEventListener('keydown', (e) => {
@@ -330,25 +331,15 @@ $$('[data-disc-row]').forEach((row) => {
     });
     stack.classList.add('is-on');
   });
-  const go = () => { setFilter(id); scrollToId('arbeiten'); };
+  // Zeilen mit [data-callback] (Disziplin ohne Arbeiten) öffnen stattdessen den Rückruf
+  const go = () => { if (row.dataset.callback === undefined) { setFilter(id); scrollToId('arbeiten'); } };
   row.addEventListener('click', go);
-  row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.click(); } });
 });
 discList?.addEventListener('mouseleave', () => {
   discList.classList.remove('has-hover');
   $$('[data-disc-row]').forEach((r) => r.classList.remove('is-hover'));
   stack?.classList.remove('is-on');
-});
-
-/* ---------- Nummer kopieren ---------- */
-const copyBtn = $('[data-copy]');
-let copyT = 0;
-copyBtn?.addEventListener('click', () => {
-  navigator.clipboard?.writeText('+491700000000').catch(() => {});
-  const l = $('[data-copy-label]', copyBtn)!;
-  l.textContent = 'KOPIERT'; l.classList.add('is-done'); copyBtn.dataset.cursor = 'Kopiert';
-  clearTimeout(copyT);
-  copyT = window.setTimeout(() => { l.textContent = 'KOPIEREN'; l.classList.remove('is-done'); copyBtn.dataset.cursor = 'Nummer kopieren'; }, 1800);
 });
 
 /* ---------- Detailansicht Marke / Creator ---------- */
@@ -410,6 +401,90 @@ if (dlg) {
     panel.style.transition = '';
     panel.style.transform = '';
     if (dy > 110) close();
+  });
+}
+
+/* ---------- Rückruf ---------- */
+const cb = $<HTMLDialogElement>('#callback-dialog');
+if (cb) {
+  const form = $<HTMLFormElement>('[data-cb-form]', cb)!;
+  const done = $('[data-cb-done]', cb)!;
+  const ctx = $('[data-cb-context]', cb)!;
+  const err = $('[data-cb-error]', cb)!;
+  const submit = $<HTMLButtonElement>('[data-cb-submit]', cb)!;
+  const panel = $('.cd-panel', cb)!;
+  let context = '';
+
+  const openCb = (about: string) => {
+    context = about;
+    ctx.textContent = about ? `Zu: ${about}` : '';
+    ctx.classList.toggle('hidden', !about);
+    form.classList.remove('hidden'); done.classList.add('hidden'); err.classList.add('hidden');
+    panel.scrollTop = 0;
+    state.dialog = true; setMenu(false); lock(true);
+    cb.showModal();
+    requestAnimationFrame(() => requestAnimationFrame(() => cb.classList.add('is-open')));
+    if (fine) setTimeout(() => $<HTMLInputElement>('input[name="name"]', form)?.focus(), 300);
+  };
+  const closeCb = () => {
+    if (!cb.open) return;
+    cb.classList.remove('is-open');
+    setTimeout(() => {
+      cb.close();
+      // Andere Overlays (Lightbox, Detailansicht) können darunter noch offen sein
+      if (!document.querySelector('dialog[open]')) { state.dialog = false; lock(false); }
+    }, reduce ? 0 : 480);
+  };
+
+  document.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest?.<HTMLElement>('[data-callback]');
+    if (!t) return;
+    e.preventDefault();
+    openCb(t.dataset.callback || '');
+  });
+  cb.addEventListener('cancel', (e) => { e.preventDefault(); closeCb(); });
+  cb.addEventListener('click', (e) => {
+    if (e.target === cb || (e.target as HTMLElement).closest('[data-close]')) closeCb();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const name = String(fd.get('name') || '').trim();
+    const phone = String(fd.get('phone') || '').trim();
+    const fields = { name: !!name, phone: /^[+0-9 ()/-]{6,}$/.test(phone) };
+    Object.entries(fields).forEach(([k, ok]) => $(`[name="${k}"]`, form)!.setAttribute('aria-invalid', String(!ok)));
+    const fail = (msg: string) => { err.textContent = msg; err.classList.remove('hidden'); };
+    if (!fields.name || !fields.phone) return fail('Bitte Name und eine gültige Telefonnummer angeben.');
+    if (fd.get('botcheck')) return;
+    const key = cb.dataset.key;
+    if (!key) return fail('Das Rückruf-Formular ist noch nicht verbunden. Bitte später erneut versuchen.');
+
+    submit.disabled = true; err.classList.add('hidden');
+    try {
+      const res = await fetch(cb.dataset.endpoint!, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: key,
+          subject: `Rückruf-Wunsch: ${name}${context ? ` (${context})` : ''}`,
+          from_name: 'Website',
+          name, phone,
+          anliegen: String(fd.get('message') || '').trim() || '–',
+          zeit: fd.get('time'),
+          ueber: context || 'Allgemein',
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.success === false) throw new Error(json.message || res.statusText);
+      $('[data-cb-name]', done)!.textContent = `, ${name.split(' ')[0]}`;
+      form.reset();
+      form.classList.add('hidden'); done.classList.remove('hidden');
+    } catch {
+      fail('Das hat leider nicht geklappt. Bitte versuch es gleich noch einmal oder schreib per WhatsApp.');
+    } finally {
+      submit.disabled = false;
+    }
   });
 }
 

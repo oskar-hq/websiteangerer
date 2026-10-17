@@ -2,10 +2,9 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-// GitHub Pages: https://oskar-hq.github.io/websiteangerer/
+// GitHub Pages mit eigener Domain (DNS bei Strato, Custom domain in den Repo-Einstellungen)
 export default defineConfig({
-  site: 'https://oskar-hq.github.io',
-  base: '/websiteangerer',
+  site: 'https://marvinangerer.de',
   trailingSlash: 'ignore',
   devToolbar: { enabled: false },
   vite: { plugins: [tailwindcss()] },

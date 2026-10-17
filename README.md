@@ -7,7 +7,7 @@ Marken, Creator und Arbeiten als gekippte Squircles. Farbe kommt nur aus Logos, 
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321/websiteangerer/
+npm run dev      # http://localhost:4321/
 npm run build    # -> dist/
 ```
 
@@ -39,4 +39,4 @@ Bilder in `src/assets/` werden beim Build automatisch als WebP in mehreren Grö�
 ## GitHub Pages
 
 Der Workflow `.github/workflows/deploy.yml` baut und veröffentlicht bei jedem Push.
-URL: https://oskar-hq.github.io/websiteangerer/
+URL: https://marvinangerer.de (DNS bei Strato: A 185.199.108.153, AAAA 2606:50c0:8000::153, www → CNAME oskar-hq.github.io)

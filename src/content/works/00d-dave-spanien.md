@@ -1,11 +1,11 @@
 ---
 title: "Glamping in Spanien"
-client: "THE RACE"
-reference: therace
+client: "Dave"
+reference: dave
 discipline: design
 medium: image
 kind: "Thumbnail"
-image: "../../assets/works/therace-spanien.jpg"
+image: "../../assets/works/dave-spanien.jpg"
 order: 4
 placeholder: false
 ---

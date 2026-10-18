@@ -5,6 +5,8 @@
   "order": 210,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "dave-spanien"
+  ],
   "photo": "../../assets/people/dave.jpg"
 }

@@ -1,12 +1,11 @@
 ---
 /**
  * Startseite – Liquid Glass.
- * Heller Grund mit treibenden Lichtflecken, Glas-Header, 3D-Orbit aus Marken, Creatorn und Arbeiten
+ * Heller Grund mit treibenden Lichtflecken, Glas-Header, 3D-Orbit aus Marken und Creatorn
  * um den zentralen Anruf-Button. Darunter Netzwerk, filterbare Arbeiten mit Lightbox, Disziplinen, Abschluss.
  * Verhalten: src/lib/client.ts
  */
 import { Image, getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ClientDialog from '../components/ClientDialog.astro';
@@ -16,30 +15,29 @@ import CallButton from '../components/CallButton.astro';
 import ContactCard from '../components/ContactCard.astro';
 import Icon from '../components/Icon.astro';
 import { site, disciplines } from '../site.config';
-import { getWorks, pick, withBase, disciplineLabel, countBy } from '../lib/works';
+import { getWorks, withBase, disciplineLabel, countBy } from '../lib/works';
 
 const works = await getWorks();
 const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
-const w = (k: string) => pick(works, k);
 const cl = (id: string) => clients.find((c) => c.id === id)!;
 const counts = countBy(works);
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
-// Orbit: Arbeiten, Creator und Marken im Wechsel – Größe (s), Neigung (r), Deckkraft (o)
-type O = { img?: ImageMetadata; logo?: string; client?: string; s: number; r: number; o?: number };
-const orbit: O[] = [
-  { img: w('mgmt-cosplay').data.image, s: 0.62, r: -8, o: 0.35 },
-  { logo: 'logos/redbull.svg', client: 'redbull', s: 1.0, r: 10 },
-  { img: w('thumb-shaolin').data.image, s: 1.05, r: -6 },
-  { img: cl('viscabarca').data.photo, client: 'viscabarca', s: 0.95, r: 12 },
-  { logo: 'logos/amd.svg', client: 'amd', s: 0.95, r: -4 },
-  { img: w('plakat-knabe').data.image, s: 1.08, r: 6 },
-  { img: cl('anaelic').data.photo, client: 'anaelic', s: 0.9, r: -10 },
-  { logo: 'logos/ubisoft.svg', client: 'ubisoft', s: 0.85, r: 8 },
-  { img: w('thumb-monster').data.image, s: 1.0, r: -12 },
-  { logo: 'logos/warnerbros-games.png', client: 'warnerbros', s: 1.0, r: 4 },
-  { img: cl('elotrix').data.photo, client: 'elotrix', s: 0.9, r: -6 },
-];
+// Orbit: nur Marken und Creator im Wechsel – Größe (s), Neigung (r)
+const orbit = [
+  { client: 'redbull', s: 1.0, r: 10 },
+  { client: 'paluten', s: 0.95, r: -8 },
+  { client: 'netflix', s: 0.95, r: 6 },
+  { client: 'papaplatte', s: 1.0, r: -6 },
+  { client: 'amd', s: 0.95, r: -4 },
+  { client: 'gronkh', s: 0.9, r: 12 },
+  { client: 'ubisoft', s: 0.85, r: 8 },
+  { client: 'marvinwildhage', s: 0.95, r: -10 },
+  { client: 'knabe', s: 0.9, r: 4 },
+  { client: 'dave', s: 1.0, r: -12 },
+  { client: 'warnerbros', s: 1.0, r: 4 },
+  { client: 'viscabarca', s: 0.9, r: -6 },
+].map((o) => ({ ...o, ...cl(o.client).data }));
 const n = orbit.length;
 const shown = 12;
 
@@ -104,23 +102,17 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     <section class="relative isolate mx-auto h-svh min-h-[680px] max-w-[1440px] overflow-hidden px-3 md:min-h-[760px] md:px-7" data-hero>
       <div data-stage class="stage">
         <div data-ring class="absolute inset-0" aria-label="Unser Netzwerk arbeitet für">
-          {orbit.map((o, i) => {
-            const attrs = { class: 'orb', 'data-a': (360 / n) * i - 100, 'data-o': o.o ?? 1, style: `--s:${o.s}` };
-            const inner = (
+          {orbit.map((o, i) => (
+            <button type="button" class="orb" data-a={(360 / n) * i - 100} data-o="1" style={`--s:${o.s}`} data-client={o.client} aria-label={`${o.name} – Details`}>
               <span class="sq-frame orb-frame" style={`rotate:${o.r}deg`}>
                 {o.logo ? (
                   <span class="sq-inner is-logo"><img src={withBase(o.logo)} alt="" draggable="false" class="size-[62%] object-contain" /></span>
                 ) : (
-                  <span class="sq-inner"><Image src={o.img!} alt="" widths={[240, 400]} sizes="130px" draggable="false" class="size-full object-cover" /></span>
+                  <span class="sq-inner"><Image src={o.photo!} alt="" widths={[240, 400]} sizes="130px" draggable="false" class="size-full object-cover" /></span>
                 )}
               </span>
-            );
-            return o.client ? (
-              <button type="button" {...attrs} data-client={o.client} aria-label={`${cl(o.client).data.name} – Details`}>{inner}</button>
-            ) : (
-              <a href="#arbeiten" {...attrs} aria-label="Arbeiten ansehen">{inner}</a>
-            );
-          })}
+            </button>
+          ))}
         </div>
         <div data-intro-tile class="absolute top-0 left-0 z-[200] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
           <ContactCard size="hero" />

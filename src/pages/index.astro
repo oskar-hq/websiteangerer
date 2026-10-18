@@ -21,6 +21,10 @@ const works = await getWorks();
 const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
 const cl = (id: string) => clients.find((c) => c.id === id)!;
 const counts = countBy(works);
+const groups = [
+  { label: 'Marken', items: clients.filter((c) => c.data.kind === 'brand') },
+  { label: 'Creator', items: clients.filter((c) => c.data.kind === 'creator') },
+];
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 // Orbit: nur Marken und Creator im Wechsel – Größe (s), Neigung (r)
@@ -142,21 +146,26 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         </h2>
         <span data-reveal style="--d:200ms" class="hidden pb-2 font-mono text-[11px] text-muted md:block">{clients.length} MARKEN &amp; CREATOR</span>
       </div>
-      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 md:mt-20 md:grid-cols-4 md:gap-x-8 md:gap-y-14">
-        {clients.map((c, i) => (
-          <button type="button" data-client={c.id} data-tilt data-reveal style={`--d:${(i % 4) * 80}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
-            <span data-tilt-el class="sq-frame aspect-square p-[7px]" style={`rotate:${[-6, 5, -3, 8, -8, 3, 6, -5][i % 8]}deg`}>
-              {c.data.logo ? (
-                <span class="sq-inner is-logo"><img src={withBase(c.data.logo)} alt={c.data.name} draggable="false" class="size-[56%] object-contain" /></span>
-              ) : (
-                <span class="sq-inner"><Image src={c.data.photo!} alt={c.data.name} width={360} height={360} draggable="false" class="size-full object-cover" /></span>
-              )}
-            </span>
-            <span class="mt-4 block text-[13px] font-semibold tracking-[-0.01em]">{c.data.name}</span>
-            <span class="block text-[12px] text-muted">{c.data.kind === 'creator' ? 'Creator' : c.data.tier === 1 ? 'Headliner' : 'Marke'}</span>
-          </button>
-        ))}
-      </div>
+      <!-- Kompakte Logo-Wand: Marken und Creator je in einer Reihe -->
+      {groups.map((g, gi) => (
+        <div class={gi ? 'mt-10 md:mt-14' : 'mt-12 md:mt-20'}>
+          <span data-reveal class="block font-mono text-[11px] text-muted">{g.label.toUpperCase()} · {pad2(g.items.length)}</span>
+          <div class="mt-4 grid grid-cols-4 gap-x-2.5 gap-y-4 md:mt-5 md:grid-cols-7 md:gap-x-5 md:gap-y-5">
+            {g.items.map((c, i) => (
+              <button type="button" data-client={c.id} data-tilt data-reveal style={`--d:${(i % 7) * 60}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
+                <span data-tilt-el class="sq-frame aspect-square p-[5px]" style={`rotate:${[-4, 3, -2, 5, -5, 2, 4][i % 7]}deg`}>
+                  {c.data.logo ? (
+                    <span class="sq-inner is-logo"><img src={withBase(c.data.logo)} alt={c.data.name} draggable="false" class={`${c.data.aspect > 3 ? 'size-[78%]' : 'size-[62%]'} object-contain`} /></span>
+                  ) : (
+                    <span class="sq-inner"><Image src={c.data.photo!} alt={c.data.name} width={240} height={240} draggable="false" class="size-full object-cover" /></span>
+                  )}
+                </span>
+                <span class="mt-2 block truncate text-[11px] font-semibold md:mt-2.5 md:text-[12px] tracking-[-0.01em]">{c.data.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
     </section>
 
     <!-- ARBEITEN -->

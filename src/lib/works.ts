@@ -30,3 +30,11 @@ export function pick(works: Work[], key: string): Work {
   if (!w) throw new Error(`Arbeit "${key}" nicht gefunden`);
   return w;
 }
+
+/** Video-Quelle für die Lightbox: YouTube wird eingebettet, Dateien laufen im <video>-Element */
+export function videoSource(v?: string) {
+  if (!v) return undefined;
+  const yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/))([\w-]{11})/);
+  if (yt) return { type: 'youtube' as const, src: `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&playsinline=1` };
+  return { type: 'file' as const, src: withBase(v) };
+}

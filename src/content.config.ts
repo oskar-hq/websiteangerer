@@ -16,7 +16,12 @@ const works = defineCollection({
       medium: z.enum(['image', 'video']),
       /** Art der Arbeit, z. B. "Thumbnail", "Plakat", "Reel" */
       kind: z.string(),
+      /** Vorschaubild bzw. Poster – das Seitenverhältnis bestimmt die Kachel (hoch, quer, quadratisch) */
       image: image(),
+      /** Video: YouTube-Link oder Datei unter public/ (z. B. "videos/spot.mp4") – Kachel bekommt Play-Button */
+      video: z.string().optional(),
+      /** Referenz aus src/content/clients (Datei-Name ohne .json) – zeigt Logo/Profilbild auf der Kachel */
+      reference: z.string().optional(),
       order: z.number(),
       /** Kachel bekommt das Label "Platzhalter" */
       placeholder: z.boolean().default(true),

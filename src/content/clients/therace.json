@@ -5,6 +5,10 @@
   "order": 250,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "therace-staffel-3",
+    "therace-folge-5",
+    "therace-spanien"
+  ],
   "photo": "../../assets/people/therace.jpg"
 }

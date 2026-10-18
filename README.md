@@ -26,12 +26,15 @@ client: "Kunde"
 discipline: design        # design | video | social | management | software | consulting
 medium: image             # image | video
 kind: "Thumbnail"         # freie Bezeichnung: Plakat, Reel, Spot …
-image: "../../assets/works/datei.jpg"
+image: "../../assets/works/datei.jpg"   # Bild bzw. Vorschaubild – jedes Format (Poster, 16:9, 9:16 …)
+video: "https://youtu.be/…"   # optional: YouTube-Link oder Datei unter public/, z. B. "videos/spot.mp4"
+reference: redbull        # optional: Referenz aus src/content/clients – Logo/Profilbild erscheint auf der Kachel
 order: 330                # Reihenfolge
 featured: false
 ---
 ```
 
+Die Arbeiten stehen in einem Masonry-Raster: jede Kachel behält das Seitenverhältnis ihres Bildes (sehr hohe Formate werden bei 2:3 gekappt, in der Lightbox komplett gezeigt).
 Bilder in `src/assets/` werden beim Build automatisch als WebP in mehreren Größen ausgegeben.
 
 > Alle Inhalte sind Platzhalter.

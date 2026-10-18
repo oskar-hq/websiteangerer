@@ -185,7 +185,7 @@ function frame(t: number) {
 requestAnimationFrame(frame);
 
 /* ---------- Arbeiten: Filter, „Alle zeigen“ ---------- */
-type WorkData = { title: string; discipline: string; meta: string; full: string };
+type WorkData = { title: string; discipline: string; meta: string; full: string; video?: { type: 'youtube' | 'file'; src: string } };
 const workData: WorkData[] = JSON.parse($('#works-data')?.textContent || '[]');
 const grid = $('[data-grid]');
 const cells = grid ? $$('[data-work]', grid) : [];
@@ -202,10 +202,31 @@ function moveThumb() {
   thumb.style.translate = `${btn.offsetLeft}px 0`;
   thumb.style.width = `${btn.offsetWidth}px`;
 }
+// Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte
+let colCount = 0;
+function layoutGrid() {
+  if (!grid) return;
+  const n = innerWidth >= 768 ? 3 : 2;
+  if (n !== colCount) {
+    $$('.works-col', grid).forEach((c) => c.remove());
+    for (let i = 0; i < n; i++) grid.append(Object.assign(document.createElement('div'), { className: 'works-col' }));
+    colCount = n;
+    grid.classList.add('is-js');
+  }
+  const cols = $$('.works-col', grid);
+  const h = cols.map(() => 0);
+  cells.forEach((c) => {
+    if (c.hidden) { cols[0].append(c); return; }
+    const k = h.indexOf(Math.min(...h));
+    cols[k].append(c);
+    h[k] += +c.dataset.ratio! + 0.15;
+  });
+}
 function applyFilter(animate: boolean) {
   const list = filtered();
   const visible = filter === 'all' && !showAll ? list.slice(0, SHOWN) : list;
   cells.forEach((c) => (c.hidden = !visible.includes(c)));
+  layoutGrid();
   const count = $('[data-work-count]'); if (count) count.textContent = String(list.length).padStart(2, '0');
   if (moreBtn) moreBtn.parentElement!.hidden = !(filter === 'all' && !showAll);
   $$('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
@@ -224,11 +245,12 @@ $$('[data-filter]').forEach((b) => b.addEventListener('click', () => setFilter(b
 moreBtn?.addEventListener('click', () => { showAll = true; applyFilter(false); observeReveal(grid!); });
 addEventListener('resize', () => {
   const m = innerWidth >= 768;
-  md = m;
+  if (m !== md) { md = m; layoutGrid(); }
   moveThumb();
 });
 document.fonts?.ready.then(moveThumb);
 moveThumb();
+layoutGrid();
 
 const scrollToId = (id: string) => {
   const el = document.getElementById(id);
@@ -243,12 +265,26 @@ function renderLb(dir = 0) {
   const i = +list[lbIndex].dataset.work!;
   const d = workData[i];
   const img = $<HTMLImageElement>('[data-lb-img]', lb!)!;
-  img.src = d.full; img.alt = d.title;
+  const vid = $<HTMLVideoElement>('[data-lb-video]', lb!)!;
+  const yt = $<HTMLIFrameElement>('[data-lb-yt]', lb!)!;
+  stopLbMedia();
+  // Bild zeigen, bei Videos stattdessen Player (Datei oder YouTube) mit Vorschaubild als Poster
+  img.hidden = !!d.video; vid.hidden = d.video?.type !== 'file'; yt.hidden = d.video?.type !== 'youtube';
+  if (d.video?.type === 'file') { vid.poster = d.full; vid.src = d.video.src; vid.play().catch(() => {}); }
+  else if (d.video?.type === 'youtube') yt.src = d.video.src;
+  else { img.src = d.full; img.alt = d.title; }
+  const shown = d.video ? (d.video.type === 'file' ? vid : yt) : img;
   $('[data-lb-title]', lb!)!.textContent = d.title;
   $('[data-lb-meta]', lb!)!.textContent = d.meta;
   $('[data-callback]', lb!)!.dataset.callback = d.title;
   $('[data-lb-counter]', lb!)!.textContent = `${String(lbIndex + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')}`;
-  if (dir && !reduce) img.animate([{ opacity: 0, transform: `translate3d(${dir * 40}px,0,0) scale(.98)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: ease });
+  if (dir && !reduce) shown.animate([{ opacity: 0, transform: `translate3d(${dir * 40}px,0,0) scale(.98)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: ease });
+}
+function stopLbMedia() {
+  const vid = lb && $<HTMLVideoElement>('[data-lb-video]', lb);
+  const yt = lb && $<HTMLIFrameElement>('[data-lb-yt]', lb);
+  if (vid) { vid.pause(); vid.removeAttribute('src'); vid.load(); }
+  if (yt) yt.src = 'about:blank';
 }
 function openLb(cell: HTMLElement) {
   if (!lb) return;
@@ -261,6 +297,7 @@ function openLb(cell: HTMLElement) {
 function closeLb() {
   if (!lb?.open) return;
   lb.classList.remove('is-open');
+  stopLbMedia();
   setTimeout(() => { lb.close(); state.lightbox = false; lock(false); }, reduce ? 0 : 450);
 }
 const stepLb = (dir: number) => { const n = filtered().length; lbIndex = (lbIndex + dir + n) % n; renderLb(dir); };
@@ -275,7 +312,7 @@ if (lb) {
     const step = t.closest<HTMLElement>('[data-lb-step]');
     if (step) { stepLb(+step.dataset.lbStep!); return; }
     if (t.closest('a,[data-callback]')) return;
-    if (t.closest('[data-lb-close]') || !t.closest('[data-lb-img]')) closeLb();
+    if (t.closest('[data-lb-close]') || !t.closest('.lb-img')) closeLb();
   });
   lb.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') stepLb(1);

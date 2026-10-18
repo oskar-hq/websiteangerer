@@ -221,7 +221,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           );
         })}
       </div>
-      <div class="mt-[72px] flex justify-center">
+      <div class="mt-[72px] flex justify-center" hidden={works.length <= shown}>
         <button type="button" data-more-btn data-magnet="0.25" class="btn inline-flex h-14 items-center px-7 text-[16px] font-semibold tracking-[-0.015em]" style="--i:2">
           <span data-magnet-inner class="flex items-center gap-2.5">Alle {works.length} zeigen<Icon name="arrow-down" size={16} /></span>
         </button>

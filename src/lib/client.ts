@@ -228,7 +228,7 @@ function applyFilter(animate: boolean) {
   cells.forEach((c) => (c.hidden = !visible.includes(c)));
   layoutGrid();
   const count = $('[data-work-count]'); if (count) count.textContent = String(list.length).padStart(2, '0');
-  if (moreBtn) moreBtn.parentElement!.hidden = !(filter === 'all' && !showAll);
+  if (moreBtn) moreBtn.parentElement!.hidden = !(filter === 'all' && !showAll && list.length > SHOWN);
   $$('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
   moveThumb();
   if (!animate) return;

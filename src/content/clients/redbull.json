@@ -4,23 +4,9 @@
   "tier": 1,
   "order": 10,
   "scale": 1.05,
-  "items": [
-    {
-      "what": "Key Visuals & Plakate",
-      "who": "Louis Angerer",
-      "discipline": "Design"
-    },
-    {
-      "what": "Social-Media-Formate",
-      "who": "Studio LY",
-      "discipline": "Social Media"
-    }
-  ],
+  "items": [],
   "works": [
-    "redbull-home-ground",
-    "plakat-knabe",
-    "thumb-padel",
-    "reel-top-player"
+    "redbull-home-ground"
   ],
   "logo": "logos/redbull.svg",
   "aspect": 2.637

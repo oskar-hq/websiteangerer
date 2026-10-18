@@ -29,14 +29,15 @@ const orbit = [
   { client: 'paluten', s: 0.95, r: -8 },
   { client: 'netflix', s: 0.95, r: 6 },
   { client: 'papaplatte', s: 1.0, r: -6 },
-  { client: 'amd', s: 0.95, r: -4 },
-  { client: 'gronkh', s: 0.9, r: 12 },
-  { client: 'ubisoft', s: 0.85, r: 8 },
-  { client: 'marvinwildhage', s: 0.95, r: -10 },
   { client: 'knabe', s: 0.9, r: 4 },
+  { client: 'gronkh', s: 0.9, r: 12 },
+  { client: 'joyn', s: 0.9, r: -4 },
+  { client: 'marvinwildhage', s: 0.95, r: -10 },
+  { client: 'missgermany', s: 0.95, r: 8 },
   { client: 'dave', s: 1.0, r: -12 },
-  { client: 'warnerbros', s: 1.0, r: 4 },
-  { client: 'viscabarca', s: 0.9, r: -6 },
+  { client: 'dzbank', s: 0.95, r: 4 },
+  { client: 'mexify', s: 0.9, r: -6 },
+  { client: 'ciberdime', s: 0.9, r: 8 },
 ].map((o) => ({ ...o, ...cl(o.client).data }));
 const n = orbit.length;
 const shown = 12;

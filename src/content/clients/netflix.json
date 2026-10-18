@@ -1,0 +1,11 @@
+{
+  "name": "Netflix",
+  "kind": "brand",
+  "tier": 2,
+  "order": 160,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "logo": "logos/netflix.svg",
+  "aspect": 3.7
+}

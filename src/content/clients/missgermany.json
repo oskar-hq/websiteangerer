@@ -1,0 +1,11 @@
+{
+  "name": "Miss Germany",
+  "kind": "brand",
+  "tier": 2,
+  "order": 170,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "logo": "logos/missgermany.svg",
+  "aspect": 2.017
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Ciberdime",
+  "kind": "brand",
+  "tier": 2,
+  "order": 140,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "logo": "logos/ciberdime.png",
+  "aspect": 3.55
+}

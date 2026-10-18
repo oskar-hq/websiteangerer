@@ -1,0 +1,10 @@
+{
+  "name": "Papaplatte",
+  "kind": "creator",
+  "tier": 2,
+  "order": 200,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "photo": "../../assets/people/papaplatte.jpg"
+}

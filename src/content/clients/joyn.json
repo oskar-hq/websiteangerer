@@ -1,0 +1,11 @@
+{
+  "name": "Joyn",
+  "kind": "brand",
+  "tier": 2,
+  "order": 150,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "logo": "logos/joyn.svg",
+  "aspect": 2.375
+}

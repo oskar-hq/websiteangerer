@@ -259,11 +259,8 @@ const scrollToId = (id: string) => {
 
 /* ---------- Lightbox ---------- */
 const lb = $<HTMLDialogElement>('#lb');
-let lbIndex = 0;
-function renderLb(dir = 0) {
-  const list = filtered();
-  const i = +list[lbIndex].dataset.work!;
-  const d = workData[i];
+function renderLb(cell: HTMLElement) {
+  const d = workData[+cell.dataset.work!];
   const img = $<HTMLImageElement>('[data-lb-img]', lb!)!;
   const vid = $<HTMLVideoElement>('[data-lb-video]', lb!)!;
   const yt = $<HTMLIFrameElement>('[data-lb-yt]', lb!)!;
@@ -273,12 +270,9 @@ function renderLb(dir = 0) {
   if (d.video?.type === 'file') { vid.poster = d.full; vid.src = d.video.src; vid.play().catch(() => {}); }
   else if (d.video?.type === 'youtube') yt.src = d.video.src;
   else { img.src = d.full; img.alt = d.title; }
-  const shown = d.video ? (d.video.type === 'file' ? vid : yt) : img;
   $('[data-lb-title]', lb!)!.textContent = d.title;
   $('[data-lb-meta]', lb!)!.textContent = d.meta;
   $('[data-callback]', lb!)!.dataset.callback = d.title;
-  $('[data-lb-counter]', lb!)!.textContent = `${String(lbIndex + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')}`;
-  if (dir && !reduce) shown.animate([{ opacity: 0, transform: `translate3d(${dir * 40}px,0,0) scale(.98)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: ease });
 }
 function stopLbMedia() {
   const vid = lb && $<HTMLVideoElement>('[data-lb-video]', lb);
@@ -288,8 +282,7 @@ function stopLbMedia() {
 }
 function openLb(cell: HTMLElement) {
   if (!lb) return;
-  lbIndex = Math.max(0, filtered().indexOf(cell));
-  renderLb();
+  renderLb(cell);
   state.lightbox = true; setMenu(false); lock(true);
   lb.showModal();
   requestAnimationFrame(() => requestAnimationFrame(() => lb.classList.add('is-open')));
@@ -300,7 +293,6 @@ function closeLb() {
   stopLbMedia();
   setTimeout(() => { lb.close(); state.lightbox = false; lock(false); }, reduce ? 0 : 450);
 }
-const stepLb = (dir: number) => { const n = filtered().length; lbIndex = (lbIndex + dir + n) % n; renderLb(dir); };
 cells.forEach((c) => {
   c.addEventListener('click', () => openLb(c));
   c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(c); } });
@@ -309,19 +301,9 @@ if (lb) {
   lb.addEventListener('cancel', (e) => { e.preventDefault(); closeLb(); });
   lb.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
-    const step = t.closest<HTMLElement>('[data-lb-step]');
-    if (step) { stepLb(+step.dataset.lbStep!); return; }
     if (t.closest('a,[data-callback]')) return;
     if (t.closest('[data-lb-close]') || !t.closest('.lb-img')) closeLb();
   });
-  lb.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') stepLb(1);
-    if (e.key === 'ArrowLeft') stepLb(-1);
-  });
-  // Wischen auf Mobile
-  let sx = 0;
-  lb.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true });
-  lb.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) stepLb(dx < 0 ? 1 : -1); });
 }
 
 /* ---------- Disziplinen ---------- */

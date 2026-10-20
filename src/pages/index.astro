@@ -261,18 +261,15 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
 
   <!-- Lightbox -->
   <dialog id="lb" class="lb" aria-label="Arbeit ansehen">
-    <div class="flex h-[92px] items-center justify-between px-3 md:px-7">
-      <span data-lb-counter class="glass-chip flex h-8 items-center rounded-full px-3.5 font-mono text-[11px] tabular-nums"></span>
+    <div class="flex h-[92px] items-center justify-end px-3 md:px-7">
       <button type="button" data-lb-close class="btn grid size-11 place-items-center" aria-label="Schließen"><Icon name="close" size={12} /></button>
     </div>
-    <div class="flex min-h-0 flex-1 items-center justify-center gap-6 px-3 md:px-7">
-      <button type="button" data-lb-step="-1" class="btn hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Vorherige"><Icon name="arrow" size={18} style="rotate:180deg" /></button>
+    <div class="flex min-h-0 flex-1 items-center justify-center px-3 md:px-7">
       <div data-lb-media class="lb-media">
         <img data-lb-img alt="" class="lb-img" />
         <video data-lb-video class="lb-img" controls playsinline hidden></video>
         <iframe data-lb-yt class="lb-img lb-yt" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen hidden></iframe>
       </div>
-      <button type="button" data-lb-step="1" class="btn hidden size-[52px] shrink-0 place-items-center md:grid" aria-label="Nächste"><Icon name="arrow" size={18} /></button>
     </div>
     <div class="px-3 pt-7 pb-9 text-center md:px-7">
       <p data-lb-title class="m-0 text-[20px] font-semibold tracking-[-0.03em]"></p>

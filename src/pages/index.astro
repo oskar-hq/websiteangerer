@@ -59,7 +59,7 @@ const workData = await Promise.all(
 );
 
 const menu = [
-  { label: 'Netzwerk', href: '#netzwerk', count: pad2(clients.length) },
+  { label: 'Netzwerk', href: '#netzwerk', count: `${pad2(clients.length)}+` },
   { label: 'Arbeiten', href: '#arbeiten', count: pad2(works.length) },
   { label: 'Disziplinen', href: '#disziplinen', count: pad2(disciplines.length) },
   { label: 'Kontakt', href: '#kontakt', count: '→' },
@@ -87,7 +87,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
             <span class="burger" aria-hidden="true"><span></span><span></span></span>
             <span data-menu-label>Menü</span>
           </button>
-          <a href="#netzwerk" class="nav-count flex h-9 items-center rounded-full px-3.5 text-[13px] font-medium tabular-nums">{clients.length} Marken</a>
+          <a href="#netzwerk" class="nav-count flex h-9 items-center rounded-full px-3.5 text-[13px] font-medium tabular-nums">{clients.length}+ Marken</a>
         </nav>
         <div data-menu class="menu">
           {menu.map((m) => (
@@ -99,7 +99,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         </div>
       </div>
       <div data-reveal style="--d:160ms" class="flex items-center gap-2">
-        <CallButton size="header" label="Rückruf" class="max-md:hidden!" />
+        <CallButton size="header" label="Melde dich" class="max-md:hidden!" />
       </div>
     </div>
   </header>
@@ -146,13 +146,13 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           <span class="line-mask"><span data-line>Unser Netzwerk</span></span>
           <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">arbeitet für.</span></span>
         </h2>
-        <span data-reveal style="--d:200ms" class="hidden pb-2 font-mono text-[11px] text-muted md:block">{clients.length} MARKEN &amp; CREATOR</span>
+        <span data-reveal style="--d:200ms" class="hidden pb-2 font-mono text-[11px] text-muted md:block">AUSWAHL · {clients.length}+ MARKEN &amp; CREATOR</span>
       </div>
       <!-- Kompakte Logo-Wand: Marken und Creator je in einer Reihe -->
       {groups.map((g, gi) => (
         <div class={gi ? 'mt-10 md:mt-14' : 'mt-12 md:mt-20'}>
-          <span data-reveal class="block font-mono text-[11px] text-muted">{g.label.toUpperCase()} · {pad2(g.items.length)}</span>
-          <div class="mt-4 grid grid-cols-4 gap-x-2.5 gap-y-4 md:mt-5 md:grid-cols-7 md:gap-x-5 md:gap-y-5">
+          <span data-reveal class="block font-mono text-[11px] text-muted">{g.label.toUpperCase()} · EINE AUSWAHL</span>
+          <div class="mt-4 grid grid-cols-4 gap-x-2.5 gap-y-4 md:mt-5 md:grid-cols-8 md:gap-x-5 md:gap-y-5">
             {g.items.map((c, i) => (
               <button type="button" data-client={c.id} data-tilt data-reveal style={`--d:${(i % 7) * 60}ms`} class="card block text-center" aria-label={`${c.data.name} – Details`}>
                 <span data-tilt-el class="sq-frame aspect-square p-[5px]" style={`rotate:${[-4, 3, -2, 5, -5, 2, 4][i % 7]}deg`}>
@@ -165,6 +165,13 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
                 <span class="mt-2 block truncate text-[11px] font-semibold md:mt-2.5 md:text-[12px] tracking-[-0.01em]">{c.data.name}</span>
               </button>
             ))}
+            <!-- Zeigt, dass das nur Beispiele sind -->
+            <div data-tilt data-reveal style={`--d:${(g.items.length % 7) * 60}ms`} class="card block text-center">
+              <span data-tilt-el class="sq-frame aspect-square p-[5px]" style={`rotate:${[-4, 3, -2, 5, -5, 2, 4][g.items.length % 7]}deg`}>
+                <span class="sq-inner is-logo more-tile" aria-hidden="true">+</span>
+              </span>
+              <span class="mt-2 block truncate text-[11px] font-semibold text-muted md:mt-2.5 md:text-[12px] tracking-[-0.01em]">und viele mehr</span>
+            </div>
           </div>
         </div>
       ))}
@@ -347,7 +354,8 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
   /* Karten: Glas-Squircles, die sich beim Hover aufrichten und kippen */
   .card { perspective: 800px; }
   @media (hover: hover) {
-    .card:hover .sq-frame { rotate: 0deg !important; scale: 1.04; box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px #fff, 0 26px 50px -16px rgb(0 0 0 / 0.22); }
+    .more-tile { font-size: clamp(34px, 5vw, 56px); font-weight: 300; line-height: 1; color: var(--blue); }
+  .card:hover .sq-frame { rotate: 0deg !important; scale: 1.04; box-shadow: inset 0 1px 0.5px #fff, 0 0 0 0.5px #fff, 0 26px 50px -16px rgb(0 0 0 / 0.22); }
   }
   .work-img { display: block; }
   .work-img :global(img) { transition: scale 1.2s var(--ease-out); }

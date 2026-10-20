@@ -9,7 +9,7 @@ import photo from '../assets/people/marvin.jpg';
 import { site } from '../site.config';
 
 interface Props { size: 'hero' | 'end'; sub?: string }
-const { size, sub = 'Rückruf anfordern' } = Astro.props;
+const { size, sub = 'Lass uns sprechen' } = Astro.props;
 ---
 
 <button type="button" class="btn contact" data-callback="" data-size={size} data-magnet="0.15" aria-label={`Rückruf von ${site.name} anfordern`}>

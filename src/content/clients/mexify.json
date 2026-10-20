@@ -5,6 +5,8 @@
   "order": 240,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "mexify-floss"
+  ],
   "photo": "../../assets/people/mexify.jpg"
 }

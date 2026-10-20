@@ -5,6 +5,9 @@
   "order": 200,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "papaplatte-mine",
+    "papaplatte-hotdog"
+  ],
   "photo": "../../assets/people/papaplatte.jpg"
 }

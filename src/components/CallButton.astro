@@ -11,7 +11,7 @@ interface Props {
   context?: string;
   class?: string;
 }
-const { size, label = 'Rückruf anfordern', context = '', class: cls } = Astro.props;
+const { size, label = 'Lass uns sprechen', context = '', class: cls } = Astro.props;
 const magnet = size === 'hero' || size === 'end' ? '0.2' : size === 'header' ? '0.25' : undefined;
 const big = size === 'hero' || size === 'end';
 ---
@@ -22,7 +22,7 @@ const big = size === 'hero' || size === 'end';
   class:list={['btn call', cls]}
   data-size={size}
   data-magnet={magnet}
-  aria-label={label === 'Rückruf' ? 'Rückruf anfordern' : undefined}
+  aria-label={label === 'Melde dich' ? 'Rückruf anfordern' : undefined}
 >
   <span class="call-in" data-magnet-inner>
     <span class="call-ico" aria-hidden="true"><Icon name="phone-fill" size={24} /></span>

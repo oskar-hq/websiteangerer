@@ -6,7 +6,11 @@
   "scale": 1.0,
   "items": [],
   "works": [
-    "dave-spanien"
+    "dave-spanien",
+    "dave-kapsel",
+    "dave-baustelle",
+    "dave-singapur",
+    "dave-weinkeller"
   ],
   "photo": "../../assets/people/dave.jpg"
 }

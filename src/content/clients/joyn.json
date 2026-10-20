@@ -5,7 +5,9 @@
   "order": 150,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "joyn-folge-3"
+  ],
   "logo": "logos/joyn.svg",
   "aspect": 2.375
 }

@@ -5,6 +5,8 @@
   "order": 220,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "gronkh-first-light"
+  ],
   "photo": "../../assets/people/gronkh.jpg"
 }

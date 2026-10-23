@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site } from '../site.config';
+import { site, legal, disciplines } from '../site.config';
 import { withBase } from '../lib/works';
 
 interface Props { title?: string; description?: string; htmlClass?: string }
@@ -8,6 +8,20 @@ const { title = `${site.name} – Ein Name. Ein Anruf.`, description = site.clai
 // Absolute Adressen für Teilen-Vorschauen (WhatsApp, LinkedIn, X …) – Bild und Icons erzeugt src/lib/share.ts
 const url = new URL(Astro.url.pathname, Astro.site);
 const abs = (p: string) => new URL(withBase(p), Astro.site).href;
+// Strukturierte Daten für Google: wer hinter der Seite steht
+const home = abs('/');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', '@id': `${home}#website`, url: home, name: site.name, inLanguage: 'de-DE', publisher: { '@id': `${home}#person` } },
+    {
+      '@type': 'Person', '@id': `${home}#person`, name: site.name, url: home, image: abs('og.jpg'),
+      description: site.claim,
+      address: { '@type': 'PostalAddress', streetAddress: legal.street, postalCode: legal.city.split(' ')[0], addressLocality: legal.city.split(' ').slice(1).join(' '), addressCountry: 'DE' },
+      knowsAbout: disciplines.map((d) => d.label),
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -34,11 +48,12 @@ const abs = (p: string) => new URL(withBase(p), Astro.site).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={abs('og.jpg')} />
-    <meta name="robots" content="noindex" />
     <title>{title}</title>
     <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={withBase('icons/180.png')} />
     <link rel="manifest" href={withBase('site.webmanifest')} />
+    <link rel="sitemap" href={withBase('sitemap.xml')} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body class="min-h-svh bg-bg text-fg">

@@ -10,6 +10,16 @@ export const site = {
 };
 
 /**
+ * Suchmaschinen: Titel und Beschreibung der Startseite (Google-Ergebnis, Teilen-Vorschau).
+ * Begriffe nach Suchvolumen in Deutschland (OpenSEO): Köln, Social Media, Video, Creator-Management, Thumbnails.
+ */
+export const seo = {
+  title: 'Marvin Angerer – Design, Video & Social Media aus Köln',
+  description:
+    'Thumbnails, Video, Social Media und Creator-Management aus Köln: Marvin Angerer bringt Marken und Creator mit den besten Profis zusammen – ein Anruf genügt.',
+};
+
+/**
  * Angaben für Impressum und Datenschutzerklärung.
  * E-Mail ist im Impressum Pflicht (§ 5 DDG).
  */

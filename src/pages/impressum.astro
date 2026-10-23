@@ -4,7 +4,7 @@ import { site, legal } from '../site.config';
 import { withBase } from '../lib/works';
 ---
 
-<Legal title="Impressum">
+<Legal title="Impressum" description={`Impressum von ${site.name}, ${legal.street}, ${legal.city}: Anbieterkennzeichnung, Kontakt, Umsatzsteuer-ID und Verantwortlicher für den Inhalt.`}>
   <h2>Angaben gemäß § 5 DDG</h2>
   <p>
     <strong>{site.name}</strong><br />

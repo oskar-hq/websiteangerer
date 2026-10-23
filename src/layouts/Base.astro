@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
-import { site, legal, disciplines } from '../site.config';
+import { site, seo, legal, disciplines } from '../site.config';
 import { withBase } from '../lib/works';
 
 interface Props { title?: string; description?: string; htmlClass?: string }
-const { title = `${site.name} – Ein Name. Ein Anruf.`, description = site.claim, htmlClass } = Astro.props;
+const { title = seo.title, description = seo.description, htmlClass } = Astro.props;
 // Absolute Adressen für Teilen-Vorschauen (WhatsApp, LinkedIn, X …) – Bild und Icons erzeugt src/lib/share.ts
 const url = new URL(Astro.url.pathname, Astro.site);
 const abs = (p: string) => new URL(withBase(p), Astro.site).href;
@@ -16,7 +16,9 @@ const jsonLd = {
     { '@type': 'WebSite', '@id': `${home}#website`, url: home, name: site.name, inLanguage: 'de-DE', publisher: { '@id': `${home}#person` } },
     {
       '@type': 'Person', '@id': `${home}#person`, name: site.name, url: home, image: abs('og.jpg'),
-      description: site.claim,
+      description: seo.description,
+      email: legal.email,
+      areaServed: { '@type': 'Country', name: 'Deutschland' },
       address: { '@type': 'PostalAddress', streetAddress: legal.street, postalCode: legal.city.split(' ')[0], addressLocality: legal.city.split(' ').slice(1).join(' '), addressCountry: 'DE' },
       knowsAbout: disciplines.map((d) => d.label),
     },

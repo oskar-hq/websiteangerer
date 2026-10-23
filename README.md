@@ -39,6 +39,17 @@ Bilder in `src/assets/` werden beim Build automatisch als WebP in mehreren Grö�
 
 > Alle Inhalte sind Platzhalter.
 
+## Teilen-Vorschau, Icons & Suchmaschinen
+
+Wird alles beim Build erzeugt – nichts von Hand pflegen:
+
+- `og.jpg` (1200 × 630, `src/lib/share.ts`): Vorschaubild für WhatsApp, LinkedIn, X & Co. – der Orbit aus
+  `src/lib/orbit.ts` um die Kontaktkarte. Neue Marken im Orbit erscheinen automatisch auch im Bild.
+- `icons/180.png`, `192.png`, `512.png` und `site.webmanifest`: Homescreen-Icons aus `public/favicon.svg`.
+- `sitemap.xml` (listet jede Seite unter `src/pages/*.astro` automatisch) und `robots.txt` mit Verweis darauf.
+- Meta-Tags (Open Graph, Twitter Card, Canonical) und strukturierte Daten (schema.org: WebSite + Person)
+  setzt `src/layouts/Base.astro`.
+
 ## GitHub Pages
 
 Der Workflow `.github/workflows/deploy.yml` baut und veröffentlicht bei jedem Push.

@@ -19,6 +19,13 @@ import { withBase } from '../lib/works';
     Rückruf: über das <a href={withBase("#kontakt")}>Rückruf-Formular</a> auf der Startseite
   </p>
 
+  {legal.vatId && (
+    <>
+      <h2>Umsatzsteuer-ID</h2>
+      <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:<br />{legal.vatId}</p>
+    </>
+  )}
+
   <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
   <p>
     {site.name}<br />

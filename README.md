@@ -17,6 +17,8 @@ npm run build    # -> dist/
 - **Marken & Creator:** eine JSON-Datei pro Eintrag in `src/content/clients/` (`tier: 1` = Headliner).
   Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
   Die Detailansicht („Unser Netzwerk arbeitet für …“) zeigt `items` (Leistung, Profi, Disziplin) und `works`.
+  **Vorübergehend ausblenden:** `"hidden": true` in die JSON-Datei – Eintrag verschwindet aus Logo-Wand, Orbit, Zähler und Teilen-Bild.
+  Wieder einblenden: Zeile löschen oder auf `false` setzen.
 - **Arbeiten:** eine Datei pro Arbeit in `src/content/works/*.md`
 
 ```md
@@ -38,6 +40,17 @@ Die Arbeiten stehen in einem Masonry-Raster: jede Kachel behält das Seitenverh�
 Bilder in `src/assets/` werden beim Build automatisch als WebP in mehreren Größen ausgegeben.
 
 > Alle Inhalte sind Platzhalter.
+
+## Teilen-Vorschau, Icons & Suchmaschinen
+
+Wird alles beim Build erzeugt – nichts von Hand pflegen:
+
+- `og.jpg` (1200 × 630, `src/lib/share.ts`): Vorschaubild für WhatsApp, LinkedIn, X & Co. – der Orbit aus
+  `src/lib/orbit.ts` um die Kontaktkarte. Neue Marken im Orbit erscheinen automatisch auch im Bild.
+- `icons/180.png`, `192.png`, `512.png` und `site.webmanifest`: Homescreen-Icons aus `public/favicon.svg`.
+- `sitemap.xml` (listet jede Seite unter `src/pages/*.astro` automatisch) und `robots.txt` mit Verweis darauf.
+- Meta-Tags (Open Graph, Twitter Card, Canonical) und strukturierte Daten (schema.org: WebSite + Person)
+  setzt `src/layouts/Base.astro`.
 
 ## GitHub Pages
 

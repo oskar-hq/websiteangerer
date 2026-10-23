@@ -15,10 +15,11 @@ import CallButton from '../components/CallButton.astro';
 import ContactCard from '../components/ContactCard.astro';
 import Icon from '../components/Icon.astro';
 import { site, disciplines } from '../site.config';
+import { orbit as orbitList, orbitAngle } from '../lib/orbit';
 import { getWorks, withBase, disciplineLabel, countBy, videoSource } from '../lib/works';
 
 const works = await getWorks();
-const clients = (await getCollection('clients')).sort((a, b) => a.data.order - b.data.order);
+const clients = (await getCollection('clients', (c) => !c.data.hidden)).sort((a, b) => a.data.order - b.data.order);
 const cl = (id: string) => clients.find((c) => c.id === id)!;
 const counts = countBy(works);
 const groups = [
@@ -27,25 +28,8 @@ const groups = [
 ];
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
-// Orbit: nur Marken und Creator im Wechsel – Größe (s), Neigung (r)
-const orbit = [
-  { client: 'redbull', s: 1.0, r: 10 },
-  { client: 'paluten', s: 0.95, r: -8 },
-  { client: 'netflix', s: 0.95, r: 6 },
-  { client: 'papaplatte', s: 1.0, r: -6 },
-  { client: 'knabe', s: 0.9, r: 4 },
-  { client: 'gronkh', s: 0.9, r: 12 },
-  { client: 'joyn', s: 0.9, r: -4 },
-  { client: 'marvinwildhage', s: 0.95, r: -10 },
-  { client: 'missgermany', s: 0.95, r: 8 },
-  { client: 'dave', s: 1.0, r: -12 },
-  { client: 'dzbank', s: 0.95, r: 4 },
-  { client: 'itvstudios', s: 0.9, r: -8 },
-  { client: 'mexify', s: 0.9, r: -6 },
-  { client: 'ciberdime', s: 0.9, r: 8 },
-  { client: 'therace', s: 0.95, r: -4 },
-].map((o) => ({ ...o, ...cl(o.client).data }));
-const n = orbit.length;
+// Orbit-Reihenfolge steht in src/lib/orbit.ts – das Teilen-Bild nutzt dieselbe
+const orbit = orbitList.filter((o) => clients.some((c) => c.id === o.client)).map((o) => ({ ...o, ...cl(o.client).data }));
 const shown = 12;
 
 // Daten für Lightbox & Disziplin-Vorschau
@@ -111,7 +95,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       <div data-stage class="stage">
         <div data-ring class="absolute inset-0" aria-label="Unser Netzwerk arbeitet für">
           {orbit.map((o, i) => (
-            <button type="button" class="orb" data-a={(360 / n) * i - 100} data-o="1" style={`--s:${o.s}`} data-client={o.client} aria-label={`${o.name} – Details`}>
+            <button type="button" class="orb" data-a={orbitAngle(i, orbit.length)} data-o="1" style={`--s:${o.s}`} data-client={o.client} aria-label={`${o.name} – Details`}>
               <span class="sq-frame orb-frame" style={`rotate:${o.r}deg`}>
                 {o.logo ? (
                   <span class="sq-inner is-logo"><img src={withBase(o.logo)} alt="" draggable="false" class="size-[62%] object-contain" /></span>

@@ -1,0 +1,60 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { site, legal } from '../site.config';
+import { withBase } from '../lib/works';
+---
+
+<Legal title="Impressum">
+  <h2>Angaben gemäß § 5 DDG</h2>
+  <p>
+    <strong>{site.name}</strong><br />
+    {legal.street}<br />
+    {legal.city}<br />
+    Deutschland
+  </p>
+
+  <h2>Kontakt</h2>
+  <p>
+    {legal.email && <>E-Mail: <a href={`mailto:${legal.email}`}>{legal.email}</a><br /></>}
+    Rückruf: über das <a href={withBase("#kontakt")}>Rückruf-Formular</a> auf der Startseite
+  </p>
+
+  <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+  <p>
+    {site.name}<br />
+    {legal.street}<br />
+    {legal.city}
+  </p>
+
+  <h2>Verbraucherstreitbeilegung</h2>
+  <p>
+    Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer
+    Verbraucherschlichtungsstelle teilzunehmen.
+  </p>
+
+  <h2>Haftung für Inhalte</h2>
+  <p>
+    Die Inhalte dieser Seite wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
+    Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir für eigene
+    Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Wir sind jedoch nicht verpflichtet,
+    übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine
+    rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen
+    nach den allgemeinen Gesetzen bleiben hiervon unberührt. Sobald uns eine Rechtsverletzung bekannt wird,
+    entfernen wir die betreffenden Inhalte umgehend.
+  </p>
+
+  <h2>Haftung für Links</h2>
+  <p>
+    Diese Seite enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für diese
+    fremden Inhalte übernehmen wir keine Gewähr; verantwortlich ist stets der jeweilige Anbieter oder Betreiber der
+    Seiten. Bei Bekanntwerden von Rechtsverletzungen entfernen wir derartige Links umgehend.
+  </p>
+
+  <h2>Urheberrecht</h2>
+  <p>
+    Die auf dieser Seite gezeigten Inhalte und Werke unterliegen dem deutschen Urheberrecht. Gezeigte Arbeiten,
+    Marken und Logos sind Eigentum der jeweiligen Rechteinhaber und werden ausschließlich zur Darstellung von
+    Referenzen verwendet. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der
+    Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Rechteinhabers.
+  </p>
+</Legal>

@@ -10,6 +10,16 @@ export const site = {
 };
 
 /**
+ * Angaben für Impressum und Datenschutzerklärung.
+ * E-Mail ist im Impressum Pflicht (§ 5 DDG) – bitte eintragen, sonst erscheint dort ein Hinweis.
+ */
+export const legal = {
+  street: 'Am Alten Güterbahnhof 17',
+  city: '50825 Köln',
+  email: '',
+};
+
+/**
  * Rückruf-Formular: Besucher hinterlassen ihre Nummer, Marvin bekommt eine E-Mail.
  * Dienst: Web3Forms (kostenlos). Auf https://web3forms.com mit Marvins E-Mail einen
  * Access Key erzeugen und hier eintragen. Solange er leer ist, wird nichts verschickt.

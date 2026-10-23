@@ -112,10 +112,13 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </div>
 
       <div data-hero-foot class="absolute inset-x-3 bottom-[104px] flex items-end justify-between md:inset-x-7 md:bottom-12">
+        <div>
+        <p data-reveal style="--d:800ms" class="mb-3 font-mono text-[11px] leading-[1.5] text-muted md:mb-4"><span class="block md:inline">DESIGN · VIDEO · SOCIAL MEDIA<span class="max-md:hidden"> · </span></span><span class="block md:inline">CREATOR-MANAGEMENT · AUS KÖLN</span></p>
         <h1 class={h1}>
           <span class="line-mask"><span data-line style="--d:900ms">Ein Name,</span></span>
           <span class="line-mask"><span data-line style="--d:1000ms" class="text-soft">ein Anruf.</span></span>
         </h1>
+        </div>
         <span data-reveal style="--d:1200ms" class="absolute bottom-0 left-1/2 hidden -translate-x-1/2 pb-3 text-[11px] text-muted md:block">©2026</span>
         <a href="#netzwerk" data-reveal style="--d:1250ms" class="glass-chip mb-1.5 hidden h-9 items-center gap-2.5 rounded-full pr-3.5 pl-2.5 text-[11px] font-medium tracking-[0.02em] md:flex">
           <span class="mouse"><span data-scrollhint></span></span>
@@ -222,6 +225,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
 
     <!-- DISZIPLINEN -->
     <section id="disziplinen" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
+      <h2 data-reveal class="mb-4 font-mono text-[11px] font-normal text-muted md:mb-5">LEISTUNGEN · ALLES ÜBER EINEN ANRUF</h2>
       <ul data-disc-list class="disc-list m-0 flex list-none flex-col gap-1 rounded-[36px] p-2">
         {disciplines.map((d, i) => (
           <li data-disc-row={d.id} data-callback={counts[d.id] ? undefined : d.label} data-reveal style={`--d:${i * 70}ms`} class="disc-row rounded-[28px] px-[18px] py-[18px] md:px-7 md:py-[26px]" tabindex="0" role="button">
@@ -244,6 +248,11 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         <span class="line-mask"><span data-line>Ein Name,</span></span>
         <span class="line-mask"><span data-line style="--d:110ms" class="text-soft">ein Anruf.</span></span>
       </h2>
+      <p data-reveal class="mt-8 max-w-[56ch] text-[15px] leading-[1.6] text-muted md:mt-10 md:text-[17px]">
+        {site.name} bringt Marken und Creator mit den passenden Profis zusammen: Thumbnails, Plakate und Key Visuals,
+        Videoproduktion und Schnitt, Social Media, Creator-Management und Booking bis zur Beratung.
+        Aus Köln, für ganz Deutschland – ein Anruf, und das richtige Team steht.
+      </p>
       <footer data-reveal class="glass-chip mt-16 flex flex-wrap items-center justify-between gap-4 rounded-full px-[22px] py-3.5 text-[12px]">
         <span>©2026 {site.name}</span>
         <span class="flex flex-wrap gap-5"><a href="#top" class="text-muted transition-colors hover:text-fg">Nach oben ↑</a><a href={withBase('impressum/')} class="transition-colors hover:text-muted">Impressum</a><a href={withBase('datenschutz/')} class="transition-colors hover:text-muted">Datenschutz</a></span>

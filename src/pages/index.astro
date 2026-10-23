@@ -40,6 +40,7 @@ const orbit = [
   { client: 'missgermany', s: 0.95, r: 8 },
   { client: 'dave', s: 1.0, r: -12 },
   { client: 'dzbank', s: 0.95, r: 4 },
+  { client: 'itvstudios', s: 0.9, r: -8 },
   { client: 'mexify', s: 0.9, r: -6 },
   { client: 'ciberdime', s: 0.9, r: 8 },
   { client: 'therace', s: 0.95, r: -4 },
@@ -261,7 +262,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
       </h2>
       <footer data-reveal class="glass-chip mt-16 flex flex-wrap items-center justify-between gap-4 rounded-full px-[22px] py-3.5 text-[12px]">
         <span>©2026 {site.name}</span>
-        <span class="flex flex-wrap gap-5"><a href="#top" class="text-muted transition-colors hover:text-fg">Nach oben ↑</a><a href="#" class="transition-colors hover:text-muted">Impressum</a><a href="#" class="transition-colors hover:text-muted">Datenschutz</a></span>
+        <span class="flex flex-wrap gap-5"><a href="#top" class="text-muted transition-colors hover:text-fg">Nach oben ↑</a><a href={withBase('impressum/')} class="transition-colors hover:text-muted">Impressum</a><a href={withBase('datenschutz/')} class="transition-colors hover:text-muted">Datenschutz</a></span>
       </footer>
     </section>
   </main>

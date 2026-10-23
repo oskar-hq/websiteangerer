@@ -1,6 +1,7 @@
 /**
  * Orbit um den Anruf-Button: nur Marken und Creator im Wechsel – Größe (s), Neigung (r).
  * Wird von der Startseite und vom Teilen-Bild (src/lib/share.ts) genutzt.
+ * Ausgeblendete Einträge ("hidden": true in src/content/clients) lassen beide automatisch weg.
  */
 export const orbit = [
   { client: 'redbull', s: 1.0, r: 10 },
@@ -20,5 +21,5 @@ export const orbit = [
   { client: 'therace', s: 0.95, r: -4 },
 ];
 
-/** Startwinkel der Kachel i in Grad – wie im 3D-Orbit (src/lib/client.ts) */
-export const orbitAngle = (i: number) => (360 / orbit.length) * i - 100;
+/** Startwinkel der Kachel i von n in Grad – wie im 3D-Orbit (src/lib/client.ts) */
+export const orbitAngle = (i: number, n: number) => (360 / n) * i - 100;

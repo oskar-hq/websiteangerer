@@ -17,9 +17,11 @@ const dataUri = (buf: Buffer) => `data:image/png;base64,${buf.toString('base64')
 const f = (n: number) => n.toFixed(2);
 
 /** Logo bzw. Foto eines Eintrags aus src/content/clients als PNG */
-async function tileImage(id: string, px: number) {
+async function client(id: string) {
   const file = resolve(root, 'src/content/clients', `${id}.json`);
-  const data = JSON.parse(await readFile(file, 'utf8'));
+  return { file, data: JSON.parse(await readFile(file, 'utf8')) };
+}
+async function tileImage({ file, data }: Awaited<ReturnType<typeof client>>, px: number) {
   if (data.logo) {
     const src = await readFile(resolve(root, 'public', data.logo));
     const png = await sharp(src, { density: 400 }).resize(px, px, { fit: 'inside' }).png().toBuffer();
@@ -64,15 +66,18 @@ export async function shareImage() {
   // Startwinkel so gedreht, dass vorne unten Lücken für Karte und Schriftzug bleiben
   const spin = 6;
 
-  const tiles = await Promise.all(orbit.map(async (o, i) => {
-    const a = ((orbitAngle(i) + spin) * Math.PI) / 180, z = Math.sin(a);
+  // Ausgeblendete Kunden fehlen auch hier
+  const entries = (await Promise.all(orbit.map(async (o) => ({ ...o, entry: await client(o.client) }))))
+    .filter((o) => !o.entry.data.hidden);
+  const tiles = await Promise.all(entries.map(async (o, i) => {
+    const a = ((orbitAngle(i, entries.length) + spin) * Math.PI) / 180, z = Math.sin(a);
     const depth = 0.8 + (z + 1) * 0.14;
     return {
       ...o, i, z,
       x: cx + Math.cos(a) * rx, y: cy + z * ry,
       w: base * o.s * depth,
       opacity: 0.6 + (z + 1) * 0.2,
-      img: await tileImage(o.client, 360),
+      img: await tileImage(o.entry, 360),
     };
   }));
   tiles.sort((a, b) => a.z - b.z);

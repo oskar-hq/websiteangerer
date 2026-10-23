@@ -40,6 +40,8 @@ const clients = defineCollection({
     z.object({
       name: z.string(),
       kind: z.enum(['brand', 'creator']),
+      /** true = vorerst ausgeblendet (z. B. Kunde noch nicht abgeschlossen) – auf false setzen, dann ist er wieder überall da */
+      hidden: z.boolean().default(false),
       tier: z.union([z.literal(1), z.literal(2)]),
       order: z.number(),
       /** Logo-Datei unter public/ (SVG/PNG in Originalfarben) – nur bei kind: brand */

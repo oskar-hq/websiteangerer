@@ -17,6 +17,8 @@ npm run build    # -> dist/
 - **Marken & Creator:** eine JSON-Datei pro Eintrag in `src/content/clients/` (`tier: 1` = Headliner).
   Logos in Originalfarben unter `public/logos/`, Creator-Fotos unter `src/assets/people/`.
   Die Detailansicht („Unser Netzwerk arbeitet für …“) zeigt `items` (Leistung, Profi, Disziplin) und `works`.
+  **Vorübergehend ausblenden:** `"hidden": true` in die JSON-Datei – Eintrag verschwindet aus Logo-Wand, Orbit, Zähler und Teilen-Bild.
+  Wieder einblenden: Zeile löschen oder auf `false` setzen.
 - **Arbeiten:** eine Datei pro Arbeit in `src/content/works/*.md`
 
 ```md

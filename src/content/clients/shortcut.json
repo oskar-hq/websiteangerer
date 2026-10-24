@@ -5,7 +5,11 @@
   "order": 145,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "ylva-reihe-1",
+    "ylva-reihe-2",
+    "ylva-reihe-3"
+  ],
   "logo": "logos/shortcut.svg",
   "aspect": 4.06
 }

@@ -1,6 +1,7 @@
 ---
 title: "Outreach-Software – Aufgaben für heute"
 client: "Ylva Labs"
+reference: shortcut
 discipline: software
 medium: image
 kind: "KI-Tool"

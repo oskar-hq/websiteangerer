@@ -1,6 +1,7 @@
 ---
 title: "Outreach-Software – Akquise, die sich selbst organisiert"
 client: "Ylva Labs"
+reference: shortcut
 discipline: software
 medium: image
 kind: "KI-Tool"

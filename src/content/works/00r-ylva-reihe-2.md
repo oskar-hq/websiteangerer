@@ -1,6 +1,7 @@
 ---
 title: "Outreach-Software – Freigabe vor jedem Versand"
 client: "Ylva Labs"
+reference: shortcut
 discipline: software
 medium: image
 kind: "KI-Tool"

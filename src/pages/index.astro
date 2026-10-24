@@ -203,7 +203,8 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           const rowRatio = seg.row ? Math.min(seg.items[0].wk.data.image.height / seg.items[0].wk.data.image.width, 1.5) : 0;
           const tiles = seg.items.map(({ wk, i }, j) => {
             const { width, height } = wk.data.image;
-            const ref = wk.data.reference ? cl(wk.data.reference) : undefined;
+            // In der Reihe steht das Kunden-Badge nur einmal, auf Bild 1
+            const ref = wk.data.reference && (!seg.row || j === 0) ? cl(wk.data.reference) : undefined;
             // In der Reihe sind alle Bilder gleich hoch – das Format von Bild 1 gilt für alle
             const ratio = seg.row ? rowRatio : Math.min(height / width, 1.5);
             return (

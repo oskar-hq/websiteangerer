@@ -14,7 +14,7 @@ import StickyCall from '../components/StickyCall.astro';
 import CallButton from '../components/CallButton.astro';
 import ContactCard from '../components/ContactCard.astro';
 import Icon from '../components/Icon.astro';
-import { site, disciplines } from '../site.config';
+import { site, disciplines, searches } from '../site.config';
 import { orbit as orbitList, orbitAngle } from '../lib/orbit';
 import { getWorks, withBase, disciplineLabel, countBy, videoSource } from '../lib/works';
 
@@ -62,7 +62,13 @@ const menu = [
   { label: 'Kontakt', href: '#kontakt', count: '→' },
 ];
 // Disziplinen ohne Arbeiten (z. B. Consulting) tauchen im Filter nicht auf – ihr Klick öffnet den Rückruf
-const filters = [{ id: 'all', label: 'Alle', n: works.length }, ...disciplines.filter((d) => counts[d.id]).map((d) => ({ id: d.id, label: d.label, n: counts[d.id] }))];
+// „Wonach suchst du?“ – jede Arbeit bekommt als Schlagworte ihre Disziplin und die passenden Antworten
+const tagsOf = (wk: (typeof works)[number]) =>
+  [wk.data.discipline, ...searches.filter((q) => (q.kinds as readonly string[]).includes(wk.data.kind) || (q.disciplines as readonly string[]).includes(wk.data.discipline)).map((q) => q.id)].join(' ');
+const filters = [
+  { id: 'all', label: 'Weiß ich noch nicht', n: 0 },
+  ...searches.map((q) => ({ id: q.id, label: q.label, n: works.filter((wk) => tagsOf(wk).split(' ').includes(q.id)).length })).filter((f) => f.n),
+];
 const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracking-[-0.05em] md:text-[min(5.2vw,4.6rem)]';
 ---
 
@@ -184,13 +190,16 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
           <span class="line-mask"><span data-line>Arbeiten,</span></span>
           <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">die man kennt.</span></span>
         </h2>
-        <div data-reveal style="--d:150ms" class="flex max-w-full flex-col items-end gap-3.5">
-          <span class="font-mono text-[11px] text-muted tabular-nums"><span data-work-count>{works.length}</span> ARBEITEN</span>
-          <div data-filter-bar class="filter no-scrollbar relative flex max-w-full gap-0.5 overflow-x-auto rounded-full p-[5px]">
+        <div data-reveal style="--d:150ms" class="flex max-w-full flex-col gap-3 md:items-end">
+          <p id="suche-frage" class="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-[-0.03em] md:text-[24px]">
+            Wonach suchst du?
+            <span class="font-mono text-[11px] font-normal tracking-normal text-muted tabular-nums"><span data-work-count>{works.length}</span> ARBEITEN</span>
+          </p>
+          <div data-filter-bar role="group" aria-labelledby="suche-frage" class="filter no-scrollbar relative flex max-w-full flex-wrap gap-0.5 rounded-[27px] p-[5px] md:flex-nowrap md:overflow-x-auto md:rounded-full">
             <span data-thumb class="filter-thumb"></span>
             {filters.map((f, i) => (
-              <button type="button" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'} class="filter-btn relative flex h-9 items-center gap-1.5 rounded-full px-[15px] text-[13px] font-medium whitespace-nowrap">
-                {f.label}<span class="font-mono text-[10px] opacity-60">{f.n}</span>
+              <button type="button" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'} class="filter-btn relative flex h-11 items-center gap-1.5 rounded-full px-[18px] text-[15px] font-medium whitespace-nowrap">
+                {f.label}{f.n > 0 && <span class="font-mono text-[10px] opacity-60">{f.n}</span>}
               </button>
             ))}
           </div>
@@ -208,7 +217,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
             // In der Reihe sind alle Bilder gleich hoch – das Format von Bild 1 gilt für alle
             const ratio = seg.row ? rowRatio : Math.min(height / width, 1.5);
             return (
-              <figure data-work={i} data-disc={wk.data.discipline} data-row={seg.row} data-ratio={ratio.toFixed(4)} data-tilt data-reveal hidden={!initial.has(i)} style={`--d:${(seg.row ? j : i % 3) * 80}ms`} class="work card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
+              <figure data-work={i} data-tags={tagsOf(wk)} data-row={seg.row} data-ratio={ratio.toFixed(4)} data-tilt data-reveal hidden={!initial.has(i)} style={`--d:${(seg.row ? j : i % 3) * 80}ms`} class="work card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
                 <span data-tilt-el class="work-frame">
                   <span class="work-inner" style={`aspect-ratio:${(1 / ratio).toFixed(4)}`}>
                     <Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[400, 700, 1000]} sizes={seg.row ? '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 85vw' : '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 47vw'} draggable="false" class="size-full object-cover" />
@@ -399,10 +408,10 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     box-shadow: var(--glass-panel-shadow);
   }
   .filter-thumb {
-    position: absolute; left: 0; top: 5px; bottom: 5px; width: 0; border-radius: 999px;
+    position: absolute; left: 0; top: 0; height: 0; width: 0; border-radius: 999px;
     background: linear-gradient(180deg, #fff, #f1f1f3);
     box-shadow: inset 0 1px 0 #fff, 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 6px 14px -6px rgb(0 0 0 / 0.3);
-    transition: translate 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), width 0.65s cubic-bezier(0.34, 1.25, 0.5, 1);
+    transition: translate 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), width 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), height 0.65s, opacity 0.4s;
   }
   .filter-btn { color: var(--muted); transition: color 0.45s; }
   .filter-btn[aria-pressed='true'] { color: var(--fg); }

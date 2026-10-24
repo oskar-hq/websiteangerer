@@ -198,7 +198,8 @@ const moreBtn = $('[data-more-btn]');
 const SHOWN = 12;
 let filter = 'all', showAll = false;
 
-const filtered = () => cells.filter((c) => filter === 'all' || c.dataset.disc === filter);
+// Filter = Antwort auf „Wonach suchst du?“ oder eine Disziplin (Klick in der Disziplinen-Liste)
+const filtered = () => cells.filter((c) => filter === 'all' || c.dataset.tags!.split(' ').includes(filter));
 // Erste 12 – eine angeschnittene Reihe wird ganz gezeigt, nie halb
 function limit(list: HTMLElement[]) {
   let k = Math.min(SHOWN, list.length);
@@ -207,9 +208,13 @@ function limit(list: HTMLElement[]) {
 }
 function moveThumb() {
   const btn = bar && $(`[data-filter="${filter}"]`, bar);
+  // Disziplin ohne eigene Antwort (z. B. Design): keine Antwort markiert
+  if (thumb) thumb.style.opacity = btn ? '1' : '0';
   if (!btn || !thumb) return;
-  thumb.style.translate = `${btn.offsetLeft}px 0`;
+  // Mobil brechen die Antworten um – die Markierung wandert dann auch in die nächste Zeile
+  thumb.style.translate = `${btn.offsetLeft}px ${btn.offsetTop}px`;
   thumb.style.width = `${btn.offsetWidth}px`;
+  thumb.style.height = `${btn.offsetHeight}px`;
 }
 // Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte.
 // Raster ohne sichtbare Reihe dazwischen bilden ein gemeinsames Masonry. Über einer Reihe
@@ -278,7 +283,14 @@ function applyFilter(animate: boolean) {
     );
   });
 }
-function setFilter(id: string) { filter = id; applyFilter(true); }
+function setFilter(id: string) {
+  filter = id;
+  applyFilter(true);
+  // Auswahl steht in der Adresse (?suche=software) – so lässt sich die Ansicht teilen
+  const url = new URL(location.href);
+  if (id === 'all') url.searchParams.delete('suche'); else url.searchParams.set('suche', id);
+  history.replaceState(history.state, '', url);
+}
 $$('[data-filter]').forEach((b) => b.addEventListener('click', () => setFilter(b.dataset.filter!)));
 moreBtn?.addEventListener('click', () => { showAll = true; applyFilter(false); observeReveal(works!); });
 addEventListener('resize', () => {
@@ -287,6 +299,8 @@ addEventListener('resize', () => {
   moveThumb();
 });
 document.fonts?.ready.then(moveThumb);
+const asked = new URLSearchParams(location.search).get('suche');
+if (asked && cells.some((c) => c.dataset.tags!.split(' ').includes(asked))) { filter = asked; applyFilter(false); observeReveal(works!); }
 moveThumb();
 layoutGrid();
 

@@ -50,4 +50,14 @@ export const disciplines = [
   { id: 'consulting', label: 'Consulting', line: 'Social-Media-Content-Strategie, Business Development für Kreativ-Dienstleister, Sales.' },
 ] as const;
 
+/**
+ * Arbeiten: Antworten auf „Wonach suchst du?“ (neben „Weiß ich noch nicht“ = alles).
+ * Eine Arbeit passt, wenn ihre Art (kind) oder Disziplin hier steht. Antworten ohne Arbeiten werden ausgeblendet.
+ */
+export const searches = [
+  { id: 'thumbnails', label: 'Thumbnails', kinds: ['Thumbnail'], disciplines: [] },
+  { id: 'key-visuals', label: 'Key Visuals & Plakate', kinds: ['Key Visual', 'Plakat'], disciplines: [] },
+  { id: 'software', label: 'Software', kinds: [], disciplines: ['software'] },
+] as const satisfies readonly { id: string; label: string; kinds: readonly string[]; disciplines: readonly string[] }[];
+
 export type DisciplineId = (typeof disciplines)[number]['id'];

@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Key Visual"
 image: "../../assets/works/redbull-home-ground.jpg"
-order: 3
+order: 5
 placeholder: false
 ---

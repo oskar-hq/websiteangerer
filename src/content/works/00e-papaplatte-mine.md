@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/papaplatte-mine.jpg"
-order: 5
+order: 3
 placeholder: false
 ---

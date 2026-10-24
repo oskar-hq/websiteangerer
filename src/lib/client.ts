@@ -211,27 +211,54 @@ function moveThumb() {
   thumb.style.translate = `${btn.offsetLeft}px 0`;
   thumb.style.width = `${btn.offsetWidth}px`;
 }
-// Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte – je Raster
+// Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte.
+// Raster ohne sichtbare Reihe dazwischen bilden ein gemeinsames Masonry. Über einer Reihe
+// müssen alle Spalten bündig enden: überstehende Kacheln rutschen hinter die Reihe.
+const segs = works ? Array.from(works.children as HTMLCollectionOf<HTMLElement>) : [];
 let colCount = 0;
 function layoutGrid() {
   const n = innerWidth >= 768 ? 3 : 2;
-  grids.forEach(({ el, cells }) => {
-    if (n !== colCount) {
+  if (n !== colCount) {
+    grids.forEach(({ el }) => {
       $$('.works-col', el).forEach((c) => c.remove());
       for (let i = 0; i < n; i++) el.append(Object.assign(document.createElement('div'), { className: 'works-col' }));
       el.classList.add('is-js');
-    }
-    const cols = $$('.works-col', el);
+    });
+    colCount = n;
+  }
+  rows.forEach(({ el, cells }) => (el.hidden = cells.every((c) => c.hidden)));
+  let carry: HTMLElement[] = [];
+  let target: HTMLElement | null = null, queue: HTMLElement[] = [];
+  const flush = (beforeRow: boolean) => {
+    if (!target) return;
+    const cols = $$('.works-col', target);
     const h = cols.map(() => 0);
-    cells.forEach((c) => {
+    const placed: { c: HTMLElement; k: number }[] = [];
+    queue.forEach((c) => {
       if (c.hidden) { cols[0].append(c); return; }
       const k = h.indexOf(Math.min(...h));
       cols[k].append(c);
       h[k] += +c.dataset.ratio! + 0.15;
+      placed.push({ c, k });
     });
+    carry = [];
+    // Von hinten abtragen, bis alle Spalten gleich hoch sind (gleiche Formate gehen sofort auf)
+    while (beforeRow && placed.length && Math.max(...h) - Math.min(...h) > 0.01) {
+      const { c, k } = placed.pop()!;
+      h[k] -= +c.dataset.ratio! + 0.15;
+      carry.unshift(c);
+    }
+    target = null; queue = [];
+  };
+  segs.forEach((el) => {
+    if (el.hasAttribute('data-grid')) {
+      if (!target) { target = el; queue = carry; carry = []; }
+      queue.push(...grids.find((g) => g.el === el)!.cells);
+    } else if (!el.hidden) flush(true);
   });
-  colCount = n;
-  rows.forEach(({ el, cells }) => (el.hidden = cells.every((c) => c.hidden)));
+  flush(false);
+  // Rest (z. B. hinter der letzten Reihe ohne folgendes Raster) bleibt im letzten Raster
+  if (carry.length) { const last = grids.at(-1)?.el; if (last) { target = last; queue = carry; flush(false); } }
 }
 function applyFilter(animate: boolean) {
   const list = filtered();

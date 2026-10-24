@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/therace-folge-5.jpg"
-order: 2
+order: 1
 placeholder: false
 ---

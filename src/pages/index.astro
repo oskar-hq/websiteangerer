@@ -248,11 +248,18 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
         <span class="line-mask"><span data-line>Ein Name,</span></span>
         <span class="line-mask"><span data-line style="--d:110ms" class="text-soft">ein Anruf.</span></span>
       </h2>
-      <p data-reveal class="mt-8 max-w-[56ch] text-[15px] leading-[1.6] text-muted md:mt-10 md:text-[17px]">
-        {site.name} bringt Marken und Creator mit den passenden Profis zusammen: Thumbnails, Plakate und Key Visuals,
-        Videoproduktion und Schnitt, Social Media, Creator-Management und Booking bis zur Beratung.
-        Aus Köln, für ganz Deutschland – ein Anruf, und das richtige Team steht.
-      </p>
+      <div data-reveal class="mt-8 max-w-[58ch] space-y-4 text-[15px] leading-[1.6] text-muted md:mt-10 md:text-[17px]">
+        <p>
+          <strong class="font-semibold text-fg">Hinter dem Anruf steht {site.name} aus Köln.</strong>{' '}
+          Er bringt Marken und Creator mit genau den Profis zusammen, die sie brauchen – aus einem Netzwerk,
+          das schon für Red Bull, Netflix, ITV Studios, Papaplatte und Gronkh arbeitet.
+        </p>
+        <p>
+          Bei ihm bekommst du Thumbnails, Plakate und Key Visuals, Videoproduktion und Schnitt, Social-Media-Betreuung,
+          Creator-Management und Booking, KI-Tools für Outreach sowie Beratung zu Content-Strategie und Sales.
+          Du rufst einmal an, Marvin stellt das Team zusammen.
+        </p>
+      </div>
       <footer data-reveal class="glass-chip mt-16 flex flex-wrap items-center justify-between gap-4 rounded-full px-[22px] py-3.5 text-[12px]">
         <span>©2026 {site.name}</span>
         <span class="flex flex-wrap gap-5"><a href="#top" class="text-muted transition-colors hover:text-fg">Nach oben ↑</a><a href={withBase('impressum/')} class="transition-colors hover:text-muted">Impressum</a><a href={withBase('datenschutz/')} class="transition-colors hover:text-muted">Datenschutz</a></span>

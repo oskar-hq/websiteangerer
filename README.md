@@ -47,7 +47,8 @@ Wird alles beim Build erzeugt – nichts von Hand pflegen:
 
 - `og.jpg` (1200 × 630, `src/lib/share.ts`): Vorschaubild für WhatsApp, LinkedIn, X & Co. – der Orbit aus
   `src/lib/orbit.ts` um die Kontaktkarte. Neue Marken im Orbit erscheinen automatisch auch im Bild.
-- `icons/180.png`, `192.png`, `512.png` und `site.webmanifest`: Homescreen-Icons aus `public/favicon.svg`.
+- `favicon.ico` (16/32/48 px), `icons/favicon-48.png`/`-96.png` (Google, WhatsApp, Browser) sowie
+  `icons/180.png`, `192.png`, `512.png` und `site.webmanifest` (Homescreen) – alles aus `public/favicon.svg` (blauer Hörer).
 - `sitemap.xml` (listet jede Seite unter `src/pages/*.astro` automatisch) und `robots.txt` mit Verweis darauf.
 - Meta-Tags (Open Graph, Twitter Card, Canonical) und strukturierte Daten (schema.org: WebSite + Person)
   setzt `src/layouts/Base.astro`.

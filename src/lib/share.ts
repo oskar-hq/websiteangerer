@@ -129,8 +129,29 @@ export async function shareImage() {
     .toBuffer();
 }
 
-/** App-Icon (Homescreen, Lesezeichen) aus dem Favicon – randlos, Ecken rundet das System selbst */
-export async function appIcon(size: number) {
-  const svg = (await readFile(resolve(root, 'public/favicon.svg'), 'utf8')).replace(/ rx="8"/, '');
+/**
+ * Icons aus public/favicon.svg. App-Icons (Homescreen) randlos – die Ecken rundet das System selbst;
+ * Favicons (Browser-Tab, Google, WhatsApp) behalten die runden Ecken.
+ */
+export async function appIcon(size: number, rounded = false) {
+  let svg = await readFile(resolve(root, 'public/favicon.svg'), 'utf8');
+  if (!rounded) svg = svg.replace(/ rx="8"/, '');
   return sharp(Buffer.from(svg), { density: Math.ceil((size / 32) * 72) }).resize(size, size).png().toBuffer();
+}
+
+/** favicon.ico mit 16, 32 und 48 px (PNG-Einträge) – für Apps und Crawler, die kein SVG lesen */
+export async function faviconIco() {
+  const sizes = [16, 32, 48];
+  const pngs = await Promise.all(sizes.map((s) => appIcon(s, true)));
+  const head = Buffer.alloc(6 + 16 * sizes.length);
+  head.writeUInt16LE(0, 0); head.writeUInt16LE(1, 2); head.writeUInt16LE(sizes.length, 4);
+  let offset = head.length;
+  sizes.forEach((s, i) => {
+    const e = 6 + 16 * i;
+    head.writeUInt8(s, e); head.writeUInt8(s, e + 1); head.writeUInt8(0, e + 2); head.writeUInt8(0, e + 3);
+    head.writeUInt16LE(1, e + 4); head.writeUInt16LE(32, e + 6);
+    head.writeUInt32LE(pngs[i].length, e + 8); head.writeUInt32LE(offset, e + 12);
+    offset += pngs[i].length;
+  });
+  return Buffer.concat([head, ...pngs]);
 }

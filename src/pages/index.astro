@@ -185,29 +185,28 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
 
     <!-- ARBEITEN -->
     <section id="arbeiten" class="mx-auto max-w-[1440px] px-3 pt-28 md:px-7 md:pt-44">
-      <div class="flex flex-wrap items-end justify-between gap-7">
-        <h2 class={h1}>
-          <span class="line-mask"><span data-line>Arbeiten,</span></span>
-          <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">die man kennt.</span></span>
-        </h2>
-        <div data-reveal style="--d:150ms" class="flex max-w-full flex-col gap-3 md:items-end">
-          <p id="suche-frage" class="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-[-0.03em] md:text-[24px]">
-            Wonach suchst du?
-            <span class="font-mono text-[11px] font-normal tracking-normal text-muted tabular-nums"><span data-work-count>{works.length}</span> ARBEITEN</span>
-          </p>
-          <div data-filter-bar role="group" aria-labelledby="suche-frage" class="filter no-scrollbar relative flex max-w-full flex-wrap gap-0.5 rounded-[27px] p-[5px] md:flex-nowrap md:overflow-x-auto md:rounded-full">
-            <span data-thumb class="filter-thumb"></span>
-            {filters.map((f, i) => (
-              <button type="button" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'} class="filter-btn relative flex h-11 items-center gap-1.5 rounded-full px-[18px] text-[15px] font-medium whitespace-nowrap">
-                {f.label}{f.n > 0 && <span class="font-mono text-[10px] opacity-60">{f.n}</span>}
-              </button>
-            ))}
-          </div>
+      <h2 class={h1}>
+        <span class="line-mask"><span data-line>Arbeiten,</span></span>
+        <span class="line-mask"><span data-line style="--d:90ms" class="text-soft">die man kennt.</span></span>
+      </h2>
+      <!-- Einstieg: Jeder beantwortet zuerst die Frage, dann sieht er nur, was er sucht -->
+      <div data-reveal style="--d:150ms" class="filter mt-10 flex flex-col gap-6 rounded-[36px] p-5 md:mt-14 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8">
+        <div class="shrink-0">
+          <p id="suche-frage" class="m-0 text-[clamp(2rem,9.5vw,2.6rem)] leading-[1] font-semibold tracking-[-0.05em] md:text-[min(4vw,3.6rem)]">Wonach suchst du?</p>
+          <p class="mt-3 mb-0 font-mono text-[11px] text-muted tabular-nums"><span data-work-count>{works.length}</span> ARBEITEN</p>
+        </div>
+        <div data-filter-bar role="group" aria-labelledby="suche-frage" class="relative flex flex-wrap gap-1.5 md:justify-end">
+          <span data-thumb class="filter-thumb"></span>
+          {filters.map((f, i) => (
+            <button type="button" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'} class="filter-btn relative flex h-12 items-center gap-2 rounded-full px-5 text-[16px] font-semibold tracking-[-0.015em] whitespace-nowrap md:h-14 md:px-6 md:text-[18px]">
+              {f.label}{f.n > 0 && <span class="font-mono text-[11px] font-normal opacity-60">{f.n}</span>}
+            </button>
+          ))}
         </div>
       </div>
       <!-- Masonry: jede Arbeit im eigenen Format (Poster hoch, Thumbnail quer, Reel 9:16 gekappt).
            Eine Reihe (row) teilt das Masonry: davor ein Raster, dann die Reihe über volle Breite, dann der Rest -->
-      <div data-works class="mt-12 md:mt-20">
+      <div data-works class="mt-10 md:mt-16">
         {segments.map((seg) => {
           const rowRatio = seg.row ? Math.min(seg.items[0].wk.data.image.height / seg.items[0].wk.data.image.width, 1.5) : 0;
           const tiles = seg.items.map(({ wk, i }, j) => {
@@ -413,7 +412,8 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
     box-shadow: inset 0 1px 0 #fff, 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 6px 14px -6px rgb(0 0 0 / 0.3);
     transition: translate 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), width 0.65s cubic-bezier(0.34, 1.25, 0.5, 1), height 0.65s, opacity 0.4s;
   }
-  .filter-btn { color: var(--muted); transition: color 0.45s; }
+  .filter-btn { color: var(--muted); transition: color 0.45s, background 0.45s; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.07); }
+  @media (hover: hover) { .filter-btn:hover { color: var(--fg); } }
   .filter-btn[aria-pressed='true'] { color: var(--fg); }
 
   /* Disziplinen */

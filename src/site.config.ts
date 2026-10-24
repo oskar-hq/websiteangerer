@@ -16,7 +16,7 @@ export const site = {
 export const seo = {
   title: 'Marvin Angerer – Design, Video & Social Media aus Köln',
   description:
-    'Thumbnails, Video, Social Media und Creator-Management aus Köln: Marvin Angerer bringt Marken und Creator mit den besten Profis zusammen – ein Anruf genügt.',
+    'Thumbnails, Videos, Social Media und Creator-Booking: Marvin Angerer aus Köln liefert mit seinem Netzwerk für Red Bull, Netflix & Papaplatte. Ein Anruf genügt.',
 };
 
 /**

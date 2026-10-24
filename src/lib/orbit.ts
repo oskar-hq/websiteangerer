@@ -18,6 +18,7 @@ export const orbit = [
   { client: 'itvstudios', s: 0.9, r: -8 },
   { client: 'mexify', s: 0.9, r: -6 },
   { client: 'ciberdime', s: 0.9, r: 8 },
+  { client: 'shortcut', s: 0.9, r: -6 },
   { client: 'therace', s: 0.95, r: -4 },
 ];
 

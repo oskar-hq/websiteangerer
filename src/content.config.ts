@@ -27,6 +27,10 @@ const works = defineCollection({
       placeholder: z.boolean().default(true),
       /** Hervorgehobene Kachel (größer auf Desktop) */
       featured: z.boolean().default(false),
+      /** Name einer Reihe: Arbeiten mit gleichem Namen stehen als ein Block (3 Bilder nebeneinander) über die volle Breite */
+      row: z.string().optional(),
+      /** Position in der Reihe (1–3) – die order der Reihe ist die des Bildes mit rowIndex 1 */
+      rowIndex: z.number().optional(),
     }),
 });
 

@@ -5,7 +5,12 @@ export type Work = CollectionEntry<'works'>;
 
 export async function getWorks(): Promise<Work[]> {
   const all = await getCollection('works');
-  return all.sort((a, b) => a.data.order - b.data.order);
+  // Reihe: Bilder 2 und 3 stehen direkt hinter Bild 1, egal welche order sie selbst haben
+  const key = (w: Work) => {
+    const first = w.data.row ? all.find((x) => x.data.row === w.data.row && x.data.rowIndex === 1) : undefined;
+    return first?.data.order ?? w.data.order;
+  };
+  return all.sort((a, b) => key(a) - key(b) || (a.data.rowIndex ?? 0) - (b.data.rowIndex ?? 0));
 }
 
 export function disciplineLabel(id: string) {

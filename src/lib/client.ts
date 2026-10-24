@@ -187,8 +187,11 @@ requestAnimationFrame(frame);
 /* ---------- Arbeiten: Filter, „Alle zeigen“ ---------- */
 type WorkData = { title: string; discipline: string; meta: string; full: string; video?: { type: 'youtube' | 'file'; src: string } };
 const workData: WorkData[] = JSON.parse($('#works-data')?.textContent || '[]');
-const grid = $('[data-grid]');
-const cells = grid ? $$('[data-work]', grid) : [];
+const works = $('[data-works]');
+// Das Masonry ist an jeder Reihe geteilt: mehrere Raster, dazwischen Reihen-Blöcke
+const grids = works ? $$('[data-grid]', works).map((el) => ({ el, cells: $$('[data-work]', el) })) : [];
+const rows = works ? $$('[data-row-block]', works).map((el) => ({ el, cells: $$('[data-work]', el) })) : [];
+const cells = works ? $$('[data-work]', works) : [];
 const bar = $('[data-filter-bar]');
 const thumb = $('[data-thumb]');
 const moreBtn = $('[data-more-btn]');
@@ -196,39 +199,47 @@ const SHOWN = 12;
 let filter = 'all', showAll = false;
 
 const filtered = () => cells.filter((c) => filter === 'all' || c.dataset.disc === filter);
+// Erste 12 – eine angeschnittene Reihe wird ganz gezeigt, nie halb
+function limit(list: HTMLElement[]) {
+  let k = Math.min(SHOWN, list.length);
+  while (k < list.length && list[k].dataset.row && list[k].dataset.row === list[k - 1].dataset.row) k++;
+  return list.slice(0, k);
+}
 function moveThumb() {
   const btn = bar && $(`[data-filter="${filter}"]`, bar);
   if (!btn || !thumb) return;
   thumb.style.translate = `${btn.offsetLeft}px 0`;
   thumb.style.width = `${btn.offsetWidth}px`;
 }
-// Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte
+// Masonry: sichtbare Arbeiten der Reihe nach in die jeweils kürzeste Spalte – je Raster
 let colCount = 0;
 function layoutGrid() {
-  if (!grid) return;
   const n = innerWidth >= 768 ? 3 : 2;
-  if (n !== colCount) {
-    $$('.works-col', grid).forEach((c) => c.remove());
-    for (let i = 0; i < n; i++) grid.append(Object.assign(document.createElement('div'), { className: 'works-col' }));
-    colCount = n;
-    grid.classList.add('is-js');
-  }
-  const cols = $$('.works-col', grid);
-  const h = cols.map(() => 0);
-  cells.forEach((c) => {
-    if (c.hidden) { cols[0].append(c); return; }
-    const k = h.indexOf(Math.min(...h));
-    cols[k].append(c);
-    h[k] += +c.dataset.ratio! + 0.15;
+  grids.forEach(({ el, cells }) => {
+    if (n !== colCount) {
+      $$('.works-col', el).forEach((c) => c.remove());
+      for (let i = 0; i < n; i++) el.append(Object.assign(document.createElement('div'), { className: 'works-col' }));
+      el.classList.add('is-js');
+    }
+    const cols = $$('.works-col', el);
+    const h = cols.map(() => 0);
+    cells.forEach((c) => {
+      if (c.hidden) { cols[0].append(c); return; }
+      const k = h.indexOf(Math.min(...h));
+      cols[k].append(c);
+      h[k] += +c.dataset.ratio! + 0.15;
+    });
   });
+  colCount = n;
+  rows.forEach(({ el, cells }) => (el.hidden = cells.every((c) => c.hidden)));
 }
 function applyFilter(animate: boolean) {
   const list = filtered();
-  const visible = filter === 'all' && !showAll ? list.slice(0, SHOWN) : list;
+  const visible = filter === 'all' && !showAll ? limit(list) : list;
   cells.forEach((c) => (c.hidden = !visible.includes(c)));
   layoutGrid();
   const count = $('[data-work-count]'); if (count) count.textContent = String(list.length).padStart(2, '0');
-  if (moreBtn) moreBtn.parentElement!.hidden = !(filter === 'all' && !showAll && list.length > SHOWN);
+  if (moreBtn) moreBtn.parentElement!.hidden = visible.length >= list.length;
   $$('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
   moveThumb();
   if (!animate) return;
@@ -242,7 +253,7 @@ function applyFilter(animate: boolean) {
 }
 function setFilter(id: string) { filter = id; applyFilter(true); }
 $$('[data-filter]').forEach((b) => b.addEventListener('click', () => setFilter(b.dataset.filter!)));
-moreBtn?.addEventListener('click', () => { showAll = true; applyFilter(false); observeReveal(grid!); });
+moreBtn?.addEventListener('click', () => { showAll = true; applyFilter(false); observeReveal(works!); });
 addEventListener('resize', () => {
   const m = innerWidth >= 768;
   if (m !== md) { md = m; layoutGrid(); }

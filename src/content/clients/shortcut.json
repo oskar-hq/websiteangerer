@@ -1,0 +1,11 @@
+{
+  "name": "ShortCut",
+  "kind": "brand",
+  "tier": 2,
+  "order": 145,
+  "scale": 1.0,
+  "items": [],
+  "works": [],
+  "logo": "logos/shortcut.svg",
+  "aspect": 4.06
+}

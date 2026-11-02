@@ -5,7 +5,7 @@
  */
 export const orbit = [
   { client: 'redbull', s: 1.0, r: 10 },
-  { client: 'paluten', s: 0.95, r: -8 },
+  { client: 'bastighg', s: 0.95, r: -8 },
   { client: 'netflix', s: 0.95, r: 6 },
   { client: 'papaplatte', s: 1.0, r: -6 },
   { client: 'knabe', s: 0.9, r: 4 },

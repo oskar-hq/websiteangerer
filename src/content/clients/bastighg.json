@@ -1,0 +1,12 @@
+{
+  "name": "BastiGHG",
+  "kind": "creator",
+  "tier": 2,
+  "order": 190,
+  "scale": 1.0,
+  "items": [],
+  "works": [
+    "bastighg-friendly-fire-12"
+  ],
+  "photo": "../../assets/people/bastighg.jpg"
+}

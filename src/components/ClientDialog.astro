@@ -40,7 +40,7 @@ const { clients, works } = Astro.props;
       {ws.length > 0 && (
         <div data-dlg class="no-scrollbar mt-7 flex gap-4 overflow-x-auto px-1 pt-3 pb-5">
           {ws.map((w) => (
-            <Image src={w.data.image} alt={`${w.data.kind}: ${w.data.title}`} widths={[480, 800]} sizes="320px" class="cd-work h-44 w-auto shrink-0 rounded-[22px] object-cover" />
+            <Image src={w.data.image} alt={`${w.data.kind} für ${w.data.client}`} widths={[480, 800]} sizes="320px" class="cd-work h-44 w-auto shrink-0 rounded-[22px] object-cover" />
           ))}
         </div>
       )}

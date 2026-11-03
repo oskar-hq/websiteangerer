@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/itvstudios-koro-eisblock.webp"
-order: 19
+order: 8
 placeholder: false
 ---

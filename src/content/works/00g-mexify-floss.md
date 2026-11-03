@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/mexify-floss.webp"
-order: 7
+order: 19
 placeholder: false
 ---

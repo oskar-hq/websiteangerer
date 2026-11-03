@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Key Visual"
 image: "../../assets/works/therace-staffel-3.jpg"
-order: 4
+order: 6
 placeholder: false
 ---

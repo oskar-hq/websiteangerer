@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/mexify-ikea.jpg"
-order: 17
+order: 13
 placeholder: false
 ---

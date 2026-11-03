@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/gronkh-first-light.jpg"
-order: 16
+order: 12
 placeholder: false
 ---

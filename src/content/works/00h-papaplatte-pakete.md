@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/papaplatte-pakete.jpg"
-order: 8
+order: 18
 placeholder: false
 ---

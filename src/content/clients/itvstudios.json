@@ -5,7 +5,10 @@
   "order": 185,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "itvstudios-koro-supermarkt",
+    "itvstudios-koro-eisblock"
+  ],
   "logo": "logos/itvstudios.svg",
   "aspect": 1.389
 }

@@ -185,7 +185,7 @@ function frame(t: number) {
 requestAnimationFrame(frame);
 
 /* ---------- Arbeiten: Filter, „Alle zeigen“ ---------- */
-type WorkData = { title: string; discipline: string; meta: string; full: string; video?: { type: 'youtube' | 'file'; src: string } };
+type WorkData = { title: string; label: string; discipline: string; meta: string; full: string; video?: { type: 'youtube' | 'file'; src: string } };
 const workData: WorkData[] = JSON.parse($('#works-data')?.textContent || '[]');
 const works = $('[data-works]');
 // Das Masonry ist an jeder Reihe geteilt: mehrere Raster, dazwischen Reihen-Blöcke
@@ -321,10 +321,10 @@ function renderLb(cell: HTMLElement) {
   img.hidden = !!d.video; vid.hidden = d.video?.type !== 'file'; yt.hidden = d.video?.type !== 'youtube';
   if (d.video?.type === 'file') { vid.poster = d.full; vid.src = d.video.src; vid.play().catch(() => {}); }
   else if (d.video?.type === 'youtube') yt.src = d.video.src;
-  else { img.src = d.full; img.alt = d.title; }
+  else { img.src = d.full; img.alt = d.label; }
   $('[data-lb-title]', lb!)!.textContent = d.title;
   $('[data-lb-meta]', lb!)!.textContent = d.meta;
-  $('[data-callback]', lb!)!.dataset.callback = d.title;
+  $('[data-callback]', lb!)!.dataset.callback = d.label;
 }
 function stopLbMedia() {
   const vid = lb && $<HTMLVideoElement>('[data-lb-video]', lb);

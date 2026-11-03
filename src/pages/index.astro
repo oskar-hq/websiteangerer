@@ -47,9 +47,11 @@ works.forEach((wk, i) => {
 // Daten für Lightbox & Disziplin-Vorschau
 const workData = await Promise.all(
   works.map(async (wk) => ({
-    title: wk.data.title,
+    // Kein Titel mehr auf der Seite – Anlass ist Art + Kunde
+    title: wk.data.client,
+    label: `${wk.data.kind} für ${wk.data.client}`,
     discipline: wk.data.discipline,
-    meta: `${wk.data.kind} · ${wk.data.client} · ${disciplineLabel(wk.data.discipline)}`,
+    meta: `${wk.data.kind} · ${disciplineLabel(wk.data.discipline)}`,
     full: (await getImage({ src: wk.data.image, width: Math.min(1600, wk.data.image.width), format: 'webp' })).src,
     video: videoSource(wk.data.video),
   })),
@@ -216,10 +218,10 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
             // In der Reihe sind alle Bilder gleich hoch – das Format von Bild 1 gilt für alle
             const ratio = seg.row ? rowRatio : Math.min(height / width, 1.5);
             return (
-              <figure data-work={i} data-tags={tagsOf(wk)} data-row={seg.row} data-ratio={ratio.toFixed(4)} data-tilt data-reveal hidden={!initial.has(i)} style={`--d:${(seg.row ? j : i % 3) * 80}ms`} class="work card m-0" tabindex="0" role="button" aria-label={`${wk.data.title} ansehen`}>
+              <figure data-work={i} data-tags={tagsOf(wk)} data-row={seg.row} data-ratio={ratio.toFixed(4)} data-tilt data-reveal hidden={!initial.has(i)} style={`--d:${(seg.row ? j : i % 3) * 80}ms`} class="work card m-0" tabindex="0" role="button" aria-label={`${wk.data.kind} für ${wk.data.client} ansehen`}>
                 <span data-tilt-el class="work-frame">
                   <span class="work-inner" style={`aspect-ratio:${(1 / ratio).toFixed(4)}`}>
-                    <Image src={wk.data.image} alt={`${wk.data.kind}: ${wk.data.title}`} widths={[400, 700, 1000]} sizes={seg.row ? '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 85vw' : '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 47vw'} draggable="false" class="size-full object-cover" />
+                    <Image src={wk.data.image} alt={`${wk.data.kind} für ${wk.data.client}`} widths={[400, 700, 1000]} sizes={seg.row ? '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 85vw' : '(min-width: 1280px) 440px, (min-width: 768px) 31vw, 47vw'} draggable="false" class="size-full object-cover" />
                     {wk.data.video && <span class="work-play" aria-hidden="true"><Icon name="play" size={20} /></span>}
                     {ref && (
                       <span class="work-ref">
@@ -234,10 +236,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
                   </span>
                 </span>
                 {!seg.row && (
-                  <figcaption class="mt-3 flex items-baseline justify-between gap-3 px-1 text-[13px]">
-                    <span class="truncate font-semibold tracking-[-0.01em]">{wk.data.title}</span>
-                    <span class="shrink-0 text-[12px] text-muted max-md:hidden">{wk.data.kind}</span>
-                  </figcaption>
+                  <figcaption class="mt-3 px-1 text-[12px] text-muted">{wk.data.kind}</figcaption>
                 )}
               </figure>
             );
@@ -248,7 +247,7 @@ const h1 = 'text-[clamp(2.6rem,12vw,3.2rem)] font-semibold leading-[0.98] tracki
             <div data-row-block={seg.row} class="work-row" hidden={!seg.items.some(({ i }) => initial.has(i))}>
               <div class="work-row-track no-scrollbar">{tiles}</div>
               <p class="mt-3 flex items-baseline justify-between gap-3 px-1 text-[13px]">
-                <span class="truncate font-semibold tracking-[-0.01em]">{first.title.split(' – ')[0]} · {first.client}</span>
+                <span class="truncate font-semibold tracking-[-0.01em]">{first.client}</span>
                 <span class="shrink-0 text-[12px] text-muted">{first.kind}</span>
               </p>
             </div>

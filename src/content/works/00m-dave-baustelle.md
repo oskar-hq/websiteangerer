@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/dave-baustelle.webp"
-order: 13
+order: 15
 placeholder: false
 ---

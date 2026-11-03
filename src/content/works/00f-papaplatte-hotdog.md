@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/papaplatte-hotdog.jpg"
-order: 6
+order: 14
 placeholder: false
 ---

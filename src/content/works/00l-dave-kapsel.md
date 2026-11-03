@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/dave-kapsel.jpg"
-order: 12
+order: 7
 placeholder: false
 ---

@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/joyn-folge-3.webp"
-order: 11
+order: 2
 placeholder: false
 ---

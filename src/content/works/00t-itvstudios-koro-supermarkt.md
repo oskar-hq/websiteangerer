@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/itvstudios-koro-supermarkt.webp"
-order: 18
+order: 1
 placeholder: false
 ---

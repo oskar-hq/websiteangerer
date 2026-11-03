@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/dave-spanien.jpg"
-order: 2
+order: 20
 placeholder: false
 ---

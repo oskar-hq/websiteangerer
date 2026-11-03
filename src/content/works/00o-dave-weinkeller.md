@@ -6,6 +6,6 @@ discipline: design
 medium: image
 kind: "Thumbnail"
 image: "../../assets/works/dave-weinkeller.webp"
-order: 15
+order: 11
 placeholder: false
 ---

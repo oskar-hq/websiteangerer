@@ -47,7 +47,9 @@
   }
   * { -webkit-tap-highlight-color: transparent; }
   ::selection { background: var(--fg); color: #fff; }
-  :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; border-radius: 999px; }
+  /* Fokusrahmen nur bei Tastaturbedienung (Klasse "kb" setzt Base.astro nach Tab) */
+  :focus-visible { outline: none; }
+  html.kb :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
   img, video { display: block; max-width: 100%; }
   button { cursor: pointer; }
 }

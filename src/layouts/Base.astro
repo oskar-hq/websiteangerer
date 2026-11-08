@@ -58,7 +58,14 @@ const jsonLd = {
     <link rel="manifest" href={withBase('site.webmanifest')} />
     <link rel="sitemap" href={withBase('sitemap.xml')} />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      (() => {
+        const r = document.documentElement;
+        r.classList.add('js');
+        addEventListener('keydown', (e) => { if (e.key === 'Tab') r.classList.add('kb'); }, true);
+        addEventListener('pointerdown', () => r.classList.remove('kb'), true);
+      })();
+    </script>
   </head>
   <body class="min-h-svh bg-bg text-fg">
     <slot />

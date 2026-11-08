@@ -5,7 +5,9 @@
   "order": 130,
   "scale": 1.0,
   "items": [],
-  "works": [],
+  "works": [
+    "knabe-malz-eintracht-spandau"
+  ],
   "logo": "logos/knabe.svg",
   "aspect": 2.677
 }
